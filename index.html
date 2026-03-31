@@ -4,8 +4,221 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ОфферДоктор | AI Разбор УТП</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://st.max.ru/js/max-web-app.js"></script>
+    <style>
+        /* --- 1. CORE VARIABLES & RESET --- */
+        :root {
+            /* Базовая палитра (Концепт 1: Light Clean Business) */
+            --bg-color: #FAFAF9;
+            --card-bg: #FFFFFF;
+            --text-primary: #2D2D2D;
+            --text-secondary: #6B7280;
+            --accent-color: #0D9488; /* Бирюзовый */
+            --accent-hover: #0F766E;
+            --border-color: #E5E7EB;
+            --error-color: #EF4444;
+            
+            /* UI Tokens */
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Темы для других концептов (можно переключать класс на body) */
+        body.theme-premium {
+            --bg-color: #F3F4F6;
+            --accent-color: #6366F1; /* Лаванда */
+            --card-bg: rgba(255, 255, 255, 0.7);
+        }
+        body.theme-conversion {
+            --bg-color: #FFFBEB; /* Теплый */
+            --accent-color: #F97316; /* Коралл */
+            --text-primary: #111827;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* --- 2. LAYOUT CONTAINER (Mobile Mockup) --- */
+        .app-container {
+            width: 100%;
+            max-width: 414px; /* iPhone Max width */
+            background: var(--bg-color);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px 16px;
+            padding-bottom: 40px;
+        }
+
+        /* --- 3. TYPOGRAPHY --- */
+        h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
+        h2 { font-size: 18px; font-weight: 700; margin: 0 0 12px 0; }
+        h3 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; }
+        p { margin: 0; font-size: 14px; color: var(--text-secondary); }
+        .subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+
+        /* --- 4. COMPONENTS --- */
+        /* Hero Block */
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            padding-top: 10px;
+        }
+        .hero-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        /* Cards & Inputs */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+            transition: transform 0.2s;
+        }
+        .input-group { margin-bottom: 16px; }
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .input-field {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: #FAFAFA;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+        }
+        .input-field:focus { border-color: var(--accent-color); background: #fff; }
+
+        /* Price Block */
+        .price-tag {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: block;
+        }
+        .benefits-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+        }
+        .benefits-list li {
+            font-size: 13px;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+        .benefits-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-primary:active { opacity: 0.9; }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        /* --- 5. SCREENS & STATES --- */
+        .screen { display: none; animation: fadeIn 0.4s ease; }
+        .screen.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Loading State */
+        .loader-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .ai-loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Result Blocks */
+        .result-block {
+            border-left: 4px solid var(--accent-color);
+            background: #FAFAFA;
+        }
+        .result-block.warning { border-left-color: #F59E0B; }
+        .result-block.success { border-left-color: #10B981; }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(13, 148, 136, 0.1);
+            color: var(--accent-color);
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        /* Error State */
+        .error-box {
+            text-align: center;
+            padding: 30px;
+            background: #FEF2F2;
+            border-radius: var(--radius-lg);
+            color: #991B1B;
+        }
+    </style>
 </head>
 <body>
 
@@ -22,22 +235,21 @@
         </div>
 
         <div class="card">
-            <h2>Ваши данные</h2>
             <div class="input-group">
                 <label>Что вы продаете</label>
-                <span class="input-field input-field--static" id="product">—</span>
+                <input class="input-field" type="text" placeholder="Например: Курс по дизайну" id="inp-product">
             </div>
             <div class="input-group">
                 <label>Для кого предложение</label>
-                <span class="input-field input-field--static" id="audience">—</span>
+                <input class="input-field" type="text" placeholder="Например: Новички в IT" id="inp-audience">
             </div>
             <div class="input-group">
                 <label>Как сейчас звучит предложение</label>
-                <span class="input-field input-field--static" id="current-text">—</span>
+                <textarea class="input-field" rows="3" placeholder="Вставьте ваш текст..." id="inp-text"></textarea>
             </div>
             <div class="input-group">
                 <label>Что не устраивает</label>
-                <span class="input-field input-field--static" id="problems">—</span>
+                <input class="input-field" type="text" placeholder="Например: Слишком длинно" id="inp-problem">
             </div>
         </div>
 
@@ -49,7 +261,7 @@
                 <li>Короткая версия для шапки</li>
                 <li>План: что менять первым</li>
             </ul>
-            <button class="btn-primary" id="pay-btn">Оплатить и получить разбор</button>
+            <button class="btn-primary" onclick="goToPayment()">Оплатить и получить разбор</button>
         </div>
     </div>
 
@@ -65,7 +277,7 @@
         <div class="card" style="text-align: center;">
             <p>Чек отправлен на почту</p>
             <br>
-            <button class="btn-primary" id="payment-go-loading">Перейти к результату</button>
+            <button class="btn-primary" onclick="goToLoading()">Перейти к результату</button>
         </div>
     </div>
 
@@ -92,7 +304,10 @@
         <div class="card result-block warning">
             <span class="tag">ДИАГНОЗ</span>
             <h3>3 главные проблемы</h3>
-            <ul class="benefits-list" id="result-problems">
+            <ul class="benefits-list">
+                <li>Нет конкретной выгоды для клиента</li>
+                <li>Слишком много прилагательных</li>
+                <li>Отсутствует призыв к действию</li>
             </ul>
         </div>
 
@@ -100,22 +315,28 @@
         <div class="card result-block success">
             <span class="tag">РЕШЕНИЕ</span>
             <h3>3 новых варианта УТП</h3>
-            <ul class="benefits-list" id="result-offers">
-            </ul>
+            <p style="margin-bottom:8px; font-weight:600">Вариант 1 (Дерзкий):</p>
+            <p style="margin-bottom:12px">"Дизайн за 4 недели. Или вернем деньги."</p>
+            <p style="margin-bottom:8px; font-weight:600">Вариант 2 (Мягкий):</p>
+            <p style="margin-bottom:12px">"Освойте профессию с гарантией трудоустройства."</p>
         </div>
 
         <!-- Short Version -->
         <div class="card">
             <span class="tag">ДЛЯ ШАПКИ</span>
             <h3>Короткая версия</h3>
-            <p id="result-short" style="font-weight: 600; color: var(--text-primary);">—</p>
+            <p>Курс по дизайну для новичков. Портфолио за 1 месяц.</p>
         </div>
 
         <!-- Action Plan -->
         <div class="card">
             <span class="tag">ПЛАН</span>
             <h3>Что менять первым</h3>
-            <p id="result-advice" style="color: var(--text-secondary); font-size: 14px;">—</p>
+            <ol style="padding-left: 20px; color: var(--text-secondary); font-size: 14px;">
+                <li style="margin-bottom:6px">Убрать воду из заголовка</li>
+                <li style="margin-bottom:6px">Добавить цифры в описание</li>
+                <li>Поставить кнопку "Начать"</li>
+            </ol>
         </div>
 
         <button class="btn-primary btn-secondary" onclick="location.reload()">Сделать новый разбор</button>
@@ -125,15 +346,47 @@
     <div id="screen-error" class="screen">
         <div class="error-box">
             <h2>⚠️ Ошибка</h2>
-            <p id="error-message">Не удалось получить ответ от сервера.</p>
+            <p>Не удалось получить ответ от сервера.</p>
             <br>
-            <button class="btn-primary" id="retry-btn">Попробовать снова</button>
+            <button class="btn-primary" onclick="location.reload()">Попробовать снова</button>
         </div>
     </div>
 
 </div>
 
-<script src="app.js"></script>
+<script>
+    // --- LOGIC ---
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function goToPayment() {
+        // Валидация (упрощенная)
+        const product = document.getElementById('inp-product').value;
+        if(!product) { alert('Пожалуйста, заполните поле "Что вы продаете"'); return; }
+        
+        // Имитация задержки оплаты
+        const btn = document.querySelector('#screen-input .btn-primary');
+        const originalText = btn.innerText;
+        btn.innerText = "Обработка...";
+        
+        setTimeout(() => {
+            btn.innerText = originalText;
+            showScreen('screen-payment');
+        }, 800);
+    }
+
+    function goToLoading() {
+        showScreen('screen-loading');
+        // Имитация работы AI (3 секунды)
+        setTimeout(() => {
+            // 90% успех, 10% ошибка для демонстрации
+            Math.random() > 0.1 ? showScreen('screen-result') : showScreen('screen-error');
+        }, 3000);
+    }
+</script>
 
 </body>
 </html>
