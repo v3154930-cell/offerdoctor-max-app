@@ -2,20 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ОфферДоктор — Полный AI-разбор УТП</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://st.max.ru/js/max-web-app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <!-- Верхний блок -->
-        <header class="header">
-            <h1 class="header__title">ОфферДоктор</h1>
-            <p class="header__subtitle">Полный AI-разбор УТП</p>
-            <p class="header__description">
-                Разбор покажет слабые места текста, предложит новые формулировки УТП и поможет усилить предложение.
-            </p>
+    <div class="app-container">
+        <!-- Верхний блок (Hero) -->
+        <header class="hero">
+            <div class="hero__icon">🔍</div>
+            <div class="hero__content">
+                <h1 class="hero__title">ОфферДоктор</h1>
+                <p class="hero__subtitle">Полный AI-разбор УТП</p>
+            </div>
         </header>
 
         <!-- Блок "Ваши данные" -->
@@ -44,18 +44,16 @@
         <!-- Блок цены -->
         <section class="card price-card">
             <h2 class="card__title">Полный разбор</h2>
-            <p class="price-card__price">299 ₽</p>
+            <span class="price-card__price">299 ₽</span>
             <ul class="price-card__benefits">
                 <li>3 главные проблемы текста</li>
                 <li>3 новых варианта УТП</li>
                 <li>1 короткая версия для шапки / карточки / лендинга</li>
             </ul>
+            <button class="btn btn--primary" id="pay-btn">
+                Оплатить и получить разбор
+            </button>
         </section>
-
-        <!-- Кнопка оплаты -->
-        <button class="btn btn--primary" id="pay-btn">
-            Оплатить и получить разбор
-        </button>
 
         <!-- Состояние: оплата подтверждена -->
         <div class="status-message" id="payment-success" style="display: none;">
@@ -64,30 +62,41 @@
 
         <!-- Состояние: загрузка анализа -->
         <section class="card loading-card" id="loading-section" style="display: none;">
-            <div class="loading-spinner"></div>
+            <div class="ai-loader"></div>
             <p class="loading-text">AI анализирует ваше УТП...</p>
+            <p class="loading-subtext">Сравниваем с базой из 10,000+ офферов...</p>
         </section>
 
         <!-- Состояние: результат -->
         <section class="card result-card" id="result-section" style="display: none;">
-            <h2 class="card__title">Результат AI-разбора</h2>
+            <div class="hero hero--small">
+                <div class="hero__icon hero__icon--result">📊</div>
+                <div class="hero__content">
+                    <h2 class="hero__title">Готово</h2>
+                    <p class="hero__subtitle">Ваш персональный разбор</p>
+                </div>
+            </div>
 
-            <div class="result-block">
+            <div class="result-block result-block--warning">
+                <span class="tag">ДИАГНОЗ</span>
                 <h3 class="result-block__title">3 главные проблемы</h3>
                 <ul class="result-block__list" id="result-problems"></ul>
             </div>
 
-            <div class="result-block">
+            <div class="result-block result-block--success">
+                <span class="tag">РЕШЕНИЕ</span>
                 <h3 class="result-block__title">3 новых варианта УТП</h3>
                 <ul class="result-block__list" id="result-offers"></ul>
             </div>
 
             <div class="result-block">
+                <span class="tag">ДЛЯ ШАПКИ</span>
                 <h3 class="result-block__title">Короткая версия</h3>
                 <p class="result-block__text result-block__text--highlight" id="result-short"></p>
             </div>
 
             <div class="result-block">
+                <span class="tag">ПЛАН</span>
                 <h3 class="result-block__title">Что менять первым</h3>
                 <p class="result-block__text" id="result-advice"></p>
             </div>
@@ -95,11 +104,14 @@
 
         <!-- Состояние: ошибка -->
         <section class="card error-card" id="error-section" style="display: none;">
-            <h2 class="card__title">Произошла ошибка</h2>
-            <p class="error-text" id="error-message"></p>
-            <button class="btn btn--primary" id="retry-btn">
-                Попробовать снова
-            </button>
+            <div class="error-box">
+                <div class="error-box__icon">⚠️</div>
+                <h2 class="error-box__title">Ошибка</h2>
+                <p class="error-box__text" id="error-message"></p>
+                <button class="btn btn--primary" id="retry-btn">
+                    Попробовать снова
+                </button>
+            </div>
         </section>
     </div>
 
