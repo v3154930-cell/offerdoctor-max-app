@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ОфферДоктор — Полный AI-разбор УТП</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Верхний блок -->
+        <header class="header">
+            <h1 class="header__title">ОфферДоктор</h1>
+            <p class="header__subtitle">Полный AI-разбор УТП</p>
+            <p class="header__description">
+                Разбор покажет слабые места текста, предложит новые формулировки УТП и поможет усилить предложение.
+            </p>
+        </header>
+
+        <!-- Блок "Ваши данные" -->
+        <section class="card data-card">
+            <h2 class="card__title">Ваши данные</h2>
+            <div class="data-grid">
+                <div class="data-item">
+                    <span class="data-item__label">Что вы продаете</span>
+                    <span class="data-item__value" id="product">—</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-item__label">Для кого</span>
+                    <span class="data-item__value" id="audience">—</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-item__label">Текущий текст</span>
+                    <span class="data-item__value" id="current-text">—</span>
+                </div>
+                <div class="data-item">
+                    <span class="data-item__label">Что не устраивает</span>
+                    <span class="data-item__value" id="problems">—</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Блок цены -->
+        <section class="card price-card">
+            <h2 class="card__title">Полный разбор</h2>
+            <p class="price-card__price">299 ₽</p>
+            <ul class="price-card__benefits">
+                <li>3 главные проблемы текста</li>
+                <li>3 новых варианта УТП</li>
+                <li>1 короткая версия для шапки / карточки / лендинга</li>
+            </ul>
+        </section>
+
+        <!-- Кнопка оплаты -->
+        <button class="btn btn--primary" id="pay-btn">
+            Оплатить и получить разбор
+        </button>
+
+        <!-- Блок результата -->
+        <section class="card result-card" id="result-section" style="display: none;">
+            <h2 class="card__title">Результат AI-разбора</h2>
+
+            <div class="result-block">
+                <h3 class="result-block__title">Короткий диагноз</h3>
+                <p class="result-block__text" id="diagnosis"></p>
+            </div>
+
+            <div class="result-block">
+                <h3 class="result-block__title">3 слабые точки</h3>
+                <ul class="result-block__list" id="weak-points"></ul>
+            </div>
+
+            <div class="result-block">
+                <h3 class="result-block__title">3 новых варианта УТП</h3>
+                <ul class="result-block__list" id="new-utp"></ul>
+            </div>
+
+            <div class="result-block">
+                <h3 class="result-block__title">Готовая короткая версия</h3>
+                <p class="result-block__text result-block__text--highlight" id="short-version"></p>
+            </div>
+
+            <div class="result-block">
+                <h3 class="result-block__title">Что менять первым</h3>
+                <p class="result-block__text" id="first-steps"></p>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
