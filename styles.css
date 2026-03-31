@@ -94,7 +94,6 @@ p { margin: 0; font-size: 14px; color: var(--text-secondary); }
     transition: transform 0.2s;
 }
 .input-group { margin-bottom: 16px; }
-.input-group:last-child { margin-bottom: 0; }
 .input-group label {
     display: block;
     font-size: 13px;
@@ -112,16 +111,8 @@ p { margin: 0; font-size: 14px; color: var(--text-secondary); }
     font-family: inherit;
     resize: none;
     outline: none;
-    display: block;
 }
 .input-field:focus { border-color: var(--accent-color); background: #fff; }
-.input-field--static {
-    background: transparent;
-    border: none;
-    padding: 8px 0;
-    color: var(--text-primary);
-    cursor: default;
-}
 
 /* Price Block */
 .price-tag {
@@ -163,7 +154,6 @@ p { margin: 0; font-size: 14px; color: var(--text-secondary); }
     font-weight: 600;
     cursor: pointer;
     transition: opacity 0.2s;
-    font-family: var(--font-family);
 }
 .btn-primary:active { opacity: 0.9; }
 .btn-secondary {
@@ -199,8 +189,8 @@ p { margin: 0; font-size: 14px; color: var(--text-secondary); }
     border-left: 4px solid var(--accent-color);
     background: #FAFAFA;
 }
-.result-block.warning { border-left-color: #F59E0B; background: #FFFBEB; }
-.result-block.success { border-left-color: #10B981; background: #ECFDF5; }
+.result-block.warning { border-left-color: #F59E0B; }
+.result-block.success { border-left-color: #10B981; }
 
 .tag {
     display: inline-block;
@@ -220,34 +210,4 @@ p { margin: 0; font-size: 14px; color: var(--text-secondary); }
     background: #FEF2F2;
     border-radius: var(--radius-lg);
     color: #991B1B;
-}
-.error-box h2 {
-    color: var(--error-color);
-}
-
-/* --- 6. RESPONSIVE --- */
-@media (max-width: 480px) {
-    .app-container {
-        padding: 16px 12px 32px;
-    }
-    
-    h1 { font-size: 22px; }
-    .card { padding: 16px; }
-    .price-tag { font-size: 28px; }
-    .btn-primary { padding: 14px; font-size: 15px; }
-    .ai-loader { width: 50px; height: 50px; }
-    .loader-container { padding: 40px 16px; }
-}
-
-/* --- 7. ACCESSIBILITY --- */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-:focus-visible {
-    outline: 3px solid var(--accent-color);
-    outline-offset: 2px;
 }
