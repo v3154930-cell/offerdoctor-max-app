@@ -57,34 +57,49 @@
             Оплатить и получить разбор
         </button>
 
-        <!-- Блок результата -->
+        <!-- Состояние: оплата подтверждена -->
+        <div class="status-message" id="payment-success" style="display: none;">
+            ✓ Оплата подтверждена. Готовим анализ...
+        </div>
+
+        <!-- Состояние: загрузка анализа -->
+        <section class="card loading-card" id="loading-section" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">AI анализирует ваше УТП...</p>
+        </section>
+
+        <!-- Состояние: результат -->
         <section class="card result-card" id="result-section" style="display: none;">
             <h2 class="card__title">Результат AI-разбора</h2>
 
             <div class="result-block">
-                <h3 class="result-block__title">Короткий диагноз</h3>
-                <p class="result-block__text" id="diagnosis"></p>
-            </div>
-
-            <div class="result-block">
-                <h3 class="result-block__title">3 слабые точки</h3>
-                <ul class="result-block__list" id="weak-points"></ul>
+                <h3 class="result-block__title">3 главные проблемы</h3>
+                <ul class="result-block__list" id="result-problems"></ul>
             </div>
 
             <div class="result-block">
                 <h3 class="result-block__title">3 новых варианта УТП</h3>
-                <ul class="result-block__list" id="new-utp"></ul>
+                <ul class="result-block__list" id="result-offers"></ul>
             </div>
 
             <div class="result-block">
-                <h3 class="result-block__title">Готовая короткая версия</h3>
-                <p class="result-block__text result-block__text--highlight" id="short-version"></p>
+                <h3 class="result-block__title">Короткая версия</h3>
+                <p class="result-block__text result-block__text--highlight" id="result-short"></p>
             </div>
 
             <div class="result-block">
                 <h3 class="result-block__title">Что менять первым</h3>
-                <p class="result-block__text" id="first-steps"></p>
+                <p class="result-block__text" id="result-advice"></p>
             </div>
+        </section>
+
+        <!-- Состояние: ошибка -->
+        <section class="card error-card" id="error-section" style="display: none;">
+            <h2 class="card__title">Произошла ошибка</h2>
+            <p class="error-text" id="error-message"></p>
+            <button class="btn btn--primary" id="retry-btn">
+                Попробовать снова
+            </button>
         </section>
     </div>
 
