@@ -7,140 +7,245 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Background Decorations -->
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
 
-<div class="app-container">
-    
-    <!-- === SCREEN 1: INPUT FORM === -->
-    <div id="screen-input" class="screen active">
-        <div class="hero">
-            <div class="hero-icon">🔍</div>
-            <div>
+    <div class="app-container">
+        
+        <!-- SCREEN 1: INPUT FORM -->
+        <div id="screen-input" class="screen active">
+            <div class="hero">
+                <div class="ai-badge">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                    </svg>
+                </div>
                 <h1>ОфферДоктор</h1>
-                <p class="subtitle">AI-разбор УТП и предложения для клиента</p>
+                <p>AI-разбор УТП и предложения для клиента. Получите экспертный анализ и готовые улучшения за 2 минуты</p>
+            </div>
+
+            <div class="glass-card">
+                <div class="section-title">Ваши данные</div>
+                
+                <div class="form-group">
+                    <label>Что вы продаете</label>
+                    <input type="text" class="form-input" id="inp-product" placeholder="Например: Онлайн-курс по дизайну">
+                </div>
+
+                <div class="form-group">
+                    <label>Для кого предложение</label>
+                    <input type="text" class="form-input" id="inp-audience" placeholder="Например: Новички, желающие сменить профессию">
+                </div>
+
+                <div class="form-group">
+                    <label>Как сейчас звучит предложение</label>
+                    <textarea class="form-textarea" id="inp-text" placeholder="Вставьте ваш текущий текст предложения..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Что не устраивает</label>
+                    <input type="text" class="form-input" id="inp-problem" placeholder="Например: Мало откликов, непонятно формулирую">
+                </div>
+            </div>
+
+            <div class="glass-card price-section">
+                <div class="price-tag">
+                    <span class="price-currency">₽</span>299
+                </div>
+                
+                <ul class="benefits">
+                    <li>3 главные проблемы вашего текста</li>
+                    <li>3 новых сильных варианта УТП</li>
+                    <li>Короткая версия для шапки профиля</li>
+                    <li>Пошаговый план: что менять первым</li>
+                </ul>
+
+                <button class="btn-primary" onclick="goToPayment()">
+                    Оплатить и получить разбор
+                </button>
             </div>
         </div>
 
-        <div class="card">
-            <div class="input-group">
-                <label>Что вы продаете</label>
-                <input class="input-field" type="text" placeholder="Например: Курс по дизайну" id="inp-product">
-            </div>
-            <div class="input-group">
-                <label>Для кого предложение</label>
-                <input class="input-field" type="text" placeholder="Например: Новички в IT" id="inp-audience">
-            </div>
-            <div class="input-group">
-                <label>Как сейчас звучит предложение</label>
-                <textarea class="input-field" rows="3" placeholder="Вставьте ваш текст..." id="inp-text"></textarea>
-            </div>
-            <div class="input-group">
-                <label>Что не устраивает</label>
-                <input class="input-field" type="text" placeholder="Например: Слишком длинно" id="inp-problem">
-            </div>
-        </div>
-
-        <div class="card">
-            <span class="price-tag">299 ₽</span>
-            <ul class="benefits-list">
-                <li>3 главные проблемы текста</li>
-                <li>3 новых варианта УТП</li>
-                <li>Короткая версия для шапки</li>
-                <li>План: что менять первым</li>
-            </ul>
-            <button class="btn-primary" onclick="goToPayment()">Оплатить и получить разбор</button>
-        </div>
-    </div>
-
-    <!-- === SCREEN 2: PAYMENT SUCCESS === -->
-    <div id="screen-payment" class="screen">
-        <div class="hero">
-            <div class="hero-icon">✅</div>
-            <div>
+        <!-- SCREEN 2: PAYMENT SUCCESS -->
+        <div id="screen-payment" class="screen">
+            <div class="hero">
+                <div class="success-check">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                </div>
                 <h1>Оплата успешна</h1>
-                <p class="subtitle">Средства списаны, начинаем анализ</p>
+                <p>Средства списаны. Начинаем анализ вашего предложения</p>
+            </div>
+
+            <div class="glass-card" style="text-align: center;">
+                <div style="color: var(--text-secondary); font-size: 14px; margin-bottom: 24px;">
+                    Чек отправлен на вашу почту
+                </div>
+                <button class="btn-primary" onclick="goToLoading()">
+                    Перейти к результату
+                </button>
             </div>
         </div>
-        <div class="card" style="text-align: center;">
-            <p>Чек отправлен на почту</p>
-            <br>
-            <button class="btn-primary" onclick="goToLoading()">Перейти к результату</button>
-        </div>
-    </div>
 
-    <!-- === SCREEN 3: LOADING (AI THINKING) === -->
-    <div id="screen-loading" class="screen">
-        <div class="loader-container">
-            <div class="ai-loader"></div>
-            <h2>AI анализирует ваше УТП</h2>
-            <p>Сравниваем с базой из 10,000+ офферов...</p>
-        </div>
-    </div>
+        <!-- SCREEN 3: LOADING -->
+        <div id="screen-loading" class="screen">
+            <div class="loading-container">
+                <div class="loading-ring">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="ring-1" cx="60" cy="60" r="54"/>
+                        <circle class="ring-2" cx="60" cy="60" r="42"/>
+                        <circle class="ring-3" cx="60" cy="60" r="30"/>
+                    </svg>
+                </div>
+                
+                <div class="loading-text">AI анализирует ваше УТП</div>
+                <div class="loading-subtext">Сравниваем с базой из 10,000+ успешных офферов...</div>
 
-    <!-- === SCREEN 4: RESULT === -->
-    <div id="screen-result" class="screen">
-        <div class="hero">
-            <div class="hero-icon">📊</div>
-            <div>
+                <div class="wave-lines">
+                    <div class="wave-line"></div>
+                    <div class="wave-line"></div>
+                    <div class="wave-line"></div>
+                    <div class="wave-line"></div>
+                    <div class="wave-line"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: RESULT -->
+        <div id="screen-result" class="screen">
+            <div class="hero" style="padding-bottom: 20px;">
                 <h1>Готово</h1>
-                <p class="subtitle">Ваш персональный разбор</p>
+                <p>Ваш персональный разбор предложения</p>
+            </div>
+
+            <!-- Problems -->
+            <div class="result-card warning">
+                <div class="result-header">
+                    <div class="result-icon">⚠️</div>
+                    <div>
+                        <div class="result-title">Диагноз</div>
+                        <div class="result-subtitle">3 главные проблемы</div>
+                    </div>
+                </div>
+                
+                <div class="result-text">
+                    <strong>1. Нет конкретной выгоды</strong>
+                    Неясно, что именно получит клиент
+                </div>
+                <div class="result-text">
+                    <strong>2. Много воды</strong>
+                    Слишком много прилагательных, мало фактов
+                </div>
+                <div class="result-text">
+                    <strong>3. Слабый призыв</strong>
+                    Отсутствует четкое действие для клиента
+                </div>
+            </div>
+
+            <!-- Solutions -->
+            <div class="result-card success">
+                <div class="improvement-indicator">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                    </svg>
+                    +85% к конверсии
+                </div>
+
+                <div class="result-header">
+                    <div class="result-icon">✨</div>
+                    <div>
+                        <div class="result-title">Решение</div>
+                        <div class="result-subtitle">3 новых варианта УТП</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <span class="variant-tag">Вариант 1 — Дерзкий</span>
+                    <div class="result-text">
+                        "Дизайн за 4 недели. Или вернем деньги. 
+                        Гарантия трудоустройства или бесплатное обучение до результата"
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <span class="variant-tag">Вариант 2 — Мягкий</span>
+                    <div class="result-text">
+                        "Освойте профессию дизайнера с нуля. 
+                        Первое портфолио через 30 дней. Поддержка 24/7"
+                    </div>
+                </div>
+
+                <div>
+                    <span class="variant-tag">Вариант 3 — Экспертный</span>
+                    <div class="result-text">
+                        "Курс от практикующих дизайнеров топ-студий. 
+                        Реальные проекты в портфолио. 92% выпускников находят работу"
+                    </div>
+                </div>
+            </div>
+
+            <!-- Short Version -->
+            <div class="result-card">
+                <div class="result-header">
+                    <div class="result-icon">📌</div>
+                    <div>
+                        <div class="result-title">Для шапки профиля</div>
+                        <div class="result-subtitle">Короткая версия</div>
+                    </div>
+                </div>
+                <div class="result-text" style="font-weight: 600; color: var(--text-primary);">
+                    "Дизайн с нуля до портфолио за 1 месяц. 
+                    Гарантия результата. Начните бесплатно →"
+                </div>
+            </div>
+
+            <!-- Action Plan -->
+            <div class="result-card">
+                <div class="result-header">
+                    <div class="result-icon">🎯</div>
+                    <div>
+                        <div class="result-title">План действий</div>
+                        <div class="result-subtitle">Что менять первым</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; flex-shrink: 0;">1</div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">Убрать воду из заголовка — оставить только факты</div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; flex-shrink: 0;">2</div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">Добавить цифры и сроки (4 недели, 92%, 24/7)</div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end)); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 12px; flex-shrink: 0;">3</div>
+                        <div style="color: var(--text-secondary); font-size: 14px;">Поставить четкий призыв к действию со стрелкой</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="location.reload()" style="margin-top: 8px;">
+                Сделать новый разбор
+            </button>
+        </div>
+
+        <!-- SCREEN 5: ERROR -->
+        <div id="screen-error" class="screen">
+            <div class="error-container">
+                <div class="error-icon">⚡</div>
+                <div class="error-title">Не удалось получить ответ</div>
+                <div class="error-text">Произошла ошибка при анализе. Попробуйте еще раз</div>
+                <button class="btn-primary" onclick="location.reload()">
+                    Попробовать снова
+                </button>
             </div>
         </div>
 
-        <!-- Problems -->
-        <div class="card result-block warning">
-            <span class="tag">ДИАГНОЗ</span>
-            <h3>3 главные проблемы</h3>
-            <ul class="benefits-list">
-                <li>Нет конкретной выгоды для клиента</li>
-                <li>Слишком много прилагательных</li>
-                <li>Отсутствует призыв к действию</li>
-            </ul>
-        </div>
-
-        <!-- Solutions -->
-        <div class="card result-block success">
-            <span class="tag">РЕШЕНИЕ</span>
-            <h3>3 новых варианта УТП</h3>
-            <p style="margin-bottom:8px; font-weight:600">Вариант 1 (Дерзкий):</p>
-            <p style="margin-bottom:12px">"Дизайн за 4 недели. Или вернем деньги."</p>
-            <p style="margin-bottom:8px; font-weight:600">Вариант 2 (Мягкий):</p>
-            <p style="margin-bottom:12px">"Освойте профессию с гарантией трудоустройства."</p>
-        </div>
-
-        <!-- Short Version -->
-        <div class="card">
-            <span class="tag">ДЛЯ ШАПКИ</span>
-            <h3>Короткая версия</h3>
-            <p>Курс по дизайну для новичков. Портфолио за 1 месяц.</p>
-        </div>
-
-        <!-- Action Plan -->
-        <div class="card">
-            <span class="tag">ПЛАН</span>
-            <h3>Что менять первым</h3>
-            <ol style="padding-left: 20px; color: var(--text-secondary); font-size: 14px;">
-                <li style="margin-bottom:6px">Убрать воду из заголовка</li>
-                <li style="margin-bottom:6px">Добавить цифры в описание</li>
-                <li>Поставить кнопку "Начать"</li>
-            </ol>
-        </div>
-
-        <button class="btn-primary btn-secondary" onclick="location.reload()">Сделать новый разбор</button>
     </div>
 
-    <!-- === SCREEN 5: ERROR === -->
-    <div id="screen-error" class="screen">
-        <div class="error-box">
-            <h2>⚠️ Ошибка</h2>
-            <p>Не удалось получить ответ от сервера.</p>
-            <br>
-            <button class="btn-primary" onclick="location.reload()">Попробовать снова</button>
-        </div>
-    </div>
-
-</div>
-
-<script src="app.js"></script>
-
+    <script src="app.js"></script>
 </body>
 </html>
