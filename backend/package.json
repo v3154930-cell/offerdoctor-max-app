@@ -1,0 +1,25 @@
+{
+  "name": "offerdoctor-backend",
+  "version": "1.0.0",
+  "description": "Backend для ОфферДоктор — AI-разбор УТП через GigaChat",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "gigachat",
+    "ai",
+    "marketing"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
