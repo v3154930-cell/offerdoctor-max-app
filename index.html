@@ -3,118 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ОфферДоктор — Полный AI-разбор УТП</title>
+    <title>ОфферДоктор | AI Разбор УТП</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://st.max.ru/js/max-web-app.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Верхний блок (Hero) -->
-        <header class="hero">
-            <div class="hero__icon">🔍</div>
-            <div class="hero__content">
-                <h1 class="hero__title">ОфферДоктор</h1>
-                <p class="hero__subtitle">Полный AI-разбор УТП</p>
+
+<div class="app-container">
+    
+    <!-- === SCREEN 1: INPUT FORM === -->
+    <div id="screen-input" class="screen active">
+        <div class="hero">
+            <div class="hero-icon">🔍</div>
+            <div>
+                <h1>ОфферДоктор</h1>
+                <p class="subtitle">AI-разбор УТП и предложения для клиента</p>
             </div>
-        </header>
-
-        <!-- Блок "Ваши данные" -->
-        <section class="card data-card">
-            <h2 class="card__title">Ваши данные</h2>
-            <div class="data-grid">
-                <div class="data-item">
-                    <span class="data-item__label">Что вы продаете</span>
-                    <span class="data-item__value" id="product">—</span>
-                </div>
-                <div class="data-item">
-                    <span class="data-item__label">Для кого</span>
-                    <span class="data-item__value" id="audience">—</span>
-                </div>
-                <div class="data-item">
-                    <span class="data-item__label">Текущий текст</span>
-                    <span class="data-item__value" id="current-text">—</span>
-                </div>
-                <div class="data-item">
-                    <span class="data-item__label">Что не устраивает</span>
-                    <span class="data-item__value" id="problems">—</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- Блок цены -->
-        <section class="card price-card">
-            <h2 class="card__title">Полный разбор</h2>
-            <span class="price-card__price">299 ₽</span>
-            <ul class="price-card__benefits">
-                <li>3 главные проблемы текста</li>
-                <li>3 новых варианта УТП</li>
-                <li>1 короткая версия для шапки / карточки / лендинга</li>
-            </ul>
-            <button class="btn btn--primary" id="pay-btn">
-                Оплатить и получить разбор
-            </button>
-        </section>
-
-        <!-- Состояние: оплата подтверждена -->
-        <div class="status-message" id="payment-success" style="display: none;">
-            ✓ Оплата подтверждена. Готовим анализ...
         </div>
 
-        <!-- Состояние: загрузка анализа -->
-        <section class="card loading-card" id="loading-section" style="display: none;">
-            <div class="ai-loader"></div>
-            <p class="loading-text">AI анализирует ваше УТП...</p>
-            <p class="loading-subtext">Сравниваем с базой из 10,000+ офферов...</p>
-        </section>
-
-        <!-- Состояние: результат -->
-        <section class="card result-card" id="result-section" style="display: none;">
-            <div class="hero hero--small">
-                <div class="hero__icon hero__icon--result">📊</div>
-                <div class="hero__content">
-                    <h2 class="hero__title">Готово</h2>
-                    <p class="hero__subtitle">Ваш персональный разбор</p>
-                </div>
+        <div class="card">
+            <h2>Ваши данные</h2>
+            <div class="input-group">
+                <label>Что вы продаете</label>
+                <span class="input-field input-field--static" id="product">—</span>
             </div>
-
-            <div class="result-block result-block--warning">
-                <span class="tag">ДИАГНОЗ</span>
-                <h3 class="result-block__title">3 главные проблемы</h3>
-                <ul class="result-block__list" id="result-problems"></ul>
+            <div class="input-group">
+                <label>Для кого предложение</label>
+                <span class="input-field input-field--static" id="audience">—</span>
             </div>
-
-            <div class="result-block result-block--success">
-                <span class="tag">РЕШЕНИЕ</span>
-                <h3 class="result-block__title">3 новых варианта УТП</h3>
-                <ul class="result-block__list" id="result-offers"></ul>
+            <div class="input-group">
+                <label>Как сейчас звучит предложение</label>
+                <span class="input-field input-field--static" id="current-text">—</span>
             </div>
-
-            <div class="result-block">
-                <span class="tag">ДЛЯ ШАПКИ</span>
-                <h3 class="result-block__title">Короткая версия</h3>
-                <p class="result-block__text result-block__text--highlight" id="result-short"></p>
+            <div class="input-group">
+                <label>Что не устраивает</label>
+                <span class="input-field input-field--static" id="problems">—</span>
             </div>
+        </div>
 
-            <div class="result-block">
-                <span class="tag">ПЛАН</span>
-                <h3 class="result-block__title">Что менять первым</h3>
-                <p class="result-block__text" id="result-advice"></p>
-            </div>
-        </section>
-
-        <!-- Состояние: ошибка -->
-        <section class="card error-card" id="error-section" style="display: none;">
-            <div class="error-box">
-                <div class="error-box__icon">⚠️</div>
-                <h2 class="error-box__title">Ошибка</h2>
-                <p class="error-box__text" id="error-message"></p>
-                <button class="btn btn--primary" id="retry-btn">
-                    Попробовать снова
-                </button>
-            </div>
-        </section>
+        <div class="card">
+            <span class="price-tag">299 ₽</span>
+            <ul class="benefits-list">
+                <li>3 главные проблемы текста</li>
+                <li>3 новых варианта УТП</li>
+                <li>Короткая версия для шапки</li>
+                <li>План: что менять первым</li>
+            </ul>
+            <button class="btn-primary" id="pay-btn">Оплатить и получить разбор</button>
+        </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- === SCREEN 2: PAYMENT SUCCESS === -->
+    <div id="screen-payment" class="screen">
+        <div class="hero">
+            <div class="hero-icon">✅</div>
+            <div>
+                <h1>Оплата успешна</h1>
+                <p class="subtitle">Средства списаны, начинаем анализ</p>
+            </div>
+        </div>
+        <div class="card" style="text-align: center;">
+            <p>Чек отправлен на почту</p>
+            <br>
+            <button class="btn-primary" id="payment-go-loading">Перейти к результату</button>
+        </div>
+    </div>
+
+    <!-- === SCREEN 3: LOADING (AI THINKING) === -->
+    <div id="screen-loading" class="screen">
+        <div class="loader-container">
+            <div class="ai-loader"></div>
+            <h2>AI анализирует ваше УТП</h2>
+            <p>Сравниваем с базой из 10,000+ офферов...</p>
+        </div>
+    </div>
+
+    <!-- === SCREEN 4: RESULT === -->
+    <div id="screen-result" class="screen">
+        <div class="hero">
+            <div class="hero-icon">📊</div>
+            <div>
+                <h1>Готово</h1>
+                <p class="subtitle">Ваш персональный разбор</p>
+            </div>
+        </div>
+
+        <!-- Problems -->
+        <div class="card result-block warning">
+            <span class="tag">ДИАГНОЗ</span>
+            <h3>3 главные проблемы</h3>
+            <ul class="benefits-list" id="result-problems">
+            </ul>
+        </div>
+
+        <!-- Solutions -->
+        <div class="card result-block success">
+            <span class="tag">РЕШЕНИЕ</span>
+            <h3>3 новых варианта УТП</h3>
+            <ul class="benefits-list" id="result-offers">
+            </ul>
+        </div>
+
+        <!-- Short Version -->
+        <div class="card">
+            <span class="tag">ДЛЯ ШАПКИ</span>
+            <h3>Короткая версия</h3>
+            <p id="result-short" style="font-weight: 600; color: var(--text-primary);">—</p>
+        </div>
+
+        <!-- Action Plan -->
+        <div class="card">
+            <span class="tag">ПЛАН</span>
+            <h3>Что менять первым</h3>
+            <p id="result-advice" style="color: var(--text-secondary); font-size: 14px;">—</p>
+        </div>
+
+        <button class="btn-primary btn-secondary" onclick="location.reload()">Сделать новый разбор</button>
+    </div>
+
+    <!-- === SCREEN 5: ERROR === -->
+    <div id="screen-error" class="screen">
+        <div class="error-box">
+            <h2>⚠️ Ошибка</h2>
+            <p id="error-message">Не удалось получить ответ от сервера.</p>
+            <br>
+            <button class="btn-primary" id="retry-btn">Попробовать снова</button>
+        </div>
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
 </body>
 </html>

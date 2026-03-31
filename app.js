@@ -1,6 +1,7 @@
 /**
  * ОфферДоктор — Mini App для MAX
  * Frontend, готовый к реальному backend-потоку
+ * Дизайн: Qwen (адаптировано)
  */
 
 (function () {
@@ -91,47 +92,47 @@
         currentText: document.getElementById('current-text'),
         problems: document.getElementById('problems'),
         payBtn: document.getElementById('pay-btn'),
-        paymentSuccess: document.getElementById('payment-success'),
-        loadingSection: document.getElementById('loading-section'),
-        resultSection: document.getElementById('result-section'),
+        paymentGoLoading: document.getElementById('payment-go-loading'),
         resultProblems: document.getElementById('result-problems'),
         resultOffers: document.getElementById('result-offers'),
         resultShort: document.getElementById('result-short'),
         resultAdvice: document.getElementById('result-advice'),
-        errorSection: document.getElementById('error-section'),
         errorMessage: document.getElementById('error-message'),
         retryBtn: document.getElementById('retry-btn')
     };
 
-    // ===== Управление состояниями =====
+    // ===== Управление состояниями (screen-based) =====
 
-    function hideAllSections() {
-        elements.payBtn.style.display = 'none';
-        elements.paymentSuccess.style.display = 'none';
-        elements.loadingSection.style.display = 'none';
-        elements.resultSection.style.display = 'none';
-        elements.errorSection.style.display = 'none';
+    function showScreen(screenId) {
+        var screens = document.querySelectorAll('.screen');
+        for (var i = 0; i < screens.length; i++) {
+            screens[i].classList.remove('active');
+        }
+        var target = document.getElementById(screenId);
+        if (target) {
+            target.classList.add('active');
+            window.scrollTo(0, 0);
+        }
     }
 
     function setState(newState) {
         currentState = newState;
-        hideAllSections();
 
         switch (newState) {
             case AppState.FORM:
-                elements.payBtn.style.display = 'block';
+                showScreen('screen-input');
                 break;
             case AppState.PAYMENT_SUCCESS:
-                elements.paymentSuccess.style.display = 'block';
+                showScreen('screen-payment');
                 break;
             case AppState.LOADING_ANALYSIS:
-                elements.loadingSection.style.display = 'block';
+                showScreen('screen-loading');
                 break;
             case AppState.RESULT:
-                elements.resultSection.style.display = 'block';
+                showScreen('screen-result');
                 break;
             case AppState.ERROR:
-                elements.errorSection.style.display = 'block';
+                showScreen('screen-error');
                 break;
         }
     }
@@ -242,7 +243,7 @@
     // ===== Отрисовка ошибки =====
 
     function renderError(message) {
-        elements.errorMessage.textContent = message || 'Произошла неизвестная ошибка. Попробуйте снова.';
+        elements.errorMessage.textContent = message || 'Не удалось выполнить анализ. Попробуйте снова.';
         setState(AppState.ERROR);
     }
 
@@ -252,8 +253,8 @@
         // 1. Показываем "Оплата подтверждена"
         setState(AppState.PAYMENT_SUCCESS);
 
-        // 2. Через паузу переходим к загрузке
-        setTimeout(function () {
+        // 2. Обработчик кнопки "Перейти к результату" на экране оплаты
+        elements.paymentGoLoading.onclick = function () {
             setState(AppState.LOADING_ANALYSIS);
 
             // 3. Выполняем запрос к backend
@@ -268,7 +269,7 @@
                     console.error('Ошибка анализа:', error);
                     renderError(error.message || 'Не удалось выполнить анализ. Попробуйте снова.');
                 });
-        }, 800); // Пауза 800 мс между "оплатой" и началом анализа
+        };
     }
 
     function resetToForm() {
@@ -292,7 +293,7 @@
         elements.retryBtn.addEventListener('click', resetToForm);
 
         // ===== Close Guard для полей формы =====
-        var formFields = document.querySelectorAll('.data-item__value');
+        var formFields = document.querySelectorAll('.input-field--static');
         formFields.forEach(function (field) {
             field.addEventListener('input', function () {
                 enableCloseGuard();

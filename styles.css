@@ -1,71 +1,69 @@
-/* ===== CSS Variables — адаптировано из дизайна Qwen ===== */
+/* --- 1. CORE VARIABLES & RESET --- */
 :root {
-    /* Базовая палитра (Light Clean Business) */
+    /* Базовая палитра (Концепт 1: Light Clean Business) */
     --bg-color: #FAFAF9;
     --card-bg: #FFFFFF;
     --text-primary: #2D2D2D;
     --text-secondary: #6B7280;
     --accent-color: #0D9488; /* Бирюзовый */
     --accent-hover: #0F766E;
-    --accent-light: rgba(13, 148, 136, 0.1);
     --border-color: #E5E7EB;
     --error-color: #EF4444;
-    --error-bg: #FEF2F2;
-    --error-text: #991B1B;
-    --warning-color: #F59E0B;
-    --warning-bg: #FFFBEB;
-    --success-color: #10B981;
-    --success-bg: #ECFDF5;
-
+    
     /* UI Tokens */
     --radius-lg: 20px;
     --radius-md: 12px;
-    --radius-sm: 8px;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-
-    --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --transition: all 0.2s ease-in-out;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* ===== Reset & Base ===== */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
+/* Темы для других концептов (можно переключать класс на body) */
+body.theme-premium {
+    --bg-color: #F3F4F6;
+    --accent-color: #6366F1; /* Лаванда */
+    --card-bg: rgba(255, 255, 255, 0.7);
+}
+body.theme-conversion {
+    --bg-color: #FFFBEB; /* Теплый */
+    --accent-color: #F97316; /* Коралл */
+    --text-primary: #111827;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
     margin: 0;
     padding: 0;
-    -webkit-tap-highlight-color: transparent;
-}
-
-html {
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-body {
     font-family: var(--font-family);
     background-color: var(--bg-color);
     color: var(--text-primary);
     line-height: 1.5;
-    min-height: 100vh;
     display: flex;
     justify-content: center;
+    min-height: 100vh;
 }
 
-/* ===== App Container (mobile-first) ===== */
+/* --- 2. LAYOUT CONTAINER (Mobile Mockup) --- */
 .app-container {
     width: 100%;
-    max-width: 414px;
+    max-width: 414px; /* iPhone Max width */
+    background: var(--bg-color);
     min-height: 100vh;
-    padding: 20px 16px 40px;
     position: relative;
     overflow-x: hidden;
+    padding: 20px 16px;
+    padding-bottom: 40px;
 }
 
-/* ===== Hero Block ===== */
+/* --- 3. TYPOGRAPHY --- */
+h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px 0; letter-spacing: -0.5px; }
+h2 { font-size: 18px; font-weight: 700; margin: 0 0 12px 0; }
+h3 { font-size: 16px; font-weight: 600; margin: 0 0 8px 0; }
+p { margin: 0; font-size: 14px; color: var(--text-secondary); }
+.subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+
+/* --- 4. COMPONENTS --- */
+/* Hero Block */
 .hero {
     display: flex;
     align-items: center;
@@ -73,47 +71,19 @@ body {
     margin-bottom: 24px;
     padding-top: 10px;
 }
-
-.hero--small {
-    margin-bottom: 20px;
-    padding-top: 0;
-}
-
-.hero__icon {
+.hero-icon {
     width: 40px;
     height: 40px;
     background: var(--accent-color);
-    border-radius: var(--radius-sm);
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
     font-size: 20px;
-    flex-shrink: 0;
 }
 
-.hero__icon--result {
-    background: var(--success-color);
-}
-
-.hero__content {
-    flex: 1;
-}
-
-.hero__title {
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 2px;
-    letter-spacing: -0.5px;
-    color: var(--text-primary);
-}
-
-.hero__subtitle {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-/* ===== Card ===== */
+/* Cards & Inputs */
 .card {
     background: var(--card-bg);
     border-radius: var(--radius-lg);
@@ -123,82 +93,66 @@ body {
     margin-bottom: 16px;
     transition: transform 0.2s;
 }
-
-.card__title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--text-primary);
-}
-
-/* ===== Data Card ===== */
-.data-grid {
-    display: grid;
-    gap: 16px;
-}
-
-.data-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.data-item__label {
+.input-group { margin-bottom: 16px; }
+.input-group:last-child { margin-bottom: 0; }
+.input-group label {
+    display: block;
     font-size: 13px;
     font-weight: 600;
+    margin-bottom: 6px;
     color: var(--text-primary);
 }
-
-.data-item__value {
+.input-field {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    background: #FAFAFA;
     font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.5;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    display: block;
+}
+.input-field:focus { border-color: var(--accent-color); background: #fff; }
+.input-field--static {
+    background: transparent;
+    border: none;
+    padding: 8px 0;
+    color: var(--text-primary);
+    cursor: default;
 }
 
-/* ===== Price Card ===== */
-.price-card {
-    text-align: center;
-}
-
-.price-card .card__title {
-    margin-bottom: 8px;
-}
-
-.price-card__price {
+/* Price Block */
+.price-tag {
     font-size: 32px;
     font-weight: 800;
     color: var(--text-primary);
     margin-bottom: 12px;
     display: block;
-    letter-spacing: -1px;
 }
-
-.price-card__benefits {
+.benefits-list {
     list-style: none;
-    text-align: left;
-    max-width: 280px;
-    margin: 0 auto 20px;
     padding: 0;
+    margin: 0 0 20px 0;
 }
-
-.price-card__benefits li {
-    position: relative;
-    padding-left: 20px;
-    margin-bottom: 8px;
+.benefits-list li {
     font-size: 13px;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
     color: var(--text-secondary);
 }
-
-.price-card__benefits li::before {
-    content: '✓';
+.benefits-list li::before {
+    content: "✓";
     position: absolute;
     left: 0;
     color: var(--accent-color);
     font-weight: bold;
 }
 
-/* ===== Button ===== */
-.btn {
+/* Buttons */
+.btn-primary {
     width: 100%;
     padding: 16px;
     background: var(--accent-color);
@@ -207,46 +161,28 @@ body {
     border-radius: var(--radius-md);
     font-size: 16px;
     font-weight: 600;
-    font-family: var(--font-family);
     cursor: pointer;
     transition: opacity 0.2s;
-    text-align: center;
-    margin-top: 0;
+    font-family: var(--font-family);
+}
+.btn-primary:active { opacity: 0.9; }
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
 }
 
-.btn:active {
-    opacity: 0.9;
-}
+/* --- 5. SCREENS & STATES --- */
+.screen { display: none; animation: fadeIn 0.4s ease; }
+.screen.active { display: block; }
 
-.btn--primary {
-    background: var(--accent-color);
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.btn--success {
-    background: var(--success-color);
-    cursor: default;
-    pointer-events: none;
-}
-
-/* ===== Status Message ===== */
-.status-message {
-    text-align: center;
-    padding: 14px 16px;
-    margin-bottom: 16px;
-    background: var(--success-bg);
-    color: var(--success-color);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid var(--success-color);
-}
-
-/* ===== Loading Card ===== */
-.loading-card {
+/* Loading State */
+.loader-container {
     text-align: center;
     padding: 60px 20px;
 }
-
 .ai-loader {
     width: 60px;
     height: 60px;
@@ -256,201 +192,56 @@ body {
     margin: 0 auto 24px;
     animation: spin 1s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+/* Result Blocks */
+.result-block {
+    border-left: 4px solid var(--accent-color);
+    background: #FAFAFA;
 }
+.result-block.warning { border-left-color: #F59E0B; background: #FFFBEB; }
+.result-block.success { border-left-color: #10B981; background: #ECFDF5; }
 
-.loading-text {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-}
-
-.loading-subtext {
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-/* ===== Result Card ===== */
-.result-card {
-    border-color: var(--accent-color);
-    animation: fadeIn 0.4s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ===== Tag (badge) ===== */
 .tag {
     display: inline-block;
     padding: 4px 8px;
-    background: var(--accent-light);
+    background: rgba(13, 148, 136, 0.1);
     color: var(--accent-color);
     border-radius: 6px;
     font-size: 11px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     margin-bottom: 8px;
 }
 
-/* ===== Result Blocks ===== */
-.result-block {
-    margin-bottom: 20px;
-    padding: 16px;
-    background: var(--bg-color);
-    border-radius: var(--radius-md);
-}
-
-.result-block:last-child {
-    margin-bottom: 0;
-}
-
-.result-block--warning {
-    border-left: 4px solid var(--warning-color);
-    background: var(--warning-bg);
-}
-
-.result-block--success {
-    border-left: 4px solid var(--success-color);
-    background: var(--success-bg);
-}
-
-.result-block__title {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 8px;
-}
-
-.result-block__text {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--text-primary);
-}
-
-.result-block__text--highlight {
-    font-weight: 600;
-    color: var(--accent-color);
-}
-
-.result-block__list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.result-block__list li {
-    position: relative;
-    padding-left: 18px;
-    margin-bottom: 6px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--text-primary);
-}
-
-.result-block__list li::before {
-    content: '•';
-    position: absolute;
-    left: 0;
-    color: var(--accent-color);
-    font-weight: bold;
-    font-size: 18px;
-    line-height: 1.3;
-}
-
-/* ===== Error Card ===== */
-.error-card {
-    border: none;
-    background: transparent;
-    box-shadow: none;
-}
-
+/* Error State */
 .error-box {
     text-align: center;
-    padding: 30px 20px;
-    background: var(--error-bg);
+    padding: 30px;
+    background: #FEF2F2;
     border-radius: var(--radius-lg);
-    color: var(--error-text);
+    color: #991B1B;
 }
-
-.error-box__icon {
-    font-size: 32px;
-    margin-bottom: 12px;
-}
-
-.error-box__title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 8px;
+.error-box h2 {
     color: var(--error-color);
 }
 
-.error-box__text {
-    font-size: 14px;
-    line-height: 1.5;
-    margin-bottom: 20px;
-    color: var(--error-text);
-}
-
-.error-card .btn {
-    max-width: 200px;
-    margin: 0 auto;
-}
-
-/* ===== Responsive ===== */
+/* --- 6. RESPONSIVE --- */
 @media (max-width: 480px) {
     .app-container {
         padding: 16px 12px 32px;
     }
-
-    .hero__title {
-        font-size: 22px;
-    }
-
-    .card {
-        padding: 16px;
-    }
-
-    .price-card__price {
-        font-size: 28px;
-    }
-
-    .btn {
-        padding: 14px;
-        font-size: 15px;
-    }
-
-    .ai-loader {
-        width: 50px;
-        height: 50px;
-    }
-
-    .loading-card {
-        padding: 40px 16px;
-    }
+    
+    h1 { font-size: 22px; }
+    .card { padding: 16px; }
+    .price-tag { font-size: 28px; }
+    .btn-primary { padding: 14px; font-size: 15px; }
+    .ai-loader { width: 50px; height: 50px; }
+    .loader-container { padding: 40px 16px; }
 }
 
-/* ===== Accessibility ===== */
+/* --- 7. ACCESSIBILITY --- */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
