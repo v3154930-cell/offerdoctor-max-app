@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ОфферДоктор | AI Разбор</title>
-    <!-- deploy: preview-flow-149 v2 -->
+    <!-- deploy: visual-fix-ai-badge-loading -->
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -12,9 +12,9 @@
             --grad-1: #818CF8;
             --grad-2: #10B981;
             --text-1: #1E293B;
-            --text-2: #64748B;
-            --glass: rgba(255,255,255,0.85);
-            --glass-border: rgba(255,255,255,0.7);
+            --text-2: #475569;
+            --glass: rgba(255,255,255,0.88);
+            --glass-border: rgba(148,163,184,0.35);
         }
 
         body {
@@ -57,7 +57,7 @@
 
         .screen {
             flex: 1;
-            padding: 72px 20px 100px;
+            padding: 72px 20px 40px;
             background: linear-gradient(180deg, rgba(129,140,248,0.06) 0%, rgba(16,185,129,0.04) 100%);
             overflow-y: auto;
             position: relative;
@@ -86,6 +86,29 @@
             max-width: 160px;
         }
 
+        /* Title shimmer effect */
+        .title-shimmer {
+            background: linear-gradient(
+                120deg,
+                var(--text-1) 0%,
+                var(--text-1) 40%,
+                var(--grad-1) 50%,
+                var(--text-1) 60%,
+                var(--text-1) 100%
+            );
+            background-size: 250% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* AI Badge */
         .ai-badge {
             width: 52px;
             height: 52px;
@@ -95,7 +118,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 8px 28px rgba(129,140,248,0.35);
+            box-shadow: 0 8px 28px rgba(129,140,248,0.4);
         }
 
         .ai-badge::before {
@@ -116,6 +139,44 @@
             letter-spacing: 1px;
         }
 
+        /* AI badge subtle breathing (static screens) */
+        .ai-badge-static {
+            animation: badge-breathe 3.5s ease-in-out infinite;
+        }
+
+        .ai-badge-static::before {
+            animation: badge-glow 3.5s ease-in-out infinite;
+        }
+
+        @keyframes badge-breathe {
+            0%, 100% { box-shadow: 0 8px 28px rgba(129,140,248,0.4); }
+            50% { box-shadow: 0 8px 36px rgba(129,140,248,0.55), 0 0 12px rgba(16,185,129,0.2); }
+        }
+
+        @keyframes badge-glow {
+            0%, 100% { opacity: 0.35; filter: blur(6px); }
+            50% { opacity: 0.55; filter: blur(9px); }
+        }
+
+        /* AI badge active (loading screen) */
+        .ai-badge-active {
+            animation: badge-pulse-active 1.8s ease-in-out infinite;
+        }
+
+        .ai-badge-active::before {
+            animation: badge-glow-active 1.8s ease-in-out infinite;
+        }
+
+        @keyframes badge-pulse-active {
+            0%, 100% { box-shadow: 0 8px 28px rgba(129,140,248,0.45); transform: scale(1); }
+            50% { box-shadow: 0 8px 40px rgba(129,140,248,0.65), 0 0 20px rgba(16,185,129,0.3); transform: scale(1.04); }
+        }
+
+        @keyframes badge-glow-active {
+            0%, 100% { opacity: 0.4; filter: blur(6px); }
+            50% { opacity: 0.7; filter: blur(12px); }
+        }
+
         /* Cards */
         .card {
             background: var(--glass);
@@ -126,7 +187,7 @@
             padding: 18px 16px;
             margin-bottom: 12px;
             position: relative;
-            box-shadow: 0 4px 20px rgba(129,140,248,0.06);
+            box-shadow: 0 4px 24px rgba(129,140,248,0.1), 0 1px 3px rgba(0,0,0,0.04);
         }
 
         .card-label {
@@ -142,7 +203,7 @@
         .card-text {
             font-size: 13px;
             color: var(--text-2);
-            line-height: 1.45;
+            line-height: 1.5;
         }
 
         .card-arrow {
@@ -151,7 +212,7 @@
             right: 14px;
             width: 28px;
             height: 28px;
-            background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));
+            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.06));
             border-radius: 9px;
             display: flex;
             align-items: center;
@@ -181,19 +242,20 @@
             font-size: 10px;
             font-weight: 700;
             margin-left: 6px;
-            box-shadow: 0 2px 6px rgba(16,185,129,0.25);
+            box-shadow: 0 2px 8px rgba(16,185,129,0.3);
         }
 
         /* Price block */
         .price-block {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(248,250,252,0.95));
-            border: 1px solid rgba(255,255,255,0.85);
+            background: linear-gradient(135deg, rgba(255,255,255,0.97), rgba(248,250,252,0.97));
+            border: 1px solid rgba(148,163,184,0.25);
             border-radius: 22px;
             padding: 24px 20px;
             margin: 20px 0;
             text-align: center;
             box-shadow:
-                0 8px 28px rgba(129,140,248,0.1),
+                0 8px 32px rgba(129,140,248,0.12),
+                0 2px 8px rgba(0,0,0,0.04),
                 inset 0 1px 0 rgba(255,255,255,1);
             position: relative;
             overflow: hidden;
@@ -206,7 +268,7 @@
             left: -60%;
             width: 220%;
             height: 220%;
-            background: radial-gradient(circle, rgba(129,140,248,0.04) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(129,140,248,0.05) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -250,18 +312,19 @@
         /* Buttons */
         .btn {
             width: 100%;
-            padding: 15px 28px;
-            background: linear-gradient(135deg, var(--grad-2), #34D399);
+            padding: 16px 28px;
+            background: linear-gradient(135deg, #059669, #10B981, #34D399);
             border: none;
-            border-radius: 13px;
+            border-radius: 14px;
             color: #fff;
             font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 18px rgba(16,185,129,0.32);
+            box-shadow: 0 6px 24px rgba(16,185,129,0.4), 0 2px 6px rgba(0,0,0,0.06);
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             overflow: hidden;
+            letter-spacing: 0.2px;
         }
 
         .btn::before {
@@ -271,19 +334,20 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: left 0.5s;
         }
 
         .btn:hover::before { left: 100%; }
+        .btn:hover { box-shadow: 0 8px 28px rgba(16,185,129,0.45), 0 2px 8px rgba(0,0,0,0.08); }
         .btn:active { transform: scale(0.985); }
 
         .btn-secondary {
             width: 100%;
             padding: 15px 28px;
-            background: rgba(129,140,248,0.08);
-            border: none;
-            border-radius: 13px;
+            background: rgba(129,140,248,0.1);
+            border: 1px solid rgba(129,140,248,0.15);
+            border-radius: 14px;
             color: var(--grad-1);
             font-size: 15px;
             font-weight: 600;
@@ -292,7 +356,7 @@
         }
 
         .btn-secondary:active { transform: scale(0.985); }
-        .btn-secondary:hover { background: rgba(129,140,248,0.14); }
+        .btn-secondary:hover { background: rgba(129,140,248,0.16); }
 
         /* Form fields */
         .form-group {
@@ -318,12 +382,12 @@
 
         .form-label .tag-recommended {
             color: var(--grad-1);
-            background: rgba(129,140,248,0.1);
+            background: rgba(129,140,248,0.12);
         }
 
         .form-label .tag-optional {
             color: var(--text-2);
-            background: rgba(129,140,248,0.08);
+            background: rgba(129,140,248,0.1);
             font-weight: 500;
         }
 
@@ -344,11 +408,11 @@
 
         .form-input:focus {
             border-color: var(--grad-1);
-            box-shadow: 0 0 0 3px rgba(129,140,248,0.12);
+            box-shadow: 0 0 0 3px rgba(129,140,248,0.15);
         }
 
         .form-input::placeholder {
-            color: #A0AEC0;
+            color: #94A3B8;
             font-size: 13px;
         }
 
@@ -366,7 +430,7 @@
             margin-top: 8px;
             display: none;
             padding: 10px 14px;
-            background: rgba(239,68,68,0.06);
+            background: rgba(239,68,68,0.08);
             border-radius: 10px;
             line-height: 1.4;
         }
@@ -376,76 +440,169 @@
             animation: fade 0.3s ease-out;
         }
 
-        /* Bottom pulse */
-        .bottom-pulse {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 36px 20px 28px;
-            background: linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.85) 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 14px;
+        /* ============ LOADING ANIMATION (rich) ============ */
+        .loading-center {
+            padding: 50px 20px 30px;
+            text-align: center;
         }
 
-        .pulse-wrap {
+        .loading-anim {
             position: relative;
-            width: 76px;
-            height: 76px;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 36px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .pulse-ring {
+        /* outer ambient glow */
+        .loading-aura {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(129,140,248,0.1) 0%, transparent 70%);
+            animation: aura-pulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes aura-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.25); opacity: 1; }
+        }
+
+        /* wave rings */
+        .loading-wave {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(129,140,248,0.06) 0%, transparent 75%);
+            animation: wave-expand 2.2s ease-out infinite;
+        }
+
+        .loading-wave:nth-child(2) { animation-delay: 0.7s; }
+
+        @keyframes wave-expand {
+            0% { transform: scale(0.3); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* pulse rings */
+        .loading-ring {
+            position: absolute;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             border: 2px solid var(--grad-1);
             opacity: 0;
-            animation: ring 2s ease-out infinite;
+            animation: ring-expand 2s ease-out infinite;
         }
 
-        .pulse-ring:nth-child(2) { animation-delay: 0.4s; }
-        .pulse-ring:nth-child(3) { animation-delay: 0.8s; }
+        .loading-ring:nth-child(4) { animation-delay: 0.4s; border-color: var(--grad-2); }
+        .loading-ring:nth-child(5) { animation-delay: 0.8s; }
 
-        @keyframes ring {
+        @keyframes ring-expand {
             0% { transform: scale(0.4); opacity: 0.7; }
-            100% { transform: scale(1.9); opacity: 0; }
+            100% { transform: scale(2); opacity: 0; }
         }
 
-        .pulse-core {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
+        /* orbit ring */
+        .orbit-ring {
+            position: absolute;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            position: relative;
-            box-shadow:
-                0 0 36px rgba(129,140,248,0.45),
-                inset 0 0 18px rgba(255,255,255,0.35);
-            animation: core 2s ease-in-out infinite;
+            border: 1px dashed rgba(129,140,248,0.2);
+            animation: orbit-spin 8s linear infinite;
         }
 
-        @keyframes core {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
+        @keyframes orbit-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        .pulse-wave {
+        /* orbit dots */
+        .orbit-dot {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            animation: orbit-path 3.5s linear infinite;
+        }
+
+        .orbit-dot:nth-child(8) {
+            background: var(--grad-1);
+            box-shadow: 0 0 8px rgba(129,140,248,0.6);
+            animation-duration: 3.5s;
+        }
+
+        .orbit-dot:nth-child(9) {
+            background: var(--grad-2);
+            box-shadow: 0 0 8px rgba(16,185,129,0.6);
+            animation-duration: 5s;
+            animation-delay: -1.7s;
+            width: 5px;
+            height: 5px;
+        }
+
+        @keyframes orbit-path {
+            from { transform: rotate(0deg) translateX(55px) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(55px) rotate(-360deg); }
+        }
+
+        /* rotating arcs */
+        .arc-spin {
             position: absolute;
             width: 110px;
             height: 110px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(129,140,248,0.08) 0%, transparent 75%);
-            animation: wave 2s ease-out infinite;
+            border: 2px solid transparent;
+            animation: arc-cw 4s linear infinite;
         }
 
-        @keyframes wave {
-            0% { transform: scale(0.4); opacity: 0.5; }
-            100% { transform: scale(1.3); opacity: 0; }
+        .arc-spin-1 {
+            border-top-color: rgba(129,140,248,0.35);
+            border-right-color: rgba(129,140,248,0.1);
+        }
+
+        .arc-spin-2 {
+            width: 95px;
+            height: 95px;
+            border-bottom-color: rgba(16,185,129,0.3);
+            border-left-color: rgba(16,185,129,0.08);
+            animation-name: arc-ccw;
+            animation-duration: 3s;
+        }
+
+        @keyframes arc-cw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes arc-ccw {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        /* central core */
+        .loading-core {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            box-shadow:
+                0 0 32px rgba(129,140,248,0.5),
+                0 0 60px rgba(129,140,248,0.15),
+                inset 0 0 16px rgba(255,255,255,0.4);
+            animation: core-breathe 2s ease-in-out infinite;
+        }
+
+        @keyframes core-breathe {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 32px rgba(129,140,248,0.5), 0 0 60px rgba(129,140,248,0.15), inset 0 0 16px rgba(255,255,255,0.4); }
+            50% { transform: scale(1.08); box-shadow: 0 0 44px rgba(129,140,248,0.6), 0 0 80px rgba(129,140,248,0.2), inset 0 0 20px rgba(255,255,255,0.5); }
         }
 
         /* Views */
@@ -465,11 +622,11 @@
         .result-item {
             padding: 10px 12px;
             margin: 6px 0;
-            background: rgba(16,185,129,0.04);
+            background: rgba(16,185,129,0.05);
             border-radius: 10px;
             font-size: 13px;
             color: var(--text-2);
-            line-height: 1.45;
+            line-height: 1.5;
         }
 
         .result-item strong {
@@ -504,18 +661,18 @@
 
         .payment-method:hover {
             border-color: var(--grad-1);
-            box-shadow: 0 4px 20px rgba(129,140,248,0.12);
+            box-shadow: 0 4px 20px rgba(129,140,248,0.14);
         }
 
         .payment-method.selected {
             border-color: var(--grad-1);
-            box-shadow: 0 0 0 2px rgba(129,140,248,0.15);
+            box-shadow: 0 0 0 2px rgba(129,140,248,0.18);
         }
 
         .payment-icon {
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, rgba(129,140,248,0.1), rgba(16,185,129,0.1));
+            background: linear-gradient(135deg, rgba(129,140,248,0.12), rgba(16,185,129,0.12));
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -582,7 +739,7 @@
         .error-icon-wrap {
             width: 72px;
             height: 72px;
-            background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.04));
+            background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.05));
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -624,10 +781,10 @@
             <div id="view-input" class="view active">
                 <div class="header">
                     <div>
-                        <h1>ОфферДоктор</h1>
+                        <h1 class="title-shimmer">ОфферДоктор</h1>
                         <p>AI-разбор оффера, сайта и карточки товара</p>
                     </div>
-                    <div class="ai-badge"><span>AI</span></div>
+                    <div class="ai-badge ai-badge-static"><span>AI</span></div>
                 </div>
 
                 <p class="card-text" style="margin-bottom: 16px; max-width: 260px;">Покажем, что мешает вашему предложению продавать, и&nbsp;подскажем, как сделать его сильнее.</p>
@@ -700,10 +857,10 @@
             <div id="view-preview" class="view">
                 <div class="header">
                     <div>
-                        <h1>Быстрый диагноз готов</h1>
+                        <h1 class="title-shimmer">Быстрый диагноз готов</h1>
                         <p>Мы нашли, что сейчас сильнее всего мешает вашему предложению.</p>
                     </div>
-                    <div class="ai-badge">
+                    <div class="ai-badge ai-badge-static">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
                             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                         </svg>
@@ -743,10 +900,10 @@
             <div id="view-payment" class="view">
                 <div class="header">
                     <div>
-                        <h1>Полный разбор за 149&nbsp;&#8381;</h1>
+                        <h1 class="title-shimmer">Полный разбор за 149&nbsp;&#8381;</h1>
                         <p>После оплаты вы сразу получите расширенный AI-анализ вашего предложения.</p>
                     </div>
-                    <div class="ai-badge"><span>AI</span></div>
+                    <div class="ai-badge ai-badge-static"><span>AI</span></div>
                 </div>
 
                 <div class="card" style="text-align: center; padding: 14px 16px;">
@@ -804,18 +961,25 @@
             <div id="view-loading" class="view">
                 <div class="header">
                     <div>
-                        <h1>Анализируем ваше предложение</h1>
+                        <h1 class="title-shimmer">Анализируем ваше предложение</h1>
                         <p>Сравниваем формулировки, выгоды и подачу с сильными продающими примерами.</p>
                     </div>
-                    <div class="ai-badge"><span>AI</span></div>
+                    <div class="ai-badge ai-badge-active"><span>AI</span></div>
                 </div>
-                <div style="padding: 50px 20px; text-align: center;">
-                    <div class="pulse-wrap" style="margin: 0 auto 36px;">
-                        <div class="pulse-wave"></div>
-                        <div class="pulse-ring"></div>
-                        <div class="pulse-ring"></div>
-                        <div class="pulse-ring"></div>
-                        <div class="pulse-core"></div>
+                <div class="loading-center">
+                    <div class="loading-anim">
+                        <div class="loading-aura"></div>
+                        <div class="loading-wave"></div>
+                        <div class="loading-wave"></div>
+                        <div class="loading-ring"></div>
+                        <div class="loading-ring"></div>
+                        <div class="loading-ring"></div>
+                        <div class="orbit-ring"></div>
+                        <div class="orbit-dot"></div>
+                        <div class="orbit-dot"></div>
+                        <div class="arc-spin arc-spin-1"></div>
+                        <div class="arc-spin arc-spin-2"></div>
+                        <div class="loading-core"></div>
                     </div>
                     <h4 style="font-size: 17px; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">Анализируем...</h4>
                     <p style="color: var(--text-2); font-size: 13px;">Это займет несколько секунд.</p>
@@ -826,10 +990,10 @@
             <div id="view-result" class="view">
                 <div class="header">
                     <div>
-                        <h1>Ваш полный разбор готов</h1>
+                        <h1 class="title-shimmer">Ваш полный разбор готов</h1>
                         <p>Ниже &mdash; основные проблемы и более сильные варианты формулировок.</p>
                     </div>
-                    <div class="ai-badge">
+                    <div class="ai-badge ai-badge-static">
                         <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
                             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                         </svg>
@@ -870,7 +1034,7 @@
                         <h1>Не удалось получить разбор</h1>
                         <p>Что-то пошло не так при обработке запроса. Попробуйте еще раз.</p>
                     </div>
-                    <div class="ai-badge"><span>AI</span></div>
+                    <div class="ai-badge ai-badge-static"><span>AI</span></div>
                 </div>
 
                 <div style="padding: 40px 0; text-align: center;">
@@ -889,21 +1053,6 @@
             </div>
 
         </div>
-
-        <!-- Bottom pulse (input view only) -->
-        <div id="bottom" class="bottom-pulse">
-            <div class="pulse-wrap">
-                <div class="pulse-wave"></div>
-                <div class="pulse-ring"></div>
-                <div class="pulse-ring"></div>
-                <div class="pulse-ring"></div>
-                <div class="pulse-core"></div>
-            </div>
-            <div class="pulse-text">
-                <h4>Готовим анализ...</h4>
-                <p onclick="goTo('view-input')">Повторить</p>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -921,7 +1070,6 @@
 
             document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
             document.getElementById(id).classList.add('active');
-            document.getElementById('bottom').style.display = (id === 'view-input') ? 'flex' : 'none';
 
             if (id === 'view-loading') {
                 setTimeout(function() {
