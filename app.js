@@ -6,14 +6,78 @@
 (function () {
     'use strict';
 
-    // ===== MAX-ready логика =====
-    // Проверяем существование window.WebApp и вызываем ready()
-    if (typeof window !== 'undefined' && window.WebApp) {
+    // ===== MAX Bridge: безопасные обёртки =====
+
+    /**
+     * Проверяет, доступен ли MAX WebApp
+     */
+    function isMaxAvailable() {
+        return typeof window !== 'undefined' && window.WebApp;
+    }
+
+    /**
+     * Инициализация MAX App
+     */
+    function initMaxApp() {
+        if (!isMaxAvailable()) {
+            console.log('MAX WebApp недоступен, работаем в обычном режиме');
+            return;
+        }
+
         try {
             window.WebApp.ready();
+            console.log('MAX WebApp готов');
         } catch (e) {
-            // Если вызов не удался, продолжаем работу как обычная веб-страница
             console.log('WebApp.ready() не вызван:', e.message);
+        }
+    }
+
+    /**
+     * Настройка кнопки "Назад" в MAX
+     */
+    function setupMaxBackButton() {
+        if (!isMaxAvailable()) return;
+
+        try {
+            var backBtn = window.WebApp.BackButton;
+            if (backBtn) {
+                backBtn.onClick(function () {
+                    // Обработка нажатия кнопки "Назад"
+                    console.log('Нажата кнопка "Назад"');
+                });
+            }
+        } catch (e) {
+            console.log('Ошибка настройки BackButton:', e.message);
+        }
+    }
+
+    /**
+     * Включает защиту от закрытия (close guard)
+     */
+    function enableCloseGuard() {
+        if (!isMaxAvailable()) return;
+
+        try {
+            if (typeof window.WebApp.enableClosingConfirmation === 'function') {
+                window.WebApp.enableClosingConfirmation();
+            }
+        } catch (e) {
+            console.log('Ошибка включения close guard:', e.message);
+        }
+    }
+
+    /**
+     * Выключает защиту от закрытия (close guard)
+     */
+    function disableCloseGuard() {
+        if (!isMaxAvailable()) return;
+
+        try {
+            if (typeof window.WebApp.disableClosingConfirmation === 'function') {
+                window.WebApp.disableClosingConfirmation();
+            }
+        } catch (e) {
+            console.log('Ошибка выключения close guard:', e.message);
         }
     }
 
@@ -108,6 +172,9 @@
         setTimeout(function () {
             elements.resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 100);
+
+        // Выключаем close guard после успешной "оплаты"
+        disableCloseGuard();
     }
 
     // ===== Обработчик нажатия кнопки =====
@@ -118,8 +185,28 @@
 
     // ===== Инициализация =====
     function init() {
+        // Инициализация MAX
+        initMaxApp();
+        setupMaxBackButton();
+
+        // Заполнение демо-данных
         fillDemoData();
+
+        // Обработчик кнопки
         elements.payBtn.addEventListener('click', handlePayClick);
+
+        // ===== Close Guard для полей формы =====
+        // В текущей версии поля только для просмотра, но добавим заготовку
+        // Если поля станут редактируемыми, close guard будет работать
+        var formFields = document.querySelectorAll('.data-item__value');
+        formFields.forEach(function (field) {
+            field.addEventListener('input', function () {
+                enableCloseGuard();
+            });
+            field.addEventListener('change', function () {
+                enableCloseGuard();
+            });
+        });
     }
 
     // Запускаем после загрузки DOM
