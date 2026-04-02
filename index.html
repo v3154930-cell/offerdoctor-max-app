@@ -1057,7 +1057,7 @@
           <p class="section-subtitle">Выберите формат вашего предложения.</p>
 
           <div class="scenario-grid" id="scenarioGrid">
-            <button class="scenario-card active" data-scenario="marketplace" type="button">
+            <div class="scenario-card active" data-scenario="marketplace" role="button" tabindex="0">
               <div class="scenario-top">
                 <div class="scenario-icon" aria-hidden="true">
                   <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -1070,13 +1070,13 @@
               </div>
               <div class="scenario-desc">Разбор карточки и подачи выгод на маркетплейсе.</div>
               <div class="platform-pills show" id="platformPills">
-                <span class="pill active" data-platform="ozon" role="button" tabindex="0">Ozon</span>
-                <span class="pill" data-platform="wb" role="button" tabindex="0">Wildberries</span>
-                <span class="pill" data-platform="ym" role="button" tabindex="0">Яндекс Маркет</span>
+                <button class="pill active" type="button" data-platform="ozon">Ozon</button>
+                <button class="pill" type="button" data-platform="wb">Wildberries</button>
+                <button class="pill" type="button" data-platform="ym">Яндекс Маркет</button>
               </div>
-            </button>
+            </div>
 
-            <button class="scenario-card" data-scenario="avito" type="button">
+            <div class="scenario-card" data-scenario="avito" role="button" tabindex="0">
               <div class="scenario-top">
                 <div class="scenario-icon" aria-hidden="true">
                   <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -1089,9 +1089,9 @@
                 <div class="scenario-name">Avito</div>
               </div>
               <div class="scenario-desc">Заголовок, выгоды, доверие и отклик объявления.</div>
-            </button>
+            </div>
 
-            <button class="scenario-card" data-scenario="landing" type="button">
+            <div class="scenario-card" data-scenario="landing" role="button" tabindex="0">
               <div class="scenario-top">
                 <div class="scenario-icon" aria-hidden="true">
                   <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
@@ -1104,7 +1104,7 @@
                 <div class="scenario-name">Лендинг</div>
               </div>
               <div class="scenario-desc">Первый экран, оффер, CTA и конверсия.</div>
-            </button>
+            </div>
           </div>
         </section>
 
