@@ -17,21 +17,9 @@ var PORT = process.env.PORT || 3000;
 var DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 // ===== Middleware =====
-var allowedOrigins = [
-    'https://v3154930-cell.github.io',
-    'http://localhost:3000',
-    'http://localhost:5500',
-    'http://127.0.0.1:5500',
-    'http://localhost:8080'
-];
-
 app.use(cors({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            callback(null, true);
-        }
+        callback(null, true);
     },
     methods: ['POST', 'OPTIONS', 'GET'],
     allowedHeaders: ['Content-Type'],
@@ -44,7 +32,8 @@ app.get('/', function (req, res) {
     res.json({
         status: 'ok',
         service: 'ОфферДоктор API',
-        demo_mode: DEMO_MODE
+        demo_mode: DEMO_MODE,
+        model: process.env.GIGACHAT_MODEL || 'GigaChat-2-Pro'
     });
 });
 
@@ -97,7 +86,7 @@ app.post('/api/analyze', function (req, res) {
         tariff: data.tariff || 'main'
     };
 
-    console.log('[' + normalizedData.mode + '] Запрос:', normalizedData.scenario, '/', normalizedData.platform || 'n/a');
+    console.log('[' + normalizedData.mode + '] Запрос:', normalizedData.scenario, '/', normalizedData.platform || 'n/a', '/', normalizedData.tariff);
 
     // ===== DEMO MODE =====
     if (DEMO_MODE) {
@@ -109,7 +98,6 @@ app.post('/api/analyze', function (req, res) {
             normalizedData.tariff
         );
 
-        // Simulate slight delay for realism
         return setTimeout(function () {
             res.json(mockResult);
         }, 800);
@@ -128,19 +116,21 @@ app.post('/api/analyze', function (req, res) {
     var prompt;
     if (normalizedData.mode === 'preview') {
         prompt = prompts.buildPreviewPrompt(normalizedData);
+    } else if (normalizedData.tariff === 'competitor') {
+        prompt = prompts.buildCompetitorPrompt(normalizedData);
     } else {
         prompt = prompts.buildFullPrompt(normalizedData);
     }
 
     // ===== Запрос к GigaChat =====
-    gigachat.requestGigachat(prompt)
+    gigachat.requestGigachatWithRetry(prompt)
         .then(function (responseText) {
-            console.log('[' + normalizedData.mode + '] Ответ от GigaChat получен');
+            console.log('[' + normalizedData.mode + '] Ответ от GigaChat получен (' + responseText.length + ' символов)');
 
             var parsed = gigachat.safeParseJsonFromModel(responseText);
 
             if (!parsed) {
-                console.error('[' + normalizedData.mode + '] Не удалось распарсить JSON:', responseText.substring(0, 200));
+                console.error('[' + normalizedData.mode + '] Не удалось распарсить JSON. Ответ:', responseText.substring(0, 500));
                 return res.status(502).json({
                     error: 'invalid_model_response',
                     message: 'AI вернул ответ в невалидном формате. Попробуйте снова.'
@@ -150,6 +140,8 @@ app.post('/api/analyze', function (req, res) {
             var result;
             if (normalizedData.mode === 'preview') {
                 result = gigachat.normalizePreviewResponse(parsed);
+            } else if (normalizedData.tariff === 'competitor') {
+                result = gigachat.normalizeFullWithCompetitorResponse(parsed);
             } else {
                 result = gigachat.normalizeFullResponse(parsed);
             }
@@ -170,12 +162,18 @@ app.post('/api/analyze', function (req, res) {
             var statusCode = 500;
             var errorMessage = 'Внутренняя ошибка сервера';
 
-            if (error.message.includes('таймаут') || error.message.includes('timeout')) {
+            if (error.message.indexOf('таймаут') !== -1 || error.message.indexOf('timeout') !== -1 || error.message.indexOf('Timeout') !== -1) {
                 statusCode = 504;
                 errorMessage = 'Таймаут запроса к AI. Попробуйте снова.';
-            } else if (error.message.includes('токен') || error.message.includes('OAuth')) {
+            } else if (error.message.indexOf('Rate limit') !== -1) {
+                statusCode = 429;
+                errorMessage = 'Слишком много запросов. Подождите несколько секунд.';
+            } else if (error.message.indexOf('OAuth') !== -1 || error.message.indexOf('токен') !== -1 || error.message.indexOf('Unauthorized') !== -1) {
                 statusCode = 500;
-                errorMessage = 'Ошибка авторизации в GigaChat';
+                errorMessage = 'Ошибка авторизации в GigaChat. Проверьте credentials.';
+            } else if (error.message.indexOf('ECONNREFUSED') !== -1 || error.message.indexOf('ENOTFOUND') !== -1) {
+                statusCode = 502;
+                errorMessage = 'Не удалось подключиться к GigaChat. Проверьте сеть.';
             }
 
             res.status(statusCode).json({
@@ -208,6 +206,9 @@ app.listen(PORT, function () {
         console.warn('[WARN] GIGACHAT_AUTH_KEY is not configured.');
         console.warn('[WARN] Set DEMO_MODE=true for testing without credentials.');
         console.warn('[WARN] Or create backend/.env with your GigaChat credentials.');
+    } else {
+        console.log('[REAL] GigaChat mode — credentials detected');
+        console.log('[REAL] Model: ' + (process.env.GIGACHAT_MODEL || 'GigaChat-2-Pro'));
     }
     console.log('ОфферДоктор API запущен на порту ' + PORT);
     console.log('Demo mode: ' + (DEMO_MODE ? 'ON' : 'OFF'));

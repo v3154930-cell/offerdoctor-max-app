@@ -500,6 +500,32 @@
       font-size: 12px; line-height: 1.5; margin-top: 14px;
     }
 
+    /* ===== BETA BADGE ===== */
+    .beta-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #ffd36b;
+      background: rgba(255, 211, 107, 0.15);
+      border: 1px solid rgba(255, 211, 107, 0.25);
+      vertical-align: middle;
+      margin-left: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .beta-note {
+      font-size: 12px;
+      color: var(--muted-2);
+      line-height: 1.5;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 211, 107, 0.06);
+      border: 1px solid rgba(255, 211, 107, 0.1);
+    }
+
     /* ===== THINKING ANIMATIONS ===== */
     .od-thinking-wrap {
       text-align: center; padding: 30px 20px 16px;
@@ -1204,10 +1230,11 @@
 
             <article class="tariff-card premium hidden" id="pricingCompetitor">
               <div class="tariff-top">
-                <div class="tariff-name">Аудит + конкуренты</div>
+                <div class="tariff-name">Аудит + конкуренты <span class="beta-badge">Beta</span></div>
                 <div class="tariff-price">299 ₽</div>
               </div>
               <p class="tariff-desc">Всё из расширенного аудита плюс сравнение с конкурентами: что у них сильнее и что перенять.</p>
+              <div class="beta-note">Конкурентный слой в раннем доступе. Глубина и точность могут отличаться от базового разбора.</div>
               <button class="btn btn-primary" type="button" onclick="selectTariff('competitor')">
                 Выбрать
               </button>
@@ -2181,7 +2208,7 @@ function renderFullResult(data) {
   // Header
   $('resultTitle').textContent = isPremium ? 'Премиум разбор готов' : 'Разбор готов';
   $('resultScenarioTag').textContent = tag;
-  $('resultScenarioLabel').textContent = tariffLabel;
+  $('resultScenarioLabel').textContent = tariffLabel + (isPremium ? ' (Beta)' : '');
   $('resultScenarioDesc').textContent = tag + ' — ' + tariffLabel;
 
   // Summary
