@@ -191,6 +191,16 @@
     .hero-text { margin: 14px 0 0; color: var(--muted); font-size: 15px; line-height: 1.72; }
     .hero-text strong { color: #fff; }
 
+    .hero-landing-link {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 14px; padding: 6px 0;
+      color: var(--cyan-2); font-size: 13px; font-weight: 700;
+      text-decoration: none; transition: 0.2s ease;
+    }
+
+    .hero-landing-link:hover { color: #fff; }
+    .hero-landing-link svg { opacity: 0.7; }
+
     /* ===== SECTION ===== */
     .section { padding: 20px; margin-bottom: 16px; }
 
@@ -230,8 +240,8 @@
     .scenario-name { font-size: 17px; font-weight: 800; line-height: 1.2; }
     .scenario-desc { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-    /* ===== PLATFORM PILLS ===== */
-    .platform-pills { display: none; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    /* ===== PLATFORM PILLS (inside scenario card) ===== */
+    .platform-pills { display: none; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
     .platform-pills.show { display: flex; }
 
     .pill {
@@ -1027,13 +1037,18 @@
         <section class="hero card">
           <div class="hero-badge">
             <span class="hero-badge-dot"></span>
-            Базовый разбор бесплатно
+            Бесплатный preview
           </div>
-          <h1>Найдите, что мешает продавать</h1>
+          <h1>Узнайте, что мешает продажам</h1>
           <p class="hero-text">
-            Выберите формат, заполните форму и получите <strong>бесплатный preview</strong> с главной проблемой.
-            Полный разбор доступен после preview.
+            Выберите формат, опишите предложение и получите
+            <strong>бесплатный разбор</strong> с главной проблемой и советом.
+            Полный аудит — после preview.
           </p>
+          <a id="heroLandingLink" class="hero-landing-link" href="#" style="display:none;" target="_blank" rel="noopener">
+            Узнать больше о сервисе
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+          </a>
         </section>
 
         <section class="section card">
@@ -1052,7 +1067,12 @@
                 </div>
                 <div class="scenario-name">Карточка товара</div>
               </div>
-              <div class="scenario-desc">Ozon, Wildberries, Яндекс Маркет. Разбор карточки и подачи выгод.</div>
+              <div class="scenario-desc">Разбор карточки и подачи выгод на маркетплейсе.</div>
+              <div class="platform-pills show" id="platformPills">
+                <button class="pill active" type="button" data-platform="ozon">Ozon</button>
+                <button class="pill" type="button" data-platform="wb">Wildberries</button>
+                <button class="pill" type="button" data-platform="ym">Яндекс Маркет</button>
+              </div>
             </button>
 
             <button class="scenario-card" data-scenario="avito" type="button">
@@ -1067,7 +1087,7 @@
                 </div>
                 <div class="scenario-name">Avito</div>
               </div>
-              <div class="scenario-desc">Заголовок, первые строки, выгоды, доверие и отклик объявления.</div>
+              <div class="scenario-desc">Заголовок, выгоды, доверие и отклик объявления.</div>
             </button>
 
             <button class="scenario-card" data-scenario="landing" type="button">
@@ -1082,30 +1102,24 @@
                 </div>
                 <div class="scenario-name">Лендинг</div>
               </div>
-              <div class="scenario-desc">Первый экран, оффер, CTA, структура и конверсия.</div>
+              <div class="scenario-desc">Первый экран, оффер, CTA и конверсия.</div>
             </button>
-          </div>
-
-          <div class="platform-pills show" id="platformPills">
-            <button class="pill active" type="button" data-platform="ozon">Ozon</button>
-            <button class="pill" type="button" data-platform="wb">Wildberries</button>
-            <button class="pill" type="button" data-platform="ym">Яндекс Маркет</button>
           </div>
         </section>
 
         <section class="section card">
           <h2 class="section-title">Заполните форму</h2>
-          <p class="section-subtitle" id="inputHint">Укажите, что вы продаете, для кого и прикрепите ссылку или текст.</p>
+          <p class="section-subtitle" id="inputHint">Что вы продаете, для кого и текущий текст предложения.</p>
 
           <div class="form-grid">
             <div class="form-group">
               <label class="form-label">Что вы продаете <span class="required">*</span></label>
-              <input type="text" id="inp-product" placeholder="Например: кроссовки для бега, онлайн-курс, услуги ремонта" />
+              <input type="text" id="inp-product" placeholder="Кроссовки для бега, онлайн-курс, услуги ремонта" />
             </div>
 
             <div class="form-group">
-              <label class="form-label">Для кого предложение <span class="required">*</span></label>
-              <input type="text" id="inp-audience" placeholder="Например: для начинающих бегунов, предпринимателей, молодых мам" />
+              <label class="form-label">Для кого <span class="required">*</span></label>
+              <input type="text" id="inp-audience" placeholder="Начинающие бегуны, предприниматели, молодые мамы" />
             </div>
 
             <div class="form-group">
@@ -1114,13 +1128,13 @@
             </div>
 
             <div class="form-group">
-              <label class="form-label">Как сейчас звучит предложение <span class="optional">или вставьте текст</span></label>
+              <label class="form-label">Текст предложения <span class="optional">или вставьте текст</span></label>
               <textarea id="inp-text" placeholder="Ваш текущий оффер, описание товара или текст с сайта"></textarea>
             </div>
 
             <div class="form-group">
               <label class="form-label">Что не устраивает <span class="optional">необязательно</span></label>
-              <input type="text" id="inp-pain" placeholder="Например: мало заявок, не цепляет, низкая конверсия" />
+              <input type="text" id="inp-pain" placeholder="Мало заявок, не цепляет, низкая конверсия" />
             </div>
           </div>
 
@@ -1133,7 +1147,7 @@
           </div>
 
           <div class="start-note">
-            Базовый preview — бесплатно. Полный разбор от 149 ₽.
+            Preview бесплатный. Полный аудит — от 149 ₽.
           </div>
         </section>
       </div>
@@ -1203,16 +1217,16 @@
           <div class="logo"><span>Ai</span></div>
           <div>
             <div class="brand-title">Полный разбор</div>
-            <div class="brand-subtitle" id="pricingSubtitle">Выберите подходящий формат</div>
+            <div class="brand-subtitle" id="pricingSubtitle">Выберите глубину</div>
           </div>
         </header>
 
         <section class="section card">
-          <h2 class="section-title">Что входит в полный разбор</h2>
+          <h2 class="section-title">Что получите</h2>
           <div class="tariff-list" style="margin-bottom: 16px;">
-            <li>3 главные проблемы текста</li>
+            <li>3 главные проблемы</li>
             <li>3 новых варианта УТП</li>
-            <li>Короткая версия для шапки / карточки</li>
+            <li>Короткая версия для шапки</li>
             <li>Рекомендация, что менять первым</li>
           </div>
 
@@ -1222,7 +1236,7 @@
                 <div class="tariff-name" id="pricingName">Расширенный аудит</div>
                 <div class="tariff-price" id="pricingPrice">249 ₽</div>
               </div>
-              <p class="tariff-desc" id="pricingDesc">Полный разбор с рекомендациями и новыми формулировками.</p>
+              <p class="tariff-desc">Полный аудит с новыми формулировками и приоритетом правок.</p>
               <button class="btn btn-primary" type="button" id="btnSelectMain" onclick="selectTariff('main')">
                 Выбрать
               </button>
@@ -1233,8 +1247,8 @@
                 <div class="tariff-name">Аудит + конкуренты <span class="beta-badge">Beta</span></div>
                 <div class="tariff-price">299 ₽</div>
               </div>
-              <p class="tariff-desc">Всё из расширенного аудита плюс сравнение с конкурентами: что у них сильнее и что перенять.</p>
-              <div class="beta-note">Конкурентный слой в раннем доступе. Глубина и точность могут отличаться от базового разбора.</div>
+              <p class="tariff-desc">Всё из полного аудита плюс анализ конкурентов на площадке.</p>
+              <div class="beta-note">Конкурентный слой в раннем доступе.</div>
               <button class="btn btn-primary" type="button" onclick="selectTariff('competitor')">
                 Выбрать
               </button>
@@ -1242,7 +1256,7 @@
           </div>
 
           <div class="start-note" style="margin-top: 16px;">
-            После оплаты вы сразу получите полный результат.
+            После оплаты результат будет готов через несколько секунд.
           </div>
         </section>
       </div>
@@ -1258,7 +1272,7 @@
           <div class="logo"><span>Ai</span></div>
           <div>
             <div class="brand-title">Оплата</div>
-            <div class="brand-subtitle">Подтвердите заказ</div>
+            <div class="brand-subtitle">Подтверждение заказа</div>
           </div>
         </header>
 
@@ -1321,7 +1335,7 @@
         </div>
 
         <div class="payment-note">
-          После оплаты разбор будет сформирован автоматически. Это займёт несколько секунд.
+          После оплаты разбор сформируется автоматически.
         </div>
       </div>
 
@@ -1519,6 +1533,10 @@
 // Также можно задать window.API_BASE_URL перед загрузкой страницы.
 var API_BASE_URL = window.API_BASE_URL || '{{API_BASE_URL}}' || 'http://localhost:3000';
 
+// URL лендинга. Заполните когда лендинг будет опубликован.
+// Пустая строка = ссылка не показывается.
+var LANDING_URL = window.LANDING_URL || '';
+
 // ============================================================
 //  STATE
 // ============================================================
@@ -1571,26 +1589,26 @@ var tariffPrices = {
 
 var tariffNames = {
   marketplace: {
-    main: 'Расширенный аудит карточки',
+    main: 'Полный аудит',
     competitor: 'Аудит + конкуренты'
   },
-  avito: { main: 'Полный разбор объявления' },
-  landing: { main: 'Полный разбор лендинга' }
+  avito: { main: 'Полный аудит' },
+  landing: { main: 'Полный аудит' }
 };
 
 var tariffDescs = {
   marketplace: {
-    main: 'Полный разбор карточки: название, описание, выгоды, характеристики и что улучшить первым.',
-    competitor: 'Всё из расширенного аудита плюс сравнение с конкурентами на площадке.'
+    main: 'Полный разбор карточки: название, выгоды, что улучшить первым.',
+    competitor: 'Всё из полного аудита плюс анализ конкурентов на площадке.'
   },
-  avito: { main: 'Заголовок, первые строки, выгоды, доверие и логика отклика объявления.' },
-  landing: { main: 'Первый экран, оффер, CTA, структура блоков и причины потери конверсии.' }
+  avito: { main: 'Разбор объявления: заголовок, выгоды, доверие и отклик.' },
+  landing: { main: 'Разбор лендинга: первый экран, оффер, CTA и конверсия.' }
 };
 
 var inputHints = {
-  marketplace: 'Укажите товар, аудиторию и прикрепите ссылку на карточку или вставьте текст.',
-  avito: 'Укажите, что продаете, для кого и прикрепите ссылку на объявление или текст.',
-  landing: 'Укажите продукт, аудиторию и ссылку на лендинг или текст.'
+  marketplace: 'Что вы продаете, для кого и ссылка на карточку или текст.',
+  avito: 'Что вы продаете, для кого и ссылка на объявление или текст.',
+  landing: 'Что вы продаете, для кого и ссылка на лендинг или текст.'
 };
 
 // ============================================================
@@ -1642,6 +1660,15 @@ function renderScenario() {
 }
 
 renderScenario();
+
+// LANDING_URL link
+if (LANDING_URL) {
+  var linkEl = $('heroLandingLink');
+  if (linkEl) {
+    linkEl.href = LANDING_URL;
+    linkEl.style.display = '';
+  }
+}
 
 // ============================================================
 //  VALIDATION
