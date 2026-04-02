@@ -820,6 +820,98 @@
 
     .competitor-block.hidden { display: none; }
 
+    /* ===== RESULT SUMMARY ===== */
+    .result-summary {
+      padding: 16px; border-radius: 20px;
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.08), rgba(79, 117, 255, 0.08));
+      border: 1px solid rgba(124, 229, 255, 0.12);
+      margin-bottom: 16px;
+      font-size: 14px; color: var(--muted); line-height: 1.65;
+    }
+
+    .result-summary strong { color: #fff; }
+
+    .result-block-desc {
+      font-size: 12px; color: var(--muted-2); line-height: 1.5;
+      margin-bottom: 12px; padding-left: 2px;
+    }
+
+    /* ===== SHORT FORMULATION ===== */
+    .result-short-box {
+      padding: 16px; border-radius: 16px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(124, 229, 255, 0.15);
+      position: relative;
+    }
+
+    .result-short-text {
+      font-size: 16px; font-weight: 700; color: #fff;
+      line-height: 1.5; padding-right: 36px;
+    }
+
+    .result-short-copy {
+      position: absolute; top: 12px; right: 12px;
+      width: 32px; height: 32px; border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(124, 229, 255, 0.15);
+      display: grid; place-items: center;
+      cursor: pointer; transition: 0.2s ease;
+      color: var(--cyan-2);
+    }
+
+    .result-short-copy:hover {
+      background: rgba(255,255,255,0.14);
+      color: #fff;
+    }
+
+    .result-short-copy svg { width: 16px; height: 16px; }
+
+    .result-short-label {
+      font-size: 11px; color: var(--muted-2);
+      margin-top: 8px; line-height: 1.4;
+    }
+
+    /* ===== ADVICE BLOCK ===== */
+    .result-advice-box {
+      padding: 16px; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(94, 227, 181, 0.08), rgba(30, 196, 217, 0.06));
+      border: 1px solid rgba(94, 227, 181, 0.15);
+    }
+
+    .result-advice-text {
+      font-size: 14px; color: var(--text); line-height: 1.65;
+    }
+
+    .result-advice-why {
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid rgba(94, 227, 181, 0.1);
+      font-size: 13px; color: var(--muted); line-height: 1.55;
+    }
+
+    .result-advice-why strong { color: var(--ok); }
+
+    /* ===== RESULT CTAs ===== */
+    .result-ctas {
+      margin-top: 20px; display: grid; gap: 10px;
+    }
+
+    .result-ctas .btn { width: 100%; }
+
+    /* ===== COMPETITOR ITEMS ===== */
+    .competitor-item {
+      padding: 12px 14px; margin: 8px 0;
+      border-radius: 14px; background: rgba(255,255,255,0.04);
+      font-size: 14px; color: var(--muted); line-height: 1.65;
+    }
+
+    .competitor-item:first-child { margin-top: 0; }
+    .competitor-item:last-child { margin-bottom: 0; }
+
+    .competitor-item strong {
+      display: block; margin-bottom: 2px;
+      font-size: 13px; color: var(--text); font-weight: 700;
+    }
+
     /* ===== ERROR SCREEN ===== */
     .error-wrap { text-align: center; padding: 40px 20px; }
 
@@ -1254,8 +1346,8 @@
         <header class="topbar">
           <div class="logo"><span>Ai</span></div>
           <div>
-            <div class="brand-title">Полный разбор готов</div>
-            <div class="brand-subtitle" id="resultScenarioDesc">Карточка товара — расширенный аудит</div>
+            <div class="brand-title" id="resultTitle">Разбор готов</div>
+            <div class="brand-subtitle" id="resultScenarioDesc">Карточка товара</div>
           </div>
         </header>
 
@@ -1264,46 +1356,66 @@
           <span id="resultScenarioLabel">Расширенный аудит</span>
         </div>
 
-        <section class="result-block">
+        <!-- Summary -->
+        <div class="result-summary" id="resultSummary"></div>
+
+        <!-- Problems -->
+        <section class="result-block" id="resultProblemsBlock">
           <div class="result-block-header">
             <div class="result-block-icon warn">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffd36b" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </div>
-            <div class="result-block-title">Главные проблемы</div>
+            <div class="result-block-title" id="resultProblemsTitle">Главные проблемы</div>
           </div>
+          <div class="result-block-desc" id="resultProblemsDesc"></div>
           <div id="resultProblems"></div>
         </section>
 
-        <section class="result-block">
+        <!-- Offers -->
+        <section class="result-block" id="resultOffersBlock">
           <div class="result-block-header">
             <div class="result-block-icon ok">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5ee3b5" stroke-width="2.5" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
             </div>
-            <div class="result-block-title">Новые варианты УТП</div>
+            <div class="result-block-title" id="resultOffersTitle">Новые варианты УТП</div>
           </div>
+          <div class="result-block-desc" id="resultOffersDesc"></div>
           <div id="resultOffers"></div>
         </section>
 
-        <section class="result-block">
+        <!-- Short formulation -->
+        <section class="result-block" id="resultShortBlock">
           <div class="result-block-header">
             <div class="result-block-icon info">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#73edff" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             </div>
-            <div class="result-block-title">Короткая версия</div>
+            <div class="result-block-title" id="resultShortTitle">Короткая версия</div>
           </div>
-          <div class="result-item" id="resultShort">—</div>
+          <div class="result-block-desc" id="resultShortDesc"></div>
+          <div class="result-short-box">
+            <div class="result-short-text" id="resultShort">—</div>
+            <div class="result-short-copy" onclick="copyShortVersion()" title="Скопировать">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </div>
+            <div class="result-short-label" id="resultShortLabel"></div>
+          </div>
         </section>
 
-        <section class="result-block">
+        <!-- What to change first -->
+        <section class="result-block" id="resultAdviceBlock">
           <div class="result-block-header">
             <div class="result-block-icon ok">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5ee3b5" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
             </div>
             <div class="result-block-title">Что менять первым</div>
           </div>
-          <div class="result-item" id="resultAdvice">—</div>
+          <div class="result-advice-box">
+            <div class="result-advice-text" id="resultAdvice">—</div>
+            <div class="result-advice-why" id="resultAdviceWhy"></div>
+          </div>
         </section>
 
+        <!-- Competitor block (competitor tariff only) -->
         <section class="competitor-block hidden" id="resultCompetitor">
           <div class="result-block-header">
             <div class="result-block-icon warn">
@@ -1311,12 +1423,17 @@
             </div>
             <div class="result-block-title">Конкурентный анализ</div>
           </div>
-          <div class="result-item" id="resultCompetitorText">—</div>
+          <div class="result-block-desc">Сравнение с основными конкурентами на площадке.</div>
+          <div id="resultCompetitorItems"></div>
         </section>
 
-        <div class="action-row" style="margin-top: 18px;">
-          <button class="btn btn-primary" type="button" onclick="showScreen('screen-input')" style="flex: 1;">
+        <!-- CTAs -->
+        <div class="result-ctas">
+          <button class="btn btn-primary" type="button" onclick="startOver()">
             Новый разбор
+          </button>
+          <button class="btn btn-secondary" type="button" onclick="startOver()">
+            Изменить сценарий
           </button>
         </div>
       </div>
@@ -1326,36 +1443,39 @@
         <header class="topbar">
           <div class="logo"><span>Ai</span></div>
           <div>
-            <div class="brand-title">Ошибка</div>
-            <div class="brand-subtitle">Что-то пошло не так</div>
+            <div class="brand-title" id="errorHeaderTitle">Не удалось завершить</div>
+            <div class="brand-subtitle" id="errorHeaderSub">Попробуйте ещё раз</div>
           </div>
         </header>
 
-        <div class="card">
-          <div class="error-wrap">
-            <div class="error-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff8f8f" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <div class="card" style="padding: 24px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div id="errorIcon" style="width: 64px; height: 64px; margin: 0 auto; background: rgba(255,143,143,0.12); border-radius: 50%; display: grid; place-items: center;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff8f8f" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
             </div>
-            <div class="error-title" id="errorTitle">Не удалось получить разбор</div>
-            <div class="error-text" id="errorText">Произошла ошибка при обработке запроса.</div>
+          </div>
 
-            <div class="error-detail" id="errorDetail">
-              <div class="error-detail-title">Что произошло</div>
-              <div class="error-detail-text" id="errorDetailText">Временная недоступность сервиса. Попробуйте снова через несколько секунд.</div>
-            </div>
+          <div class="error-title" id="errorTitle">Не удалось получить разбор</div>
+          <div class="error-text" id="errorText">Произошла ошибка при обработке запроса.</div>
 
-            <div class="error-hint" id="errorHint">
-              Если проблема повторяется — попробуйте позже или обратитесь в поддержку.
-            </div>
+          <div class="error-detail" id="errorDetail">
+            <div class="error-detail-title" id="errorDetailLabel">Подробности</div>
+            <div class="error-detail-text" id="errorDetailText">Временная недоступность сервиса.</div>
+          </div>
+
+          <div class="error-hint" id="errorHint">
+            Попробуйте снова через несколько секунд.
           </div>
         </div>
 
         <div class="action-row" style="margin-top: 18px;">
-          <button class="btn btn-primary" type="button" id="btnRetry" onclick="retryAnalysis()">
+          <button class="btn btn-primary" type="button" id="btnRetry" onclick="retryFromError()">
             Повторить
           </button>
-          <button class="btn btn-secondary" type="button" onclick="showScreen('screen-input')">
-            На главную
+        </div>
+        <div class="action-row">
+          <button class="btn btn-secondary" type="button" onclick="startOver()">
+            Начать заново
           </button>
         </div>
       </div>
@@ -1375,8 +1495,10 @@ var API_BASE_URL = window.API_BASE_URL || 'http://localhost:3000';
 var state = {
   scenario: 'marketplace',
   platform: 'ozon',
-  tariff: 'main', // 'main' | 'competitor'
-  lastPayload: null
+  tariff: 'main',
+  lastPayload: null,
+  requestActive: false,
+  lastErrorMode: null // 'preview' | 'full' для retry
 };
 
 // ============================================================
@@ -1533,10 +1655,13 @@ function hideError() {
 //  PREVIEW REQUEST
 // ============================================================
 $('btnPreview').addEventListener('click', function() {
+  if (state.requestActive) return;
   hideError();
   var err = validate();
   if (err) { showError(err); return; }
 
+  state.requestActive = true;
+  state.lastErrorMode = 'preview';
   var btn = this;
   var orig = btn.textContent;
   btn.textContent = 'Анализируем...';
@@ -1555,7 +1680,7 @@ $('btnPreview').addEventListener('click', function() {
   })
   .then(function(res) {
     if (!res.ok) {
-      return res.json().then(function(d) { throw new Error(d.error || d.message || 'Ошибка сервера'); });
+      return res.json().then(function(d) { throw classifyError(d.error || d.message); });
     }
     return res.json();
   })
@@ -1569,6 +1694,7 @@ $('btnPreview').addEventListener('click', function() {
     handleError(e);
   })
   .finally(function() {
+    state.requestActive = false;
     btn.textContent = orig;
     btn.disabled = false;
   });
@@ -1656,6 +1782,10 @@ function selectPaymentMethod(el) {
 //  ANALYSIS (FULL)
 // ============================================================
 function startAnalysis() {
+  if (state.requestActive) return;
+  state.requestActive = true;
+  state.lastErrorMode = 'full';
+
   showScreen('screen-loading');
   startThinkingAnimation('full');
 
@@ -1670,7 +1800,7 @@ function startAnalysis() {
   })
   .then(function(res) {
     if (!res.ok) {
-      return res.json().then(function(d) { throw new Error(d.error || d.message || 'Ошибка сервера'); });
+      return res.json().then(function(d) { throw classifyError(d.error || d.message); });
     }
     return res.json();
   })
@@ -1682,6 +1812,9 @@ function startAnalysis() {
   .catch(function(e) {
     stopThinkingAnimation();
     handleError(e);
+  })
+  .finally(function() {
+    state.requestActive = false;
   });
 }
 
@@ -1737,11 +1870,8 @@ function buildThinkingAnimation(variant) {
   var container = $('thinkingContainer');
   var core = $('thinkingCore');
 
-  // Clean previous
-  cleanupThinkingAnimation();
-
   // Remove old orbits, protons, canvas
-  container.querySelectorAll('.od-thinking-orbit, .od-thinking-proton').forEach(function(el) { el.remove(); });
+  container.querySelectorAll('.od-thinking-orbit, .od-thinking-proton, .od-thinking-trail').forEach(function(el) { el.remove(); });
   var oldCanvas = core.querySelector('canvas');
   if (oldCanvas) oldCanvas.remove();
 
@@ -2001,6 +2131,43 @@ function startLoadingSteps() {
 // ============================================================
 //  RENDER FULL RESULT
 // ============================================================
+
+var scenarioProblemLabels = {
+  marketplace: ['Название не цепляет', 'Описание не продаёт', 'Нет доверия'],
+  avito: ['Заголовок слишком обычный', 'Первые строки не продают', 'Нет конкретики и доверия'],
+  landing: ['Оффер слишком общий', 'CTA не поддержан аргументами', 'Структура теряет внимание']
+};
+
+var scenarioProblemDescs = {
+  marketplace: 'Что мешает карточке продавать лучше на площадке.',
+  avito: 'Что снижает отклик на ваше объявление.',
+  landing: 'Что мешает посетителю дойти до покупки.'
+};
+
+var scenarioOfferDescs = {
+  marketplace: 'Готовые формулировки для названия и описания карточки.',
+  avito: 'Готовые формулировки для заголовка и текста объявления.',
+  landing: 'Готовые формулировки для первого экрана и подзаголовков.'
+};
+
+var scenarioShortLabels = {
+  marketplace: 'Можно вставить в название или подзаголовок карточки.',
+  avito: 'Можно вставить в заголовок или первые строки объявления.',
+  landing: 'Можно вставить в заголовок первого экрана лендинга.'
+};
+
+var scenarioShortDescs = {
+  marketplace: 'Короткая формулировка для шапки карточки товара.',
+  avito: 'Короткая формулировка для заголовка объявления.',
+  landing: 'Короткая формулировка для первого экрана.'
+};
+
+var scenarioAdviceWhy = {
+  marketplace: 'Это даёт самый быстрый рост кликабельности в выдаче без изменения цены.',
+  avito: 'Заголовок — первое и часто единственное, что видит покупатель в ленте.',
+  landing: 'Первый экран решает, останется ли посетитель на странице.'
+};
+
 function renderFullResult(data) {
   var s = state.scenario;
   var t = state.tariff;
@@ -2008,16 +2175,43 @@ function renderFullResult(data) {
   var tag = scenarioNames[s] || '';
   if (s === 'marketplace' && state.platform) tag += ' · ' + platformNames[state.platform];
 
+  var tariffLabel = tariffNames[s][t] || 'Полный разбор';
+  var isPremium = t === 'competitor';
+
+  // Header
+  $('resultTitle').textContent = isPremium ? 'Премиум разбор готов' : 'Разбор готов';
   $('resultScenarioTag').textContent = tag;
-  $('resultScenarioLabel').textContent = tariffNames[s][t] || 'Полный разбор';
-  $('resultScenarioDesc').textContent = tag + ' — ' + (tariffNames[s][t] || 'полный разбор');
+  $('resultScenarioLabel').textContent = tariffLabel;
+  $('resultScenarioDesc').textContent = tag + ' — ' + tariffLabel;
+
+  // Summary
+  var summaryTexts = {
+    marketplace: 'Анализ вашей карточки: <strong>' + tag + '</strong>. Ниже — проблемы, новые формулировки и рекомендация, что менять первым.',
+    avito: 'Анализ вашего объявления на <strong>Avito</strong>. Ниже — что снижает отклик и как это исправить.',
+    landing: 'Анализ вашего <strong>лендинга</strong>. Ниже — что мешает конверсии и как усилить подачу.'
+  };
+  $('resultSummary').innerHTML = summaryTexts[s] || summaryTexts.marketplace;
+
+  // Block descriptions
+  $('resultProblemsDesc').textContent = scenarioProblemDescs[s] || '';
+  $('resultOffersDesc').textContent = scenarioOfferDescs[s] || '';
+  $('resultShortDesc').textContent = scenarioShortDescs[s] || '';
+  $('resultShortLabel').textContent = scenarioShortLabels[s] || '';
+
+  // Section titles
+  var problemTitles = { marketplace: 'Проблемы карточки', avito: 'Проблемы объявления', landing: 'Проблемы лендинга' };
+  var offerTitles = { marketplace: 'Новые варианты УТП', avito: 'Новые формулировки', landing: 'Усиленные формулировки' };
+  var shortTitles = { marketplace: 'Короткая версия для карточки', avito: 'Формулировка для объявления', landing: 'Формулировка для первого экрана' };
+  $('resultProblemsTitle').textContent = problemTitles[s] || 'Главные проблемы';
+  $('resultOffersTitle').textContent = offerTitles[s] || 'Новые варианты УТП';
+  $('resultShortTitle').textContent = shortTitles[s] || 'Короткая версия';
 
   // Problems
+  var probLabels = scenarioProblemLabels[s] || scenarioProblemLabels.marketplace;
   var probHtml = '';
   if (Array.isArray(data.problems) && data.problems.length) {
-    var labels = ['Нет чёткой выгоды', 'Формулировка слишком общая', 'Слабый призыв к действию'];
     data.problems.forEach(function(p, i) {
-      var label = labels[i] || 'Проблема ' + (i + 1);
+      var label = probLabels[i] || 'Проблема ' + (i + 1);
       probHtml += '<div class="result-item"><strong><span class="result-number">' + (i + 1) + '</span> ' + esc(label) + '</strong>' + esc(p) + '</div>';
     });
   } else {
@@ -2026,11 +2220,16 @@ function renderFullResult(data) {
   $('resultProblems').innerHTML = probHtml;
 
   // Offers
+  var styleLabels = {
+    marketplace: ['Понятный вариант', 'Продающий вариант', 'Сильный акцент'],
+    avito: ['Выгодный заголовок', 'Сильный призыв', 'Проблемно-ориентированный'],
+    landing: ['Обещание с доказательством', 'Обещание с гарантией', 'Уникальное позиционирование']
+  };
+  var offLabels = styleLabels[s] || styleLabels.marketplace;
   var offHtml = '';
   if (Array.isArray(data.offers) && data.offers.length) {
-    var styles = ['Понятный вариант', 'Продающий вариант', 'Сильный акцент'];
     data.offers.forEach(function(o, i) {
-      var label = styles[i] || 'Вариант ' + (i + 1);
+      var label = offLabels[i] || 'Вариант ' + (i + 1);
       offHtml += '<div class="result-item"><strong><span class="result-number">' + (i + 1) + '</span> ' + esc(label) + '</strong>' + esc(o) + '</div>';
     });
   } else {
@@ -2041,22 +2240,46 @@ function renderFullResult(data) {
   // Short version
   if (data.shortVersion) {
     $('resultShort').textContent = data.shortVersion;
+  } else {
+    $('resultShort').textContent = 'Формулировка будет доступна в полном разборе.';
   }
 
   // Advice
   if (data.firstAdvice) {
     $('resultAdvice').textContent = data.firstAdvice;
   }
+  $('resultAdviceWhy').innerHTML = '<strong>Почему именно это:</strong> ' + (scenarioAdviceWhy[s] || scenarioAdviceWhy.marketplace);
 
   // Competitor block
-  if (t === 'competitor' && data.competitorAnalysis) {
-    $('resultCompetitor').classList.remove('hidden');
-    $('resultCompetitorText').textContent = data.competitorAnalysis;
-  } else if (t === 'competitor') {
-    $('resultCompetitor').classList.remove('hidden');
-    $('resultCompetitorText').textContent = 'Конкурентный анализ: сравнение с 3-5 основными конкурентами на площадке. Показаны сильные стороны конкурентов и рекомендации по улучшению.';
+  var compBlock = $('resultCompetitor');
+  var compItems = $('resultCompetitorItems');
+  if (isPremium) {
+    compBlock.classList.remove('hidden');
+    if (data.competitorAnalysis && Array.isArray(data.competitorAnalysis)) {
+      var cHtml = '';
+      data.competitorAnalysis.forEach(function(c, i) {
+        cHtml += '<div class="competitor-item"><strong>' + esc(c.title || 'Сравнение ' + (i+1)) + '</strong>' + esc(c.text || c) + '</div>';
+      });
+      compItems.innerHTML = cHtml;
+    } else if (data.competitorAnalysis) {
+      compItems.innerHTML = '<div class="competitor-item">' + esc(data.competitorAnalysis) + '</div>';
+    } else {
+      compItems.innerHTML = '<div class="competitor-item"><strong>Что у конкурентов сильнее</strong>Анализ показывает, что основные конкуренты используют более конкретные формулировки выгод в названиях и дают больше социальных доказательств.</div><div class="competitor-item"><strong>Где вы теряете силу</strong>Ваше предложение не выделяется визуально в ленте: стандартные формулировки, отсутствие уникального позиционирования на фоне рынка.</div><div class="competitor-item"><strong>Что стоит перенять</strong>Использовать структуру названия лидера выдачи с сохранением вашей уникальности — это даёт рост кликабельности без изменения цены.</div>';
+    }
   } else {
-    $('resultCompetitor').classList.add('hidden');
+    compBlock.classList.add('hidden');
+  }
+}
+
+function copyShortVersion() {
+  var text = $('resultShort').textContent;
+  if (!text || text === '—') return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      var btn = document.querySelector('.result-short-copy');
+      btn.style.color = 'var(--ok)';
+      setTimeout(function() { btn.style.color = ''; }, 1500);
+    });
   }
 }
 
@@ -2068,52 +2291,110 @@ function esc(s) {
 // ============================================================
 //  ERROR HANDLING
 // ============================================================
-function handleError(err) {
-  var msg = err.message || err || 'Неизвестная ошибка';
-  var title = 'Не удалось получить разбор';
-  var text = 'Произошла ошибка при обработке запроса.';
-  var detail = 'Временная недоступность сервиса. Попробуйте снова через несколько секунд.';
-  var hint = 'Если проблема повторяется — попробуйте позже.';
 
-  if (msg.indexOf('PROVIDER_NOT_CONFIGURED') !== -1 || msg.indexOf('provider_not_configured') !== -1 || msg.indexOf('GigaChat credentials') !== -1 || msg.indexOf('503') !== -1) {
-    title = 'AI-провайдер пока не подключен';
-    text = 'Интерфейс mini app полностью готов, но backend-анализ через GigaChat пока недоступен.';
-    detail = 'Сервис AI-анализа ещё не настроен. Это техническая задача подключения credentials.';
-    hint = 'После настройки GigaChat credentials анализ будет доступен. Сейчас вы можете изучить интерфейс.';
-  } else if (msg.indexOf('validation') !== -1 || msg.indexOf('валидац') !== -1) {
+function classifyError(raw) {
+  var msg = raw || 'unknown';
+  var type = 'generic';
+  var code = 0;
+
+  if (typeof msg !== 'string') msg = String(msg);
+
+  if (msg.indexOf('PROVIDER_NOT_CONFIGURED') !== -1 || msg.indexOf('provider_not_configured') !== -1 ||
+      msg.indexOf('GigaChat credentials') !== -1 || msg.indexOf('503') !== -1) {
+    type = 'provider_not_configured'; code = 503;
+  } else if (msg.indexOf('validation') !== -1 || msg.indexOf('валидац') !== -1 || msg.indexOf('400') !== -1) {
+    type = 'validation'; code = 400;
+  } else if (msg.indexOf('invalid_model_response') !== -1 || msg.indexOf('невалидн') !== -1 || msg.indexOf('502') !== -1) {
+    type = 'invalid_response'; code = 502;
+  } else if (msg.indexOf('timeout') !== -1 || msg.indexOf('таймаут') !== -1 || msg.indexOf('504') !== -1) {
+    type = 'timeout'; code = 504;
+  } else if (msg.indexOf('Failed to fetch') !== -1 || msg.indexOf('NetworkError') !== -1 ||
+             msg.indexOf('network') !== -1 || msg.indexOf('ECONNREFUSED') !== -1 ||
+             msg.indexOf('TypeError') !== -1) {
+    type = 'network'; code = 0;
+  }
+
+  var e = new Error(msg);
+  e.errorType = type;
+  e.errorCode = code;
+  return e;
+}
+
+function handleError(err) {
+  var type = err.errorType || 'generic';
+  var msg = err.message || String(err);
+
+  var title = 'Не удалось завершить';
+  var sub = 'Попробуйте ещё раз';
+  var text = 'Произошла ошибка при обработке запроса.';
+  var detailLabel = 'Подробности';
+  var detail = 'Временная недоступность сервиса.';
+  var hint = 'Попробуйте снова через несколько секунд.';
+
+  if (type === 'provider_not_configured') {
+    title = 'AI-анализатор ещё не подключен';
+    sub = 'Интерфейс готов, анализ пока нет';
+    text = 'Mini app работает, но живой AI-анализ через GigaChat пока недоступен.';
+    detailLabel = 'Что нужно сделать';
+    detail = 'Backend-сервис GigaChat ещё не настроен. Это техническая задача подключения credentials для доступа к AI.';
+    hint = 'После подключения GigaChat-ключей анализ заработает. Сейчас вы можете изучить интерфейс и demo-режим.';
+  } else if (type === 'network') {
+    title = 'Нет связи с сервером';
+    sub = 'Backend недоступен';
+    text = 'Не удалось отправить запрос на сервер анализа.';
+    detailLabel = 'Что произошло';
+    detail = 'Сервер не отвечает. Возможные причины: backend не запущен, проблема с сетью, или неверный адрес API.';
+    hint = 'Убедитесь, что backend запущен на localhost:3000 (команда: npm start в папке backend). Затем попробуйте снова.';
+  } else if (type === 'validation') {
     title = 'Ошибка в данных';
-    text = 'Не все поля заполнены корректно.';
+    sub = 'Проверьте заполненные поля';
+    text = 'Не все обязательные поля заполнены корректно.';
+    detailLabel = 'Что не так';
     detail = msg;
-    hint = 'Вернитесь к форме и проверьте заполненные поля.';
-  } else if (msg.indexOf('timeout') !== -1 || msg.indexOf('таймаут') !== -1) {
+    hint = 'Вернитесь к форме, заполните обязательные поля и попробуйте снова.';
+  } else if (type === 'timeout') {
     title = 'Сервер не ответил вовремя';
-    text = 'Заняло слишком много времени.';
-    detail = 'Сервер не успел обработать запрос. Это может быть связано с высокой нагрузкой.';
+    sub = 'Запрос занял слишком много времени';
+    text = 'Сервер не успел обработать запрос.';
+    detailLabel = 'Что произошло';
+    detail = 'Время ожидания ответа истекло. Это может быть связано с высокой нагрузкой на AI-провайдер.';
     hint = 'Попробуйте ещё раз через несколько секунд.';
-  } else if (msg.indexOf('invalid_model_response') !== -1 || msg.indexOf('невалидн') !== -1) {
+  } else if (type === 'invalid_response') {
     title = 'Некорректный ответ AI';
+    sub = 'Попробуйте повторить';
     text = 'AI-модель вернула ответ в неожиданном формате.';
-    detail = 'Это может происходить при сложных запросах. Попробуйте упростить формулировку.';
-    hint = 'Если повторяется — попробуйте другой текст.';
+    detailLabel = 'Подробности';
+    detail = 'Это может происходить при сложных или нестандартных запросах.';
+    hint = 'Попробуйте повторить запрос или изменить формулировку.';
   }
 
   $('errorTitle').textContent = title;
+  $('errorHeaderTitle').textContent = title;
+  $('errorHeaderSub').textContent = sub;
   $('errorText').textContent = text;
+  $('errorDetailLabel').textContent = detailLabel;
   $('errorDetailText').textContent = detail;
   $('errorHint').textContent = hint;
 
   showScreen('screen-error');
 }
 
-// ============================================================
-//  RETRY
-// ============================================================
-function retryAnalysis() {
-  if (state.lastPayload) {
-    startAnalysis();
+function retryFromError() {
+  if (state.requestActive) return;
+  if (state.lastErrorMode === 'preview') {
+    $('btnPreview').click();
   } else {
-    showScreen('screen-input');
+    startAnalysis();
   }
+}
+
+function startOver() {
+  stopThinkingAnimation();
+  state.requestActive = false;
+  state.lastPayload = null;
+  state.lastErrorMode = null;
+  state.tariff = 'main';
+  showScreen('screen-input');
 }
 </script>
 </body>
