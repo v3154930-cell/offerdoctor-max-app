@@ -11,21 +11,27 @@
 function buildPreviewPrompt(data) {
     var product = data.product || '';
     var audience = data.audience || '';
-    var offer = data.offer || '';
+    var link = data.link || '';
+    var text = data.text || '';
     var pain = data.pain || '';
+
+    var offerParts = [];
+    if (text) offerParts.push('Текст предложения: ' + text);
+    if (link) offerParts.push('Ссылка: ' + link);
+    var offerBlock = offerParts.join('\n') || 'Не указано';
 
     return 'Ты — эксперт по маркетингу и УТП (уникальное торговое предложение). ' +
         'Проанализируй кратко предложение клиента и дай одну главную проблему и один совет.\n\n' +
         'Данные клиента:\n' +
         '• Что продаёт: ' + product + '\n' +
         '• Для кого: ' + audience + '\n' +
-        '• Текущее УТП: ' + offer + '\n' +
-        '• Что не устраивает: ' + pain + '\n\n' +
+        '• ' + offerBlock + '\n' +
+        '• Что не устраивает: ' + (pain || 'Не указано') + '\n\n' +
         'Верни ответ СТРОГО в формате JSON без каких-либо пояснений, маркеров или дополнительного текста:\n' +
         '{\n' +
-        '  "previewProblem": "одна главная проблема текущего УТП, 1-2 предложения",\n' +
+        '  "previewProblem": "одна главная проблема текущего предложения, 1-2 предложения",\n' +
         '  "previewHint": "один конкретный совет, как улучшить, 1-2 предложения",\n' +
-        '  "cta": "Получить полный разбор за 299 ₽"\n' +
+        '  "cta": "Получить полный разбор за 149 ₽"\n' +
         '}';
 }
 
@@ -37,16 +43,22 @@ function buildPreviewPrompt(data) {
 function buildFullPrompt(data) {
     var product = data.product || '';
     var audience = data.audience || '';
-    var offer = data.offer || '';
+    var link = data.link || '';
+    var text = data.text || '';
     var pain = data.pain || '';
+
+    var offerParts = [];
+    if (text) offerParts.push('Текст предложения: ' + text);
+    if (link) offerParts.push('Ссылка: ' + link);
+    var offerBlock = offerParts.join('\n') || 'Не указано';
 
     return 'Ты — эксперт по маркетингу, копирайтингу и созданию УТП (уникальное торговое предложение). ' +
         'Твоя задача — провести глубокий анализ предложения клиента и дать развёрнутые рекомендации.\n\n' +
         'Данные клиента:\n' +
         '• Что продаёт: ' + product + '\n' +
         '• Для кого: ' + audience + '\n' +
-        '• Текущее УТП: ' + offer + '\n' +
-        '• Что не устраивает: ' + pain + '\n\n' +
+        '• ' + offerBlock + '\n' +
+        '• Что не устраивает: ' + (pain || 'Не указано') + '\n\n' +
         'Выполни анализ и верни ответ СТРОГО в формате JSON без каких-либо пояснений, вступлений или заключений:\n\n' +
         '{\n' +
         '  "problems": [\n' +

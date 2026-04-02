@@ -1,1113 +1,1101 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ОфферДоктор | AI Разбор</title>
-    <!-- deploy: visual-fix-ai-badge-loading -->
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        :root {
-            --grad-1: #818CF8;
-            --grad-2: #10B981;
-            --text-1: #1E293B;
-            --text-2: #475569;
-            --glass: rgba(255,255,255,0.88);
-            --glass-border: rgba(148,163,184,0.35);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-            background: linear-gradient(135deg, #F0F4FF 0%, #F0FDF4 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
-
-        .phone {
-            width: 100%;
-            max-width: 375px;
-            height: 812px;
-            background: #fff;
-            border-radius: 48px;
-            box-shadow:
-                0 0 0 10px #1E293B,
-                0 40px 80px rgba(0,0,0,0.25);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 160px;
-            height: 32px;
-            background: #1E293B;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
-            z-index: 50;
-        }
-
-        .screen {
-            flex: 1;
-            padding: 72px 20px 40px;
-            background: linear-gradient(180deg, rgba(129,140,248,0.06) 0%, rgba(16,185,129,0.04) 100%);
-            overflow-y: auto;
-            position: relative;
-        }
-
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 28px;
-        }
-
-        .header h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-1);
-            margin-bottom: 4px;
-            letter-spacing: -0.3px;
-        }
-
-        .header p {
-            font-size: 12px;
-            color: var(--text-2);
-            line-height: 1.4;
-            max-width: 160px;
-        }
-
-        /* Title shimmer effect */
-        .title-shimmer {
-            background: linear-gradient(
-                120deg,
-                var(--text-1) 0%,
-                var(--text-1) 40%,
-                var(--grad-1) 50%,
-                var(--text-1) 60%,
-                var(--text-1) 100%
-            );
-            background-size: 250% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 4s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 100% 0; }
-            100% { background-position: -100% 0; }
-        }
-
-        /* AI Badge */
-        .ai-badge {
-            width: 52px;
-            height: 52px;
-            background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            box-shadow: 0 8px 28px rgba(129,140,248,0.4);
-        }
-
-        .ai-badge::before {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
-            border-radius: 21px;
-            opacity: 0.4;
-            filter: blur(6px);
-            z-index: -1;
-        }
-
-        .ai-badge span {
-            color: #fff;
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        /* AI badge subtle breathing (static screens) */
-        .ai-badge-static {
-            animation: badge-breathe 3.5s ease-in-out infinite;
-        }
-
-        .ai-badge-static::before {
-            animation: badge-glow 3.5s ease-in-out infinite;
-        }
-
-        @keyframes badge-breathe {
-            0%, 100% { box-shadow: 0 8px 28px rgba(129,140,248,0.4); }
-            50% { box-shadow: 0 8px 36px rgba(129,140,248,0.55), 0 0 12px rgba(16,185,129,0.2); }
-        }
-
-        @keyframes badge-glow {
-            0%, 100% { opacity: 0.35; filter: blur(6px); }
-            50% { opacity: 0.55; filter: blur(9px); }
-        }
-
-        /* AI badge active (loading screen) */
-        .ai-badge-active {
-            animation: badge-pulse-active 1.8s ease-in-out infinite;
-        }
-
-        .ai-badge-active::before {
-            animation: badge-glow-active 1.8s ease-in-out infinite;
-        }
-
-        @keyframes badge-pulse-active {
-            0%, 100% { box-shadow: 0 8px 28px rgba(129,140,248,0.45); transform: scale(1); }
-            50% { box-shadow: 0 8px 40px rgba(129,140,248,0.65), 0 0 20px rgba(16,185,129,0.3); transform: scale(1.04); }
-        }
-
-        @keyframes badge-glow-active {
-            0%, 100% { opacity: 0.4; filter: blur(6px); }
-            50% { opacity: 0.7; filter: blur(12px); }
-        }
-
-        /* Cards */
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 18px 16px;
-            margin-bottom: 12px;
-            position: relative;
-            box-shadow: 0 4px 24px rgba(129,140,248,0.1), 0 1px 3px rgba(0,0,0,0.04);
-        }
-
-        .card-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-1);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .card-text {
-            font-size: 13px;
-            color: var(--text-2);
-            line-height: 1.5;
-        }
-
-        .card-arrow {
-            position: absolute;
-            top: 14px;
-            right: 14px;
-            width: 28px;
-            height: 28px;
-            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.06));
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card-arrow svg {
-            width: 16px;
-            height: 16px;
-            stroke: var(--grad-2);
-            stroke-width: 2.5;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 22px;
-            height: 22px;
-            padding: 0 6px;
-            background: linear-gradient(135deg, var(--grad-2), #34D399);
-            border-radius: 11px;
-            color: #fff;
-            font-size: 10px;
-            font-weight: 700;
-            margin-left: 6px;
-            box-shadow: 0 2px 8px rgba(16,185,129,0.3);
-        }
-
-        /* Price block */
-        .price-block {
-            background: linear-gradient(135deg, rgba(255,255,255,0.97), rgba(248,250,252,0.97));
-            border: 1px solid rgba(148,163,184,0.25);
-            border-radius: 22px;
-            padding: 24px 20px;
-            margin: 20px 0;
-            text-align: center;
-            box-shadow:
-                0 8px 32px rgba(129,140,248,0.12),
-                0 2px 8px rgba(0,0,0,0.04),
-                inset 0 1px 0 rgba(255,255,255,1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .price-block::before {
-            content: '';
-            position: absolute;
-            top: -60%;
-            left: -60%;
-            width: 220%;
-            height: 220%;
-            background: radial-gradient(circle, rgba(129,140,248,0.05) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .price-amount {
-            font-size: 34px;
-            font-weight: 800;
-            color: var(--text-1);
-            margin-bottom: 12px;
-            letter-spacing: -1px;
-        }
-
-        .price-desc {
-            font-size: 13px;
-            color: var(--text-2);
-            line-height: 1.45;
-            margin-bottom: 8px;
-        }
-
-        .price-features {
-            text-align: left;
-            margin: 16px 0;
-        }
-
-        .price-feature {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            padding: 6px 0;
-            font-size: 13px;
-            color: var(--text-2);
-            line-height: 1.4;
-        }
-
-        .price-feature .check {
-            color: var(--grad-2);
-            font-weight: 700;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        /* Buttons */
-        .btn {
-            width: 100%;
-            padding: 16px 28px;
-            background: linear-gradient(135deg, #059669, #10B981, #34D399);
-            border: none;
-            border-radius: 14px;
-            color: #fff;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 6px 24px rgba(16,185,129,0.4), 0 2px 6px rgba(0,0,0,0.06);
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.2px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before { left: 100%; }
-        .btn:hover { box-shadow: 0 8px 28px rgba(16,185,129,0.45), 0 2px 8px rgba(0,0,0,0.08); }
-        .btn:active { transform: scale(0.985); }
-
-        .btn-secondary {
-            width: 100%;
-            padding: 15px 28px;
-            background: rgba(129,140,248,0.1);
-            border: 1px solid rgba(129,140,248,0.15);
-            border-radius: 14px;
-            color: var(--grad-1);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-        }
-
-        .btn-secondary:active { transform: scale(0.985); }
-        .btn-secondary:hover { background: rgba(129,140,248,0.16); }
-
-        /* Form fields */
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-1);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .form-label .tag {
-            font-size: 10px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 6px;
-        }
-
-        .form-label .tag-recommended {
-            color: var(--grad-1);
-            background: rgba(129,140,248,0.12);
-        }
-
-        .form-label .tag-optional {
-            color: var(--text-2);
-            background: rgba(129,140,248,0.1);
-            font-weight: 500;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--glass);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            font-size: 14px;
-            font-family: inherit;
-            color: var(--text-1);
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-        }
-
-        .form-input:focus {
-            border-color: var(--grad-1);
-            box-shadow: 0 0 0 3px rgba(129,140,248,0.15);
-        }
-
-        .form-input::placeholder {
-            color: #94A3B8;
-            font-size: 13px;
-        }
-
-        .form-hint {
-            font-size: 11px;
-            color: var(--text-2);
-            margin-top: 6px;
-            line-height: 1.4;
-            padding-left: 2px;
-        }
-
-        .form-error {
-            font-size: 12px;
-            color: #EF4444;
-            margin-top: 8px;
-            display: none;
-            padding: 10px 14px;
-            background: rgba(239,68,68,0.08);
-            border-radius: 10px;
-            line-height: 1.4;
-        }
-
-        .form-error.visible {
-            display: block;
-            animation: fade 0.3s ease-out;
-        }
-
-        /* ============ LOADING ANIMATION (rich) ============ */
-        .loading-center {
-            padding: 50px 20px 30px;
-            text-align: center;
-        }
-
-        .loading-anim {
-            position: relative;
-            width: 130px;
-            height: 130px;
-            margin: 0 auto 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* outer ambient glow */
-        .loading-aura {
-            position: absolute;
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(129,140,248,0.1) 0%, transparent 70%);
-            animation: aura-pulse 2.5s ease-in-out infinite;
-        }
-
-        @keyframes aura-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.25); opacity: 1; }
-        }
-
-        /* wave rings */
-        .loading-wave {
-            position: absolute;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(129,140,248,0.06) 0%, transparent 75%);
-            animation: wave-expand 2.2s ease-out infinite;
-        }
-
-        .loading-wave:nth-child(2) { animation-delay: 0.7s; }
-
-        @keyframes wave-expand {
-            0% { transform: scale(0.3); opacity: 0.6; }
-            100% { transform: scale(1.5); opacity: 0; }
-        }
-
-        /* pulse rings */
-        .loading-ring {
-            position: absolute;
-            width: 90px;
-            height: 90px;
-            border-radius: 50%;
-            border: 2px solid var(--grad-1);
-            opacity: 0;
-            animation: ring-expand 2s ease-out infinite;
-        }
-
-        .loading-ring:nth-child(4) { animation-delay: 0.4s; border-color: var(--grad-2); }
-        .loading-ring:nth-child(5) { animation-delay: 0.8s; }
-
-        @keyframes ring-expand {
-            0% { transform: scale(0.4); opacity: 0.7; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-
-        /* orbit ring */
-        .orbit-ring {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 1px dashed rgba(129,140,248,0.2);
-            animation: orbit-spin 8s linear infinite;
-        }
-
-        @keyframes orbit-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* orbit dots */
-        .orbit-dot {
-            position: absolute;
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            animation: orbit-path 3.5s linear infinite;
-        }
-
-        .orbit-dot:nth-child(8) {
-            background: var(--grad-1);
-            box-shadow: 0 0 8px rgba(129,140,248,0.6);
-            animation-duration: 3.5s;
-        }
-
-        .orbit-dot:nth-child(9) {
-            background: var(--grad-2);
-            box-shadow: 0 0 8px rgba(16,185,129,0.6);
-            animation-duration: 5s;
-            animation-delay: -1.7s;
-            width: 5px;
-            height: 5px;
-        }
-
-        @keyframes orbit-path {
-            from { transform: rotate(0deg) translateX(55px) rotate(0deg); }
-            to { transform: rotate(360deg) translateX(55px) rotate(-360deg); }
-        }
-
-        /* rotating arcs */
-        .arc-spin {
-            position: absolute;
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            animation: arc-cw 4s linear infinite;
-        }
-
-        .arc-spin-1 {
-            border-top-color: rgba(129,140,248,0.35);
-            border-right-color: rgba(129,140,248,0.1);
-        }
-
-        .arc-spin-2 {
-            width: 95px;
-            height: 95px;
-            border-bottom-color: rgba(16,185,129,0.3);
-            border-left-color: rgba(16,185,129,0.08);
-            animation-name: arc-ccw;
-            animation-duration: 3s;
-        }
-
-        @keyframes arc-cw {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes arc-ccw {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
-        }
-
-        /* central core */
-        .loading-core {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--grad-1), var(--grad-2));
-            border-radius: 50%;
-            position: relative;
-            z-index: 2;
-            box-shadow:
-                0 0 32px rgba(129,140,248,0.5),
-                0 0 60px rgba(129,140,248,0.15),
-                inset 0 0 16px rgba(255,255,255,0.4);
-            animation: core-breathe 2s ease-in-out infinite;
-        }
-
-        @keyframes core-breathe {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 32px rgba(129,140,248,0.5), 0 0 60px rgba(129,140,248,0.15), inset 0 0 16px rgba(255,255,255,0.4); }
-            50% { transform: scale(1.08); box-shadow: 0 0 44px rgba(129,140,248,0.6), 0 0 80px rgba(129,140,248,0.2), inset 0 0 20px rgba(255,255,255,0.5); }
-        }
-
-        /* Views */
-        .view { display: none; animation: fade 0.4s ease-out; }
-        .view.active { display: block; }
-        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Result cards */
-        .result-card {
-            border-left: 4px solid;
-            border-radius: 20px;
-        }
-        .result-card.warn { border-left-color: #F59E0B; }
-        .result-card.ok { border-left-color: var(--grad-2); }
-        .result-card.info { border-left-color: var(--grad-1); }
-
-        .result-item {
-            padding: 10px 12px;
-            margin: 6px 0;
-            background: rgba(16,185,129,0.05);
-            border-radius: 10px;
-            font-size: 13px;
-            color: var(--text-2);
-            line-height: 1.5;
-        }
-
-        .result-item strong {
-            color: var(--text-1);
-            display: block;
-            margin-bottom: 2px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        /* Payment methods */
-        .payment-methods {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 16px 0;
-        }
-
-        .payment-method {
-            background: var(--glass);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            cursor: pointer;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .payment-method:hover {
-            border-color: var(--grad-1);
-            box-shadow: 0 4px 20px rgba(129,140,248,0.14);
-        }
-
-        .payment-method.selected {
-            border-color: var(--grad-1);
-            box-shadow: 0 0 0 2px rgba(129,140,248,0.18);
-        }
-
-        .payment-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, rgba(129,140,248,0.12), rgba(16,185,129,0.12));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .payment-icon svg {
-            width: 22px;
-            height: 22px;
-            stroke: var(--grad-1);
-            stroke-width: 2;
-            fill: none;
-            stroke-linecap: round;
-        }
-
-        .payment-info { flex: 1; }
-
-        .payment-info h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-1);
-            margin-bottom: 2px;
-        }
-
-        .payment-info p {
-            font-size: 12px;
-            color: var(--text-2);
-        }
-
-        .payment-radio {
-            width: 22px;
-            height: 22px;
-            border: 2px solid #CBD5E1;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: border-color 0.2s;
-        }
-
-        .payment-method.selected .payment-radio {
-            border-color: var(--grad-1);
-        }
-
-        .payment-method.selected .payment-radio::after {
-            content: '';
-            width: 12px;
-            height: 12px;
-            background: var(--grad-1);
-            border-radius: 50%;
-        }
-
-        .payment-note {
-            font-size: 11px;
-            color: var(--text-2);
-            text-align: center;
-            margin-top: 12px;
-            line-height: 1.4;
-        }
-
-        /* Error screen */
-        .error-icon-wrap {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.05));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-
-        .error-icon-wrap svg {
-            width: 36px;
-            height: 36px;
-            stroke: #EF4444;
-            stroke-width: 2.5;
-            fill: none;
-            stroke-linecap: round;
-        }
-
-        .error-card {
-            border-left: 4px solid #EF4444;
-        }
-
-        .error-card .card-label {
-            color: #EF4444;
-        }
-
-        /* Responsive — full-screen mini app mode (mobile / MAX) */
-        @media (max-width: 420px) {
-            body { padding: 0; background: #fff; }
-            .phone {
-                max-width: 100%;
-                border-radius: 0;
-                box-shadow: none;
-                height: 100vh;
-                height: 100dvh;
-            }
-            .notch { display: none; }
-            .screen {
-                padding-top: calc(env(safe-area-inset-top, 20px) + 16px);
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ОфферДоктор — mini app</title>
+  <meta
+    name="description"
+    content="ОфферДоктор — mini app для аудита карточек товара, объявлений Avito и лендингов."
+  />
+  <style>
+    :root {
+      --bg-1: #0b1624;
+      --bg-2: #102233;
+      --bg-3: #14304a;
+      --surface: rgba(255,255,255,0.08);
+      --surface-2: rgba(255,255,255,0.12);
+      --surface-3: rgba(255,255,255,0.06);
+      --line: rgba(154, 214, 255, 0.14);
+      --text: #f2fbff;
+      --muted: rgba(232, 246, 255, 0.72);
+      --muted-2: rgba(232, 246, 255, 0.52);
+      --cyan: #1ec4d9;
+      --cyan-2: #73edff;
+      --blue: #4f75ff;
+      --blue-2: #89a2ff;
+      --danger: #ff8f8f;
+      --warn: #ffd36b;
+      --ok: #5ee3b5;
+      --shadow: 0 26px 64px rgba(0,0,0,0.28);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --max: 560px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% -10%, rgba(115, 237, 255, 0.18), transparent 0 34%),
+        radial-gradient(circle at 100% 30%, rgba(79, 117, 255, 0.18), transparent 0 24%),
+        radial-gradient(circle at 0% 100%, rgba(30, 196, 217, 0.18), transparent 0 22%),
+        linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 48%, var(--bg-3) 100%);
+      min-height: 100vh;
+    }
+
+    .app-shell {
+      position: relative;
+      width: min(100%, var(--max));
+      margin: 0 auto;
+      padding: 18px 14px 34px;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-shell::before,
+    .app-shell::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(28px);
+      opacity: 0.42;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-shell::before {
+      width: 220px;
+      height: 220px;
+      top: 44px;
+      right: -70px;
+      background: radial-gradient(circle, rgba(115, 237, 255, 0.42), transparent 70%);
+    }
+
+    .app-shell::after {
+      width: 240px;
+      height: 240px;
+      left: -90px;
+      bottom: 120px;
+      background: radial-gradient(circle, rgba(79, 117, 255, 0.32), transparent 70%);
+    }
+
+    .layer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .logo {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      flex: 0 0 50px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,0.92), rgba(255,255,255,0.08) 44%, transparent 62%),
+        linear-gradient(145deg, rgba(30, 196, 217, 1), rgba(79, 117, 255, 1));
+      box-shadow:
+        0 16px 36px rgba(79, 117, 255, 0.26),
+        inset 0 1px 0 rgba(255,255,255,0.44);
+      overflow: hidden;
+    }
+
+    .logo::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 2px solid rgba(255,255,255,0.76);
+      border-radius: 12px;
+    }
+
+    .logo::after {
+      content: "";
+      position: absolute;
+      width: 78%;
+      height: 170%;
+      top: -34%;
+      left: -32%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.58), transparent);
+      transform: skewX(-18deg);
+      animation: shineMove 5s linear infinite;
+    }
+
+    .logo span {
+      position: relative;
+      z-index: 1;
+      font-size: 20px;
+      font-weight: 900;
+      color: #fff;
+      text-transform: uppercase;
+    }
+
+    .brand-title {
+      font-size: 22px;
+      line-height: 1.08;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      right: -84px;
+      top: -78px;
+      background: radial-gradient(circle, rgba(115, 237, 255, 0.18), transparent 68%);
+      filter: blur(10px);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      color: #d9f7ff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      margin-bottom: 16px;
+    }
+
+    .hero-badge-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--cyan-2), var(--blue));
+      box-shadow: 0 0 0 6px rgba(115, 237, 255, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 8vw, 44px);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+      font-weight: 900;
+    }
+
+    .hero-text {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.72;
+    }
+
+    .hero-text strong {
+      color: #fff;
+    }
+
+    .section {
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .section-subtitle {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .scenario-card {
+      width: 100%;
+      text-align: left;
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      background: rgba(255,255,255,0.06);
+      border-radius: 22px;
+      padding: 16px;
+      color: inherit;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .scenario-card.active {
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.18), rgba(79, 117, 255, 0.18));
+      border-color: rgba(124, 229, 255, 0.3);
+      box-shadow: 0 14px 34px rgba(36, 111, 201, 0.18);
+    }
+
+    .scenario-card:hover {
+      transform: translateY(-1px);
+    }
+
+    .scenario-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .scenario-icon {
+      width: 52px;
+      height: 52px;
+      flex: 0 0 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .scenario-name {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .scenario-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .platform-pills {
+      display: none;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .platform-pills.show {
+      display: flex;
+    }
+
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      background: rgba(255,255,255,0.06);
+      color: #d8f5ff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .pill.active {
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.22), rgba(79, 117, 255, 0.22));
+      border-color: rgba(124, 229, 255, 0.26);
+      color: #fff;
+    }
+
+    .mode-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .mode-btn {
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      background: rgba(255,255,255,0.06);
+      color: #d8f5ff;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 16px;
+      padding: 12px 10px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.22), rgba(79, 117, 255, 0.22));
+      color: #fff;
+      border-color: rgba(124, 229, 255, 0.26);
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="url"] {
+      width: 100%;
+      border: 1px solid rgba(154, 214, 255, 0.14);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      border-radius: 18px;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      outline: none;
+      transition: 0.2s ease;
+    }
+
+    textarea::placeholder,
+    input::placeholder {
+      color: rgba(225, 241, 255, 0.5);
+    }
+
+    textarea:focus,
+    input:focus {
+      border-color: rgba(124, 229, 255, 0.36);
+      box-shadow: 0 0 0 5px rgba(84, 205, 255, 0.08);
+    }
+
+    textarea {
+      min-height: 124px;
+      resize: vertical;
+    }
+
+    .file-box {
+      display: none;
+      padding: 18px;
+      border-radius: 18px;
+      border: 1px dashed rgba(154, 214, 255, 0.22);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .file-box.show {
+      display: block;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: 0;
+      cursor: pointer;
+      border-radius: 18px;
+      padding: 15px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      transition: 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 16px 34px rgba(62, 109, 255, 0.28);
+      flex: 1 1 220px;
+    }
+
+    .btn-primary::after {
+      content: "";
+      position: absolute;
+      width: 60%;
+      height: 160%;
+      top: -35%;
+      left: -70%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.52), transparent);
+      transform: skewX(-18deg);
+      animation: shineMove 4.4s linear infinite;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      color: #dff8ff;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      flex: 1 1 160px;
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(154, 214, 255, 0.1);
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      font-size: 12px;
+      font-weight: 800;
+      color: #e7faff;
+    }
+
+    .result-title {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .result-problem {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.72;
+    }
+
+    .issue-list {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .issue-item {
+      display: flex;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .issue-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      margin-top: 8px;
+      flex: 0 0 10px;
+    }
+
+    .issue-dot.warn {
+      background: var(--warn);
+      box-shadow: 0 0 0 6px rgba(255, 211, 107, 0.12);
+    }
+
+    .issue-dot.bad {
+      background: var(--danger);
+      box-shadow: 0 0 0 6px rgba(255, 143, 143, 0.12);
+    }
+
+    .issue-dot.ok {
+      background: var(--ok);
+      box-shadow: 0 0 0 6px rgba(94, 227, 181, 0.12);
+    }
+
+    .issue-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .issue-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .teaser {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.12), rgba(79, 117, 255, 0.12));
+      border: 1px solid rgba(124, 229, 255, 0.14);
+      color: #e8fbff;
+      font-size: 14px;
+      line-height: 1.68;
+    }
+
+    .tariff-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tariff-card {
+      padding: 18px;
+      border-radius: 22px;
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      background: rgba(255,255,255,0.06);
+      transition: 0.2s ease;
+    }
+
+    .tariff-card.premium {
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.05));
+      border-color: rgba(124, 229, 255, 0.22);
+      box-shadow: 0 18px 40px rgba(27, 98, 204, 0.16);
+    }
+
+    .tariff-card.hidden {
+      display: none;
+    }
+
+    .tariff-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .tariff-name {
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 800;
+    }
+
+    .tariff-price {
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .tariff-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+      margin: 0 0 12px;
+    }
+
+    .tariff-list {
+      margin: 0 0 14px;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .tariff-list li {
+      display: flex;
+      gap: 10px;
+      color: #eaf9ff;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .tariff-list li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      margin-top: 8px;
+      flex: 0 0 8px;
+      background: linear-gradient(135deg, var(--cyan-2), var(--blue));
+      box-shadow: 0 0 0 6px rgba(84, 205, 255, 0.1);
+    }
+
+    .tariff-card .btn {
+      width: 100%;
+    }
+
+    .tariff-muted {
+      color: var(--muted-2);
+      font-size: 13px;
+      line-height: 1.55;
+      margin-top: 8px;
+    }
+
+    .start-note {
+      margin-top: 10px;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    @keyframes shineMove {
+      0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+      18% { opacity: 0.6; }
+      40% { transform: translateX(140%) skewX(-18deg); opacity: 0; }
+      100% { transform: translateX(140%) skewX(-18deg); opacity: 0; }
+    }
+
+    @media (max-width: 420px) {
+      .app-shell {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      .mode-row {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .brand-title {
+        font-size: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="phone">
-        <div class="notch"></div>
-
-        <div class="screen">
-
-            <!-- ===================== 1. INPUT VIEW ===================== -->
-            <div id="view-input" class="view active">
-                <div class="header">
-                    <div>
-                        <h1 class="title-shimmer">ОфферДоктор</h1>
-                        <p>AI-разбор оффера, сайта и карточки товара</p>
-                    </div>
-                    <div class="ai-badge ai-badge-static"><span>AI</span></div>
-                </div>
-
-                <p class="card-text" style="margin-bottom: 16px; max-width: 260px;">Покажем, что мешает вашему предложению продавать, и&nbsp;подскажем, как сделать его сильнее.</p>
-
-                <div class="card">
-                    <div class="card-arrow">
-                        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    </div>
-                    <div class="card-label">&#9889; Проблемы</div>
-                    <div class="card-text">Покажем, почему ваш оффер не цепляет клиента с первого взгляда.</div>
-                </div>
-
-                <div class="card">
-                    <div class="card-arrow">
-                        <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                    </div>
-                    <div class="card-label">Новые формулировки</div>
-                    <div class="card-text">Предложим более сильные варианты УТП под вашу аудиторию.</div>
-                </div>
-
-                <div class="card">
-                    <div class="card-label">
-                        Короткая версия
-                        <span class="badge">AI</span>
-                    </div>
-                    <div class="card-text">Дадим компактный вариант для карточки товара, шапки или лендинга.</div>
-                </div>
-
-                <div class="form-group">
-                    <div class="form-label">Что вы продаете</div>
-                    <input type="text" id="inp-product" class="form-input" placeholder="Например: онлайн-курс по дизайну, чай, косметика, консультации">
-                </div>
-
-                <div class="form-group">
-                    <div class="form-label">Для кого предложение</div>
-                    <input type="text" id="inp-audience" class="form-input" placeholder="Например: для новичков, предпринимателей, мам, владельцев бизнеса">
-                </div>
-
-                <div class="form-group">
-                    <div class="form-label">
-                        Ссылка на сайт или карточку товара
-                        <span class="tag tag-recommended">рекомендуем</span>
-                    </div>
-                    <input type="url" id="inp-link" class="form-input" placeholder="Например: сайт, лендинг, Ozon, Wildberries, Taplink">
-                    <div class="form-hint">Лучший результат получается, если добавить ссылку на сайт, лендинг или карточку товара.</div>
-                </div>
-
-                <div class="form-group">
-                    <div class="form-label">
-                        Как сейчас звучит предложение
-                        <span class="tag tag-optional">необязательно</span>
-                    </div>
-                    <input type="text" id="inp-text" class="form-input" placeholder="Вставьте ваш текущий оффер, описание товара или текст с сайта">
-                </div>
-
-                <div class="form-group">
-                    <div class="form-label">
-                        Что не устраивает
-                        <span class="tag tag-optional">необязательно</span>
-                    </div>
-                    <input type="text" id="inp-pain" class="form-input" placeholder="Например: мало заявок, не цепляет, слабая конверсия, текст выглядит обычным">
-                </div>
-
-                <div id="input-error" class="form-error"></div>
-
-                <button class="btn" onclick="goTo('view-preview')">Получить быстрый бесплатный диагноз</button>
-            </div>
-
-            <!-- ===================== 2. PREVIEW VIEW ===================== -->
-            <div id="view-preview" class="view">
-                <div class="header">
-                    <div>
-                        <h1 class="title-shimmer">Быстрый диагноз готов</h1>
-                        <p>Мы нашли, что сейчас сильнее всего мешает вашему предложению.</p>
-                    </div>
-                    <div class="ai-badge ai-badge-static">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="card result-card warn">
-                    <div class="card-label" style="color: #F59E0B;">&#9888;&#65039; Главная проблема</div>
-                    <div class="result-item"><strong>&#8226; Нет конкретной выгоды</strong>Ваш оффер звучит слишком общо и не показывает конкретную выгоду для клиента.</div>
-                </div>
-
-                <div class="card result-card ok">
-                    <div class="card-label" style="color: var(--grad-2);">&#10024; Что улучшить в первую очередь</div>
-                    <div class="result-item"><strong>Добавьте ясный результат</strong>Добавьте ясный результат, срок или отличие от конкурентов &mdash; тогда предложение станет понятнее и сильнее.</div>
-                </div>
-
-                <div class="card" style="text-align: center; padding: 14px 16px;">
-                    <div class="card-text" style="margin-bottom: 0;">В полном разборе покажем, какие формулировки сработают лучше именно для вашей ниши.</div>
-                </div>
-
-                <div class="price-block">
-                    <div class="price-amount">Полный AI-разбор &mdash; 149&nbsp;&#8381;</div>
-                    <div class="price-desc">Получите расширенный разбор с новыми вариантами УТП и конкретными рекомендациями, что менять первым.</div>
-                    <div class="price-features">
-                        <div class="price-feature"><span class="check">&#10003;</span> 3 главные проблемы текста</div>
-                        <div class="price-feature"><span class="check">&#10003;</span> 3 новых варианта УТП</div>
-                        <div class="price-feature"><span class="check">&#10003;</span> Короткая версия для шапки или карточки</div>
-                        <div class="price-feature"><span class="check">&#10003;</span> Пошаговая рекомендация, с чего начать</div>
-                    </div>
-                    <button class="btn" onclick="goTo('view-payment')">Получить полный разбор за 149&nbsp;&#8381;</button>
-                </div>
-
-                <button class="btn-secondary" onclick="goTo('view-input')">Назад</button>
-            </div>
-
-            <!-- ===================== 3. PAYMENT VIEW ===================== -->
-            <div id="view-payment" class="view">
-                <div class="header">
-                    <div>
-                        <h1 class="title-shimmer">Полный разбор за 149&nbsp;&#8381;</h1>
-                        <p>После оплаты вы сразу получите расширенный AI-анализ вашего предложения.</p>
-                    </div>
-                    <div class="ai-badge ai-badge-static"><span>AI</span></div>
-                </div>
-
-                <div class="card" style="text-align: center; padding: 14px 16px;">
-                    <div class="card-text">Что входит: 3 проблемы, 3 новых варианта УТП, короткая версия и рекомендация, что менять первым.</div>
-                </div>
-
-                <div class="price-block">
-                    <div class="price-amount">149&nbsp;&#8381;</div>
-                </div>
-
-                <div class="form-label" style="margin-bottom: 10px; margin-top: 4px;">Способ оплаты</div>
-
-                <div class="payment-methods">
-                    <div class="payment-method selected" onclick="selectPayment(this)">
-                        <div class="payment-icon">
-                            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                        </div>
-                        <div class="payment-info">
-                            <h4>Банковская карта</h4>
-                            <p>Visa, MasterCard, МИР</p>
-                        </div>
-                        <div class="payment-radio"></div>
-                    </div>
-
-                    <div class="payment-method" onclick="selectPayment(this)">
-                        <div class="payment-icon">
-                            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
-                        </div>
-                        <div class="payment-info">
-                            <h4>СБП</h4>
-                            <p>Мгновенный перевод</p>
-                        </div>
-                        <div class="payment-radio"></div>
-                    </div>
-
-                    <div class="payment-method" onclick="selectPayment(this)">
-                        <div class="payment-icon">
-                            <svg viewBox="0 0 24 24"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
-                        </div>
-                        <div class="payment-info">
-                            <h4>ЮMoney</h4>
-                            <p>Из кошелька</p>
-                        </div>
-                        <div class="payment-radio"></div>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="goTo('view-loading')">Оплатить 149&nbsp;&#8381;</button>
-                <button class="btn-secondary" onclick="goTo('view-preview')" style="margin-top: 10px;">Назад</button>
-
-                <div class="payment-note">После оплаты разбор откроется сразу, без ожидания и без ручной проверки.</div>
-            </div>
-
-            <!-- ===================== 4. LOADING VIEW ===================== -->
-            <div id="view-loading" class="view">
-                <div class="header">
-                    <div>
-                        <h1 class="title-shimmer">Анализируем ваше предложение</h1>
-                        <p>Сравниваем формулировки, выгоды и подачу с сильными продающими примерами.</p>
-                    </div>
-                    <div class="ai-badge ai-badge-active"><span>AI</span></div>
-                </div>
-                <div class="loading-center">
-                    <div class="loading-anim">
-                        <div class="loading-aura"></div>
-                        <div class="loading-wave"></div>
-                        <div class="loading-wave"></div>
-                        <div class="loading-ring"></div>
-                        <div class="loading-ring"></div>
-                        <div class="loading-ring"></div>
-                        <div class="orbit-ring"></div>
-                        <div class="orbit-dot"></div>
-                        <div class="orbit-dot"></div>
-                        <div class="arc-spin arc-spin-1"></div>
-                        <div class="arc-spin arc-spin-2"></div>
-                        <div class="loading-core"></div>
-                    </div>
-                    <h4 style="font-size: 17px; font-weight: 600; color: var(--text-1); margin-bottom: 6px;">Анализируем...</h4>
-                    <p style="color: var(--text-2); font-size: 13px;">Это займет несколько секунд.</p>
-                </div>
-            </div>
-
-            <!-- ===================== 5. RESULT VIEW ===================== -->
-            <div id="view-result" class="view">
-                <div class="header">
-                    <div>
-                        <h1 class="title-shimmer">Ваш полный разбор готов</h1>
-                        <p>Ниже &mdash; основные проблемы и более сильные варианты формулировок.</p>
-                    </div>
-                    <div class="ai-badge ai-badge-static">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="#fff">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="card result-card warn">
-                    <div class="card-label" style="color: #F59E0B;">&#9888;&#65039; Проблемы</div>
-                    <div class="result-item"><strong>&#8226; Нет четкой выгоды</strong>Клиенту не сразу понятно, что именно он получит и почему это важно.</div>
-                    <div class="result-item"><strong>&#8226; Формулировка слишком общая</strong>Текст звучит безопасно, но не цепляет и не выделяет вас среди похожих предложений.</div>
-                    <div class="result-item"><strong>&#8226; Слабый призыв к действию</strong>Не хватает ясного следующего шага, который подтолкнет человека к покупке или заявке.</div>
-                </div>
-
-                <div class="card result-card ok">
-                    <div class="card-label" style="color: var(--grad-2);">&#10024; Новые варианты УТП</div>
-                    <div class="result-item"><strong>Вариант 1 &mdash; понятный</strong>Получите [результат] быстрее и проще &mdash; без лишней теории и путаницы.</div>
-                    <div class="result-item"><strong>Вариант 2 &mdash; продающий</strong>[Продукт/услуга], который помогает [целевой аудитории] прийти к [результату] с понятным планом и быстрым стартом.</div>
-                    <div class="result-item"><strong>Вариант 3 &mdash; сильный акцент</strong>Помогаем [аудитории] получить [результат] с помощью [формата/метода], без [главная боль клиента].</div>
-                </div>
-
-                <div class="card result-card info">
-                    <div class="card-label" style="color: var(--grad-1);">&#128221; Короткая версия</div>
-                    <div class="result-item">Понятное решение для [аудитории], которое помогает быстрее получить [результат].</div>
-                </div>
-
-                <div class="card result-card ok">
-                    <div class="card-label" style="color: var(--grad-2);">&#128203; Что менять первым</div>
-                    <div class="result-item">Сначала перепишите первую фразу оффера: уберите общие слова и сразу покажите конкретную выгоду для клиента.</div>
-                </div>
-
-                <button class="btn" onclick="goTo('view-input')" style="margin-top: 12px;">Сделать новый разбор</button>
-            </div>
-
-            <!-- ===================== 6. ERROR VIEW ===================== -->
-            <div id="view-error" class="view">
-                <div class="header">
-                    <div>
-                        <h1>Не удалось получить разбор</h1>
-                        <p>Что-то пошло не так при обработке запроса. Попробуйте еще раз.</p>
-                    </div>
-                    <div class="ai-badge ai-badge-static"><span>AI</span></div>
-                </div>
-
-                <div style="padding: 40px 0; text-align: center;">
-                    <div class="error-icon-wrap">
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                    </div>
-                </div>
-
-                <div class="card error-card">
-                    <div class="card-label">&#9888;&#65039; Что произошло</div>
-                    <div class="card-text">Не удалось завершить анализ. Это может быть связано с временной недоступностью сервиса.</div>
-                </div>
-
-                <button class="btn" onclick="goTo('view-loading')" style="margin-top: 20px;">Повторить</button>
-                <button class="btn-secondary" onclick="goTo('view-input')" style="margin-top: 10px;">На главную</button>
-            </div>
-
+  <div class="app-shell">
+    <div class="layer">
+      <header class="topbar">
+        <div class="logo"><span>Ai</span></div>
+        <div>
+          <div class="brand-title">ОфферДоктор</div>
+          <div class="brand-subtitle">Минимум действий — максимум результата</div>
         </div>
+      </header>
+
+      <section class="hero card">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Базовый аудит бесплатно • дальше вы выбираете глубину
+        </div>
+        <h1>Проверьте, где ваше предложение теряет продажи</h1>
+        <p class="hero-text">
+          Выберите формат, вставьте ссылку или текст и получите
+          <strong>базовый аудит бесплатно</strong>.
+          После результата можно перейти в
+          <strong>расширенный аудит</strong>
+          или выбрать
+          <strong>аудит + конкуренты</strong>.
+        </p>
+      </section>
+
+      <section class="section card">
+        <h2 class="section-title">Что будем проверять</h2>
+        <p class="section-subtitle">На старте только три понятных формата.</p>
+
+        <div class="scenario-grid" id="scenarioGrid">
+          <button class="scenario-card active" data-scenario="marketplace" type="button">
+            <div class="scenario-top">
+              <div class="scenario-icon" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 8.5L8.2 5H15.6L19 8.5V17.5A2 2 0 0 1 17 19.5H7A2 2 0 0 1 5 17.5V8.5Z" stroke="#E6F8FF" stroke-width="1.8" stroke-linejoin="round"/>
+                  <path d="M8 5L9.4 9H14.8L16 5" stroke="#E6F8FF" stroke-width="1.8" stroke-linejoin="round"/>
+                  <path d="M8.2 13.2C9.2 14 10.5 14.5 12 14.5C13.5 14.5 14.8 14 15.8 13.2" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="scenario-name">Карточка товара</div>
+            </div>
+            <div class="scenario-desc">Ozon, Wildberries, Яндекс Маркет. Для каждой площадки — отдельный сценарий анализа.</div>
+          </button>
+
+          <button class="scenario-card" data-scenario="avito" type="button">
+            <div class="scenario-top">
+              <div class="scenario-icon" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                  <circle cx="6" cy="7" r="3" fill="#24B6D1"/>
+                  <circle cx="17" cy="6" r="3" fill="#F55252"/>
+                  <circle cx="17" cy="17" r="3" fill="#FDBA2C"/>
+                  <circle cx="7" cy="17" r="3" fill="#4A7EFF"/>
+                </svg>
+              </div>
+              <div class="scenario-name">Avito</div>
+            </div>
+            <div class="scenario-desc">Анализ объявления: заголовок, первые строки, логика выгоды, доверие и отклик.</div>
+          </button>
+
+          <button class="scenario-card" data-scenario="landing" type="button">
+            <div class="scenario-top">
+              <div class="scenario-icon" aria-hidden="true">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="#E6F8FF" stroke-width="1.8"/>
+                  <path d="M3 9H21" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M8 13H11" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M14 13H17" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="scenario-name">Лендинг</div>
+            </div>
+            <div class="scenario-desc">Разбор первого экрана, оффера, CTA, структуры блоков и причин просадки конверсии.</div>
+          </button>
+        </div>
+
+        <div class="platform-pills show" id="platformPills">
+          <button class="pill active" type="button" data-platform="ozon">Ozon</button>
+          <button class="pill" type="button" data-platform="wb">Wildberries</button>
+          <button class="pill" type="button" data-platform="ym">Яндекс Маркет</button>
+        </div>
+      </section>
+
+      <section class="section card">
+        <h2 class="section-title">Передайте материал</h2>
+        <p class="section-subtitle" id="inputHint">
+          Для карточки товара можно вставить ссылку, текст или загрузить материалы для дальнейшего анализа.
+        </p>
+
+        <div class="mode-row">
+          <button class="mode-btn active" type="button" data-mode="url">Ссылка</button>
+          <button class="mode-btn" type="button" data-mode="text">Текст</button>
+          <button class="mode-btn" type="button" data-mode="file">Файл / изображение</button>
+        </div>
+
+        <div class="form-grid">
+          <input id="urlInput" type="url" placeholder="Вставьте ссылку" />
+          <textarea id="textInput" style="display:none;" placeholder="Вставьте текст для анализа"></textarea>
+          <div id="fileBox" class="file-box">
+            Здесь будет загрузка файла или изображения. В этой версии оставляем чистый интерфейс без отдельной логики загрузки.
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button class="btn btn-primary" id="analyzeBtn" type="button">Запустить базовый аудит</button>
+          <button class="btn btn-secondary" id="clearBtn" type="button">Очистить</button>
+        </div>
+
+        <div class="result-box" id="resultBox">
+          <div class="result-head">
+            <div>
+              <div class="result-badge">Базовый аудит • бесплатно</div>
+              <h3 class="result-title" id="resultTitle">Главная проблема</h3>
+              <p class="result-problem" id="resultProblem"></p>
+            </div>
+          </div>
+
+          <div class="issue-list" id="issueList"></div>
+
+          <div class="teaser" id="teaserBox"></div>
+        </div>
+      </section>
+
+      <section class="section card">
+        <h2 class="section-title">Выберите глубину анализа</h2>
+        <p class="section-subtitle" id="tariffHint">
+          Сначала пользователь получает базовый разбор, а дальше сам решает, нужно ли идти глубже.
+        </p>
+
+        <div class="tariff-grid">
+          <article class="tariff-card">
+            <div class="tariff-top">
+              <div class="tariff-name">Базовый аудит</div>
+              <div class="tariff-price">0 ₽</div>
+            </div>
+            <p class="tariff-desc">Быстрый и полезный разбор: главная проблема, слабые места и короткие рекомендации.</p>
+            <ul class="tariff-list">
+              <li>главная причина просадки</li>
+              <li>2–3 слабых места</li>
+              <li>понятный следующий шаг</li>
+            </ul>
+            <button class="btn btn-secondary" type="button">Активен по умолчанию</button>
+          </article>
+
+          <article class="tariff-card premium" id="paidCard">
+            <div class="tariff-top">
+              <div class="tariff-name">Расширенный аудит</div>
+              <div class="tariff-price" id="paidPrice">249 ₽</div>
+            </div>
+            <p class="tariff-desc" id="paidDesc">Полный разбор карточки товара, текста, выгод, структуры и следующих шагов для усиления.</p>
+            <ul class="tariff-list" id="paidList">
+              <li>глубокий разбор выбранного формата</li>
+              <li>улучшенные формулировки</li>
+              <li>приоритетный список правок</li>
+            </ul>
+            <button class="btn btn-primary" type="button">Выбрать расширенный аудит</button>
+          </article>
+
+          <article class="tariff-card hidden" id="competitorCard">
+            <div class="tariff-top">
+              <div class="tariff-name">Аудит + конкуренты</div>
+              <div class="tariff-price" id="competitorPrice">299 ₽</div>
+            </div>
+            <p class="tariff-desc" id="competitorDesc">Старший тариф для карточек товара: полный аудит плюс сравнение с конкурентами.</p>
+            <ul class="tariff-list">
+              <li>всё из расширенного аудита</li>
+              <li>сравнение с конкурентами</li>
+              <li>что у них сильнее и что стоит перенять</li>
+            </ul>
+            <button class="btn btn-primary" type="button">Выбрать аудит + конкуренты</button>
+            <div class="tariff-muted">Для Avito и лендингов этот слой можно добавить позже отдельно.</div>
+          </article>
+        </div>
+
+        <div class="start-note">
+          В боевой версии здесь будет переход к оплате и вызов реального AI-сценария.
+        </div>
+      </section>
     </div>
+  </div>
 
-    <script>
-        function goTo(id) {
-            if (id === 'view-preview') {
-                var err = validateInput();
-                if (err) {
-                    var el = document.getElementById('input-error');
-                    el.textContent = err;
-                    el.classList.add('visible');
-                    return;
-                }
-                document.getElementById('input-error').classList.remove('visible');
-            }
+  <script>
+    const state = {
+      scenario: "marketplace",
+      platform: "ozon",
+      mode: "url"
+    };
 
-            document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
-            document.getElementById(id).classList.add('active');
+    const scenarioCards = document.querySelectorAll(".scenario-card");
+    const platformPills = document.getElementById("platformPills");
+    const pillButtons = platformPills.querySelectorAll(".pill");
+    const modeButtons = document.querySelectorAll(".mode-btn");
 
-            if (id === 'view-loading') {
-                setTimeout(function() {
-                    if (Math.random() > 0.1) {
-                        goTo('view-result');
-                    } else {
-                        goTo('view-error');
-                    }
-                }, 3000);
-            }
+    const inputHint = document.getElementById("inputHint");
+    const urlInput = document.getElementById("urlInput");
+    const textInput = document.getElementById("textInput");
+    const fileBox = document.getElementById("fileBox");
+
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const resultBox = document.getElementById("resultBox");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultProblem = document.getElementById("resultProblem");
+    const issueList = document.getElementById("issueList");
+    const teaserBox = document.getElementById("teaserBox");
+
+    const paidPrice = document.getElementById("paidPrice");
+    const paidDesc = document.getElementById("paidDesc");
+    const paidList = document.getElementById("paidList");
+    const competitorCard = document.getElementById("competitorCard");
+
+    const scenarioData = {
+      marketplace: {
+        price: "249 ₽",
+        desc: "Полный разбор карточки товара, текста, выгод, характеристик и следующего шага для улучшения.",
+        hint: "Для карточки товара можно вставить ссылку, текст или загрузить материалы для дальнейшего анализа.",
+        paidItems: [
+          "анализ названия, описания и выгод",
+          "что мешает карточке продавать лучше",
+          "приоритетный список правок"
+        ],
+        demo: {
+          title: "Карточка недобирает из-за слабой подачи выгоды",
+          problem: "Покупатель видит товар, но не получает ясного ответа, чем он лучше и почему его стоит выбрать именно сейчас.",
+          issues: [
+            { tone: "bad", title: "Название не добирает смысл", text: "Карточка не раскрывает главный сценарий использования и не помогает быстрее понять ценность товара." },
+            { tone: "warn", title: "В тексте мало конкретной пользы", text: "Описание перечисляет свойства, но не превращает их в понятные выгоды для покупателя." },
+            { tone: "ok", title: "Карточку можно быстро усилить", text: "Базовая структура уже есть, значит карточку можно заметно улучшить без полной пересборки." }
+          ],
+          teaser: "В расширенном аудите пользователь увидит, что переписать первым, какие блоки усилить и как сделать карточку более убедительной."
         }
-
-        function validateInput() {
-            var product = document.getElementById('inp-product').value.trim();
-            var audience = document.getElementById('inp-audience').value.trim();
-            var link = document.getElementById('inp-link').value.trim();
-            var text = document.getElementById('inp-text').value.trim();
-
-            if (!product) return 'Укажите, что вы продаете';
-            if (!audience) return 'Укажите, для кого ваше предложение';
-            if (!link && !text) return 'Добавьте ссылку на сайт / карточку товара или вставьте текст вашего предложения';
-            return '';
+      },
+      avito: {
+        price: "149 ₽",
+        desc: "Полный разбор объявления Avito: заголовок, первые строки, выгоды, доверие и логика отклика.",
+        hint: "Для Avito можно вставить ссылку на объявление или текст объявления для анализа.",
+        paidItems: [
+          "разбор заголовка и первых строк",
+          "где падает доверие и интерес",
+          "какие формулировки усилить"
+        ],
+        demo: {
+          title: "Объявление не цепляет с первых строк",
+          problem: "Потенциальный клиент не получает быстрый и убедительный ответ, почему стоит открыть именно это объявление, а не соседнее в выдаче.",
+          issues: [
+            { tone: "bad", title: "Заголовок слишком обычный", text: "В нем мало пользы, а акцент на ценности для клиента размыт." },
+            { tone: "warn", title: "Первые строки не продают", text: "Текст не выносит ключевое преимущество наверх и теряет внимание в первые секунды." },
+            { tone: "ok", title: "Логику можно быстро усилить", text: "Если переработать начало объявления и подачу выгоды, отклик может вырасти без переписывания всего текста." }
+          ],
+          teaser: "В расширенном аудите пользователь получит усиленный вариант текста, приоритет правок и конкретные рекомендации по тому, что менять первым."
         }
-
-        function selectPayment(el) {
-            document.querySelectorAll('.payment-method').forEach(function(m) { m.classList.remove('selected'); });
-            el.classList.add('selected');
+      },
+      landing: {
+        price: "199 ₽",
+        desc: "Полный разбор лендинга: первый экран, оффер, CTA, структура блоков, доверие и причины потери конверсии.",
+        hint: "Для лендинга можно вставить ссылку на страницу или текстовую структуру / копию лендинга.",
+        paidItems: [
+          "первый экран, оффер и CTA",
+          "логика блоков и доверия",
+          "главные точки просадки конверсии"
+        ],
+        demo: {
+          title: "Лендинг не доносит ценность достаточно быстро",
+          problem: "Первый экран не дает ясного и сильного обещания результата, поэтому посетитель не понимает, почему ему стоит идти дальше по странице.",
+          issues: [
+            { tone: "bad", title: "Оффер слишком общий", text: "Польза сформулирована размыто, и посетителю сложно понять, чем предложение отличается от похожих." },
+            { tone: "warn", title: "CTA не поддержан логикой страницы", text: "Призыв к действию есть, но путь к нему недостаточно усилен аргументами и доверием." },
+            { tone: "ok", title: "Структуру можно усилить без полного редизайна", text: "За счет нового первого экрана и пары правок по блокам лендинг уже станет сильнее." }
+          ],
+          teaser: "В расширенном аудите пользователь увидит, какие блоки режут конверсию, как переписать оффер и какие формулировки стоит вынести на первый экран."
         }
-    </script>
+      }
+    };
+
+    function renderScenario() {
+      scenarioCards.forEach((card) => {
+        card.classList.toggle("active", card.dataset.scenario === state.scenario);
+      });
+
+      if (state.scenario === "marketplace") {
+        platformPills.classList.add("show");
+        competitorCard.classList.remove("hidden");
+      } else {
+        platformPills.classList.remove("show");
+        competitorCard.classList.add("hidden");
+      }
+
+      const data = scenarioData[state.scenario];
+      inputHint.textContent = data.hint;
+      paidPrice.textContent = data.price;
+      paidDesc.textContent = data.desc;
+      paidList.innerHTML = data.paidItems.map(item => `<li>${item}</li>`).join("");
+
+      resultBox.classList.remove("show");
+      clearInputs();
+      updateMode();
+    }
+
+    function updateMode() {
+      modeButtons.forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === state.mode);
+      });
+
+      urlInput.style.display = state.mode === "url" ? "block" : "none";
+      textInput.style.display = state.mode === "text" ? "block" : "none";
+      fileBox.classList.toggle("show", state.mode === "file");
+
+      if (state.mode === "url") {
+        if (state.scenario === "marketplace") {
+          urlInput.placeholder = "Вставьте ссылку на карточку товара";
+        } else if (state.scenario === "avito") {
+          urlInput.placeholder = "Вставьте ссылку на объявление Avito";
+        } else {
+          urlInput.placeholder = "Вставьте ссылку на лендинг";
+        }
+      }
+
+      if (state.mode === "text") {
+        if (state.scenario === "marketplace") {
+          textInput.placeholder = "Вставьте текст карточки товара для анализа";
+        } else if (state.scenario === "avito") {
+          textInput.placeholder = "Вставьте текст объявления Avito";
+        } else {
+          textInput.placeholder = "Вставьте текст или структуру лендинга";
+        }
+      }
+    }
+
+    function clearInputs() {
+      urlInput.value = "";
+      textInput.value = "";
+    }
+
+    function renderDemoResult() {
+      const data = scenarioData[state.scenario].demo;
+      resultTitle.textContent = data.title;
+      resultProblem.textContent = data.problem;
+      teaserBox.textContent = data.teaser;
+
+      issueList.innerHTML = data.issues.map((issue) => `
+        <li class="issue-item">
+          <span class="issue-dot ${issue.tone}"></span>
+          <div>
+            <strong>${issue.title}</strong>
+            <span>${issue.text}</span>
+          </div>
+        </li>
+      `).join("");
+
+      resultBox.classList.add("show");
+      resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    scenarioCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        state.scenario = card.dataset.scenario;
+        if (state.scenario !== "marketplace") {
+          state.platform = "";
+        } else if (!state.platform) {
+          state.platform = "ozon";
+        }
+        renderScenario();
+      });
+    });
+
+    pillButtons.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        pillButtons.forEach((item) => item.classList.remove("active"));
+        pill.classList.add("active");
+        state.platform = pill.dataset.platform;
+      });
+    });
+
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        state.mode = button.dataset.mode;
+        updateMode();
+      });
+    });
+
+    analyzeBtn.addEventListener("click", () => {
+      renderDemoResult();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      clearInputs();
+      resultBox.classList.remove("show");
+    });
+
+    renderScenario();
+  </script>
 </body>
 </html>

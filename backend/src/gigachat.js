@@ -21,10 +21,10 @@ var tokenCache = {
  */
 function getGigachatToken() {
     var authKey = process.env.GIGACHAT_AUTH_KEY;
-    var scope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_B2B';
+    var scope = process.env.GIGACHAT_SCOPE || 'GIGACHAT_API_PERS';
 
-    if (!authKey) {
-        return Promise.reject(new Error('GIGACHAT_AUTH_KEY не настроен'));
+    if (!authKey || authKey.trim() === '' || authKey === 'your_auth_key_here') {
+        return Promise.reject(new Error('PROVIDER_NOT_CONFIGURED: GIGACHAT_AUTH_KEY is missing or empty'));
     }
 
     var authHeader = 'Basic ' + Buffer.from(authKey).toString('base64');
@@ -232,7 +232,7 @@ function normalizePreviewResponse(data) {
     return {
         previewProblem: data.previewProblem || data.problem || 'Не удалось определить проблему',
         previewHint: data.previewHint || data.hint || 'Не удалось сформировать совет',
-        cta: data.cta || 'Получить полный разбор за 299 ₽'
+        cta: data.cta || 'Получить полный разбор за 149 ₽'
     };
 }
 
