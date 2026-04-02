@@ -1,22 +1,22 @@
 /**
  * ОфферДоктор Backend
  * Express-сервер для AI-разбора УТП через GigaChat
+ * Поддерживает DEMO_MODE для демонстрации без credentials
  */
 
-// Загрузка переменных окружения
 require('dotenv').config();
 
 var express = require('express');
 var cors = require('cors');
 var prompts = require('./prompts');
 var gigachat = require('./gigachat');
+var demoMocks = require('./demoMocks');
 
 var app = express();
 var PORT = process.env.PORT || 3000;
+var DEMO_MODE = process.env.DEMO_MODE === 'true';
 
 // ===== Middleware =====
-
-// CORS: GitHub Pages + localhost для разработки
 var allowedOrigins = [
     'https://v3154930-cell.github.io',
     'http://localhost:3000',
@@ -24,74 +24,105 @@ var allowedOrigins = [
     'http://127.0.0.1:5500',
     'http://localhost:8080'
 ];
-var corsOptions = {
+
+app.use(cors({
     origin: function (origin, callback) {
-        // Разрешаем запросы без origin (curl, Postman) и из списка
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
-            callback(null, true); //временно разрешаем все для отладки
+            callback(null, true);
         }
     },
-    methods: ['POST', 'OPTIONS'],
+    methods: ['POST', 'OPTIONS', 'GET'],
     allowedHeaders: ['Content-Type'],
     credentials: false
-};
-
-app.use(cors(corsOptions));
+}));
 app.use(express.json({ limit: '1mb' }));
 
 // ===== Health check =====
 app.get('/', function (req, res) {
-    res.json({ status: 'ok', service: 'ОфферДоктор API' });
+    res.json({
+        status: 'ok',
+        service: 'ОфферДоктор API',
+        demo_mode: DEMO_MODE
+    });
 });
 
 app.get('/health', function (req, res) {
-    res.json({ status: 'ok' });
+    res.json({ status: 'ok', demo_mode: DEMO_MODE });
 });
 
 // ===== POST /api/analyze =====
 app.post('/api/analyze', function (req, res) {
     var data = req.body;
 
-    // ===== Валидация входных данных =====
+    // ===== Валидация =====
     var errors = [];
 
     if (typeof data.product !== 'string' || data.product.trim().length === 0) {
-        errors.push('product должен быть непустой строкой');
+        errors.push('product: укажите, что вы продаете');
     }
     if (typeof data.audience !== 'string' || data.audience.trim().length === 0) {
-        errors.push('audience должен быть непустой строкой');
+        errors.push('audience: укажите, для кого предложение');
     }
 
-    // link или text — хотя бы один должен быть заполнен
     var hasLink = typeof data.link === 'string' && data.link.trim().length > 0;
     var hasText = typeof data.text === 'string' && data.text.trim().length > 0;
     if (!hasLink && !hasText) {
-        errors.push('нужен хотя бы один из: link или text');
+        errors.push('link или text: добавьте хотя бы одно из полей');
     }
 
     if (data.mode !== 'preview' && data.mode !== 'full') {
-        errors.push('mode должен быть "preview" или "full"');
+        errors.push('mode: должен быть "preview" или "full"');
     }
 
     if (errors.length > 0) {
         return res.status(400).json({
             error: 'validation_error',
-            message: 'Ошибка валидации входных данных',
+            message: 'Ошибка валидации: ' + errors.join('; '),
             details: errors
         });
     }
 
-    // Нормализация данных для промтов
+    // ===== Нормализация =====
     var normalizedData = {
         product: data.product.trim(),
         audience: data.audience.trim(),
         link: (data.link || '').trim(),
         text: (data.text || '').trim(),
         pain: (data.pain || '').trim(),
-        mode: data.mode
+        mode: data.mode,
+        scenario: data.scenario || 'marketplace',
+        platform: data.platform || '',
+        tariff: data.tariff || 'main'
     };
+
+    console.log('[' + normalizedData.mode + '] Запрос:', normalizedData.scenario, '/', normalizedData.platform || 'n/a');
+
+    // ===== DEMO MODE =====
+    if (DEMO_MODE) {
+        console.log('[DEMO] Возвращаем mock-результат');
+        var mockResult = demoMocks.getMockResponse(
+            normalizedData.scenario,
+            normalizedData.platform,
+            normalizedData.mode,
+            normalizedData.tariff
+        );
+
+        // Simulate slight delay for realism
+        return setTimeout(function () {
+            res.json(mockResult);
+        }, 800);
+    }
+
+    // ===== Проверка credentials =====
+    var authKey = process.env.GIGACHAT_AUTH_KEY;
+    if (!authKey || authKey.trim() === '' || authKey === 'your_auth_key_here') {
+        return res.status(503).json({
+            error: 'provider_not_configured',
+            message: 'GigaChat credentials are not configured. Set GIGACHAT_AUTH_KEY in .env or enable DEMO_MODE=true for testing.'
+        });
+    }
 
     // ===== Построение промта =====
     var prompt;
@@ -101,25 +132,21 @@ app.post('/api/analyze', function (req, res) {
         prompt = prompts.buildFullPrompt(normalizedData);
     }
 
-    console.log('[' + normalizedData.mode + '] Запрос к GigaChat для:', normalizedData.product);
-
     // ===== Запрос к GigaChat =====
     gigachat.requestGigachat(prompt)
         .then(function (responseText) {
             console.log('[' + normalizedData.mode + '] Ответ от GigaChat получен');
 
-            // ===== Парсинг JSON из ответа =====
             var parsed = gigachat.safeParseJsonFromModel(responseText);
 
             if (!parsed) {
-                console.error('[' + normalizedData.mode + '] Не удалось распарсить JSON из ответа:', responseText.substring(0, 200));
+                console.error('[' + normalizedData.mode + '] Не удалось распарсить JSON:', responseText.substring(0, 200));
                 return res.status(502).json({
                     error: 'invalid_model_response',
                     message: 'AI вернул ответ в невалидном формате. Попробуйте снова.'
                 });
             }
 
-            // ===== Нормализация ответа =====
             var result;
             if (normalizedData.mode === 'preview') {
                 result = gigachat.normalizePreviewResponse(parsed);
@@ -127,13 +154,12 @@ app.post('/api/analyze', function (req, res) {
                 result = gigachat.normalizeFullResponse(parsed);
             }
 
-            console.log('[' + normalizedData.mode + '] Результат:', JSON.stringify(result).substring(0, 100) + '...');
+            console.log('[' + normalizedData.mode + '] Результат отправлен');
             res.json(result);
         })
         .catch(function (error) {
             console.error('[' + normalizedData.mode + '] Ошибка:', error.message);
 
-            // Провайдер не сконфигурирован — возвращаем 503
             if (error.message.indexOf('PROVIDER_NOT_CONFIGURED') !== -1) {
                 return res.status(503).json({
                     error: 'provider_not_configured',
@@ -141,7 +167,6 @@ app.post('/api/analyze', function (req, res) {
                 });
             }
 
-            // Определяем тип ошибки
             var statusCode = 500;
             var errorMessage = 'Внутренняя ошибка сервера';
 
@@ -160,12 +185,12 @@ app.post('/api/analyze', function (req, res) {
         });
 });
 
-// ===== Обработка 404 =====
+// ===== 404 =====
 app.use(function (req, res) {
     res.status(404).json({ error: 'not_found', message: 'Endpoint не найден' });
 });
 
-// ===== Обработка ошибок =====
+// ===== Error handler =====
 app.use(function (err, req, res, next) {
     console.error('Unhandled error:', err);
     res.status(500).json({
@@ -174,16 +199,20 @@ app.use(function (err, req, res, next) {
     });
 });
 
-// ===== Запуск сервера =====
+// ===== Start =====
 app.listen(PORT, function () {
     var authKey = process.env.GIGACHAT_AUTH_KEY;
-    if (!authKey || authKey.trim() === '' || authKey === 'your_auth_key_here') {
-        console.warn('[WARN] GIGACHAT_AUTH_KEY is not configured. API calls will return 503.');
-        console.warn('[WARN] Create backend/.env with your GigaChat credentials to enable AI.');
+    if (DEMO_MODE) {
+        console.log('[DEMO] Режим демо активен — используются mock-данные');
+    } else if (!authKey || authKey.trim() === '' || authKey === 'your_auth_key_here') {
+        console.warn('[WARN] GIGACHAT_AUTH_KEY is not configured.');
+        console.warn('[WARN] Set DEMO_MODE=true for testing without credentials.');
+        console.warn('[WARN] Or create backend/.env with your GigaChat credentials.');
     }
     console.log('ОфферДоктор API запущен на порту ' + PORT);
-    console.log('Health check: http://localhost:' + PORT + '/health');
-    console.log('POST /api/analyze: http://localhost:' + PORT + '/api/analyze');
+    console.log('Demo mode: ' + (DEMO_MODE ? 'ON' : 'OFF'));
+    console.log('Health: http://localhost:' + PORT + '/health');
+    console.log('Analyze: POST http://localhost:' + PORT + '/api/analyze');
 });
 
 module.exports = app;

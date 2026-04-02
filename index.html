@@ -2,12 +2,9 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ОфферДоктор — mini app</title>
-  <meta
-    name="description"
-    content="ОфферДоктор — mini app для аудита карточек товара, объявлений Avito и лендингов."
-  />
+  <meta name="description" content="ОфферДоктор — AI-аудит карточек товара, объявлений Avito и лендингов" />
   <style>
     :root {
       --bg-1: #0b1624;
@@ -15,7 +12,6 @@
       --bg-3: #14304a;
       --surface: rgba(255,255,255,0.08);
       --surface-2: rgba(255,255,255,0.12);
-      --surface-3: rgba(255,255,255,0.06);
       --line: rgba(154, 214, 255, 0.14);
       --text: #f2fbff;
       --muted: rgba(232, 246, 255, 0.72);
@@ -35,9 +31,7 @@
       --max: 560px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -60,8 +54,7 @@
       overflow-x: hidden;
     }
 
-    .app-shell::before,
-    .app-shell::after {
+    .app-shell::before, .app-shell::after {
       content: "";
       position: absolute;
       border-radius: 999px;
@@ -72,26 +65,29 @@
     }
 
     .app-shell::before {
-      width: 220px;
-      height: 220px;
-      top: 44px;
-      right: -70px;
+      width: 220px; height: 220px;
+      top: 44px; right: -70px;
       background: radial-gradient(circle, rgba(115, 237, 255, 0.42), transparent 70%);
     }
 
     .app-shell::after {
-      width: 240px;
-      height: 240px;
-      left: -90px;
-      bottom: 120px;
+      width: 240px; height: 240px;
+      left: -90px; bottom: 120px;
       background: radial-gradient(circle, rgba(79, 117, 255, 0.32), transparent 70%);
     }
 
-    .layer {
-      position: relative;
-      z-index: 1;
+    .layer { position: relative; z-index: 1; }
+
+    /* ===== SCREENS ===== */
+    .screen { display: none; animation: screenIn 0.35s ease-out; }
+    .screen.active { display: block; }
+
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
+    /* ===== TOPBAR ===== */
     .topbar {
       display: flex;
       align-items: center;
@@ -101,25 +97,20 @@
 
     .logo {
       position: relative;
-      width: 50px;
-      height: 50px;
+      width: 50px; height: 50px;
       flex: 0 0 50px;
-      display: grid;
-      place-items: center;
+      display: grid; place-items: center;
       border-radius: 16px;
       background:
         radial-gradient(circle at 50% 20%, rgba(255,255,255,0.92), rgba(255,255,255,0.08) 44%, transparent 62%),
         linear-gradient(145deg, rgba(30, 196, 217, 1), rgba(79, 117, 255, 1));
-      box-shadow:
-        0 16px 36px rgba(79, 117, 255, 0.26),
-        inset 0 1px 0 rgba(255,255,255,0.44);
+      box-shadow: 0 16px 36px rgba(79, 117, 255, 0.26), inset 0 1px 0 rgba(255,255,255,0.44);
       overflow: hidden;
     }
 
     .logo::before {
       content: "";
-      position: absolute;
-      inset: 8px;
+      position: absolute; inset: 8px;
       border: 2px solid rgba(255,255,255,0.76);
       border-radius: 12px;
     }
@@ -127,38 +118,35 @@
     .logo::after {
       content: "";
       position: absolute;
-      width: 78%;
-      height: 170%;
-      top: -34%;
-      left: -32%;
+      width: 78%; height: 170%;
+      top: -34%; left: -32%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.58), transparent);
       transform: skewX(-18deg);
       animation: shineMove 5s linear infinite;
     }
 
     .logo span {
-      position: relative;
-      z-index: 1;
-      font-size: 20px;
-      font-weight: 900;
-      color: #fff;
-      text-transform: uppercase;
+      position: relative; z-index: 1;
+      font-size: 20px; font-weight: 900;
+      color: #fff; text-transform: uppercase;
     }
 
-    .brand-title {
-      font-size: 22px;
-      line-height: 1.08;
-      font-weight: 900;
-      letter-spacing: -0.03em;
+    .brand-title { font-size: 22px; line-height: 1.08; font-weight: 900; letter-spacing: -0.03em; }
+    .brand-subtitle { margin-top: 3px; color: var(--muted); font-size: 13px; line-height: 1.4; }
+
+    /* ===== BACK BUTTON ===== */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: none; border: none; color: var(--cyan-2);
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      padding: 6px 0; margin-bottom: 12px;
     }
 
-    .brand-subtitle {
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.4;
-    }
+    .back-btn:hover { color: #fff; }
 
+    .back-btn svg { width: 16px; height: 16px; }
+
+    /* ===== CARD ===== */
     .card {
       background: rgba(255,255,255,0.08);
       border: 1px solid var(--line);
@@ -167,43 +155,29 @@
       border-radius: var(--radius-xl);
     }
 
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 22px;
-      margin-bottom: 16px;
-    }
+    /* ===== HERO ===== */
+    .hero { position: relative; overflow: hidden; padding: 22px; margin-bottom: 16px; }
 
     .hero::before {
       content: "";
       position: absolute;
-      width: 230px;
-      height: 230px;
-      right: -84px;
-      top: -78px;
+      width: 230px; height: 230px;
+      right: -84px; top: -78px;
       background: radial-gradient(circle, rgba(115, 237, 255, 0.18), transparent 68%);
       filter: blur(10px);
     }
 
     .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 13px;
-      border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 9px 13px; border-radius: 999px;
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(154, 214, 255, 0.12);
-      color: #d9f7ff;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      margin-bottom: 16px;
+      color: #d9f7ff; font-size: 12px; font-weight: 800;
+      letter-spacing: 0.02em; margin-bottom: 16px;
     }
 
     .hero-badge-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
+      width: 9px; height: 9px; border-radius: 999px;
       background: linear-gradient(135deg, var(--cyan-2), var(--blue));
       box-shadow: 0 0 0 6px rgba(115, 237, 255, 0.12);
     }
@@ -211,57 +185,27 @@
     h1 {
       margin: 0;
       font-size: clamp(30px, 8vw, 44px);
-      line-height: 0.98;
-      letter-spacing: -0.04em;
-      font-weight: 900;
+      line-height: 0.98; letter-spacing: -0.04em; font-weight: 900;
     }
 
-    .hero-text {
-      margin: 14px 0 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.72;
-    }
+    .hero-text { margin: 14px 0 0; color: var(--muted); font-size: 15px; line-height: 1.72; }
+    .hero-text strong { color: #fff; }
 
-    .hero-text strong {
-      color: #fff;
-    }
+    /* ===== SECTION ===== */
+    .section { padding: 20px; margin-bottom: 16px; }
 
-    .section {
-      padding: 20px;
-      margin-bottom: 16px;
-    }
+    .section-title { margin: 0 0 8px; font-size: 20px; line-height: 1.15; font-weight: 800; letter-spacing: -0.03em; }
+    .section-subtitle { margin: 0 0 16px; color: var(--muted); font-size: 14px; line-height: 1.65; }
 
-    .section-title {
-      margin: 0 0 8px;
-      font-size: 20px;
-      line-height: 1.15;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .section-subtitle {
-      margin: 0 0 16px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .scenario-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
+    /* ===== SCENARIO CARDS ===== */
+    .scenario-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
 
     .scenario-card {
-      width: 100%;
-      text-align: left;
+      width: 100%; text-align: left;
       border: 1px solid rgba(154, 214, 255, 0.12);
       background: rgba(255,255,255,0.06);
-      border-radius: 22px;
-      padding: 16px;
-      color: inherit;
-      cursor: pointer;
+      border-radius: 22px; padding: 16px;
+      color: inherit; cursor: pointer;
       transition: 0.2s ease;
     }
 
@@ -271,173 +215,120 @@
       box-shadow: 0 14px 34px rgba(36, 111, 201, 0.18);
     }
 
-    .scenario-card:hover {
-      transform: translateY(-1px);
-    }
+    .scenario-card:hover { transform: translateY(-1px); }
 
-    .scenario-top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
+    .scenario-top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 
     .scenario-icon {
-      width: 52px;
-      height: 52px;
-      flex: 0 0 52px;
-      border-radius: 16px;
-      display: grid;
-      place-items: center;
+      width: 52px; height: 52px; flex: 0 0 52px;
+      border-radius: 16px; display: grid; place-items: center;
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(154, 214, 255, 0.12);
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
     }
 
-    .scenario-name {
-      font-size: 17px;
-      font-weight: 800;
-      line-height: 1.2;
-    }
+    .scenario-name { font-size: 17px; font-weight: 800; line-height: 1.2; }
+    .scenario-desc { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-    .scenario-desc {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .platform-pills {
-      display: none;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .platform-pills.show {
-      display: flex;
-    }
+    /* ===== PLATFORM PILLS ===== */
+    .platform-pills { display: none; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .platform-pills.show { display: flex; }
 
     .pill {
-      padding: 10px 14px;
-      border-radius: 999px;
+      padding: 10px 14px; border-radius: 999px;
       border: 1px solid rgba(154, 214, 255, 0.12);
       background: rgba(255,255,255,0.06);
-      color: #d8f5ff;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.2s ease;
+      color: #d8f5ff; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: 0.2s ease;
     }
 
     .pill.active {
       background: linear-gradient(135deg, rgba(30, 196, 217, 0.22), rgba(79, 117, 255, 0.22));
-      border-color: rgba(124, 229, 255, 0.26);
-      color: #fff;
+      border-color: rgba(124, 229, 255, 0.26); color: #fff;
     }
 
+    /* ===== MODE TABS ===== */
     .mode-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 14px;
     }
 
     .mode-btn {
       border: 1px solid rgba(154, 214, 255, 0.12);
       background: rgba(255,255,255,0.06);
-      color: #d8f5ff;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 16px;
-      padding: 12px 10px;
-      cursor: pointer;
-      transition: 0.2s ease;
+      color: #d8f5ff; font-size: 13px; font-weight: 700;
+      border-radius: 16px; padding: 12px 10px;
+      cursor: pointer; transition: 0.2s ease;
     }
 
     .mode-btn.active {
       background: linear-gradient(135deg, rgba(30, 196, 217, 0.22), rgba(79, 117, 255, 0.22));
-      color: #fff;
-      border-color: rgba(124, 229, 255, 0.26);
+      color: #fff; border-color: rgba(124, 229, 255, 0.26);
     }
 
-    .form-grid {
-      display: grid;
-      gap: 12px;
+    /* ===== FORM ===== */
+    .form-grid { display: grid; gap: 12px; }
+
+    .form-group { display: grid; gap: 6px; }
+    .form-label {
+      font-size: 13px; font-weight: 700; color: var(--muted);
+      padding-left: 4px;
     }
 
-    textarea,
-    input[type="text"],
-    input[type="url"] {
+    .form-label .required { color: var(--danger); margin-left: 2px; }
+    .form-label .optional { color: var(--muted-2); font-weight: 500; margin-left: 4px; font-size: 12px; }
+
+    textarea, input[type="text"], input[type="url"] {
       width: 100%;
       border: 1px solid rgba(154, 214, 255, 0.14);
       background: rgba(255,255,255,0.08);
-      color: #fff;
-      border-radius: 18px;
-      padding: 16px;
-      font-family: inherit;
-      font-size: 14px;
-      line-height: 1.6;
-      outline: none;
-      transition: 0.2s ease;
+      color: #fff; border-radius: 18px; padding: 14px 16px;
+      font-family: inherit; font-size: 14px; line-height: 1.6;
+      outline: none; transition: 0.2s ease;
     }
 
-    textarea::placeholder,
-    input::placeholder {
-      color: rgba(225, 241, 255, 0.5);
-    }
+    textarea::placeholder, input::placeholder { color: rgba(225, 241, 255, 0.45); }
 
-    textarea:focus,
-    input:focus {
+    textarea:focus, input:focus {
       border-color: rgba(124, 229, 255, 0.36);
       box-shadow: 0 0 0 5px rgba(84, 205, 255, 0.08);
     }
 
-    textarea {
-      min-height: 124px;
-      resize: vertical;
+    textarea { min-height: 100px; resize: vertical; }
+
+    .form-error {
+      display: none;
+      padding: 10px 14px; border-radius: 14px;
+      background: rgba(255, 143, 143, 0.1);
+      border: 1px solid rgba(255, 143, 143, 0.2);
+      color: var(--danger); font-size: 13px; line-height: 1.5;
     }
 
+    .form-error.visible { display: block; animation: screenIn 0.25s ease-out; }
+
+    /* ===== FILE BOX ===== */
     .file-box {
-      display: none;
-      padding: 18px;
-      border-radius: 18px;
+      display: none; padding: 18px; border-radius: 18px;
       border: 1px dashed rgba(154, 214, 255, 0.22);
       background: rgba(255,255,255,0.04);
-      color: var(--muted);
-      text-align: center;
-      font-size: 14px;
-      line-height: 1.6;
+      color: var(--muted); text-align: center;
+      font-size: 14px; line-height: 1.6;
     }
+    .file-box.show { display: block; }
 
-    .file-box.show {
-      display: block;
-    }
-
-    .action-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
+    /* ===== BUTTONS ===== */
+    .action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border: 0;
-      cursor: pointer;
-      border-radius: 18px;
-      padding: 15px 18px;
-      font-size: 15px;
-      font-weight: 800;
-      transition: 0.2s ease;
-      text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 10px; border: 0; cursor: pointer;
+      border-radius: 18px; padding: 15px 18px;
+      font-size: 15px; font-weight: 800;
+      transition: 0.2s ease; text-decoration: none;
     }
 
     .btn-primary {
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
       color: #fff;
       background: linear-gradient(135deg, var(--cyan), var(--blue));
       box-shadow: 0 16px 34px rgba(62, 109, 255, 0.28);
@@ -447,17 +338,16 @@
     .btn-primary::after {
       content: "";
       position: absolute;
-      width: 60%;
-      height: 160%;
-      top: -35%;
-      left: -70%;
+      width: 60%; height: 160%; top: -35%; left: -70%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.52), transparent);
       transform: skewX(-18deg);
       animation: shineMove 4.4s linear infinite;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-primary:disabled {
+      opacity: 0.55; cursor: not-allowed; transform: none;
     }
 
     .btn-secondary {
@@ -467,126 +357,49 @@
       flex: 1 1 160px;
     }
 
-    .result-box {
-      display: none;
-      margin-top: 18px;
-      padding: 18px;
+    .btn-full { width: 100%; }
+
+    /* ===== PREVIEW RESULT ===== */
+    .preview-card {
+      padding: 18px; margin-bottom: 14px;
       border-radius: 22px;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(154, 214, 255, 0.1);
     }
 
-    .result-box.show {
-      display: block;
-    }
-
-    .result-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-
-    .result-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
+    .preview-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 12px; border-radius: 999px;
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(154, 214, 255, 0.12);
-      font-size: 12px;
-      font-weight: 800;
-      color: #e7faff;
+      font-size: 11px; font-weight: 800; color: #e7faff;
+      margin-bottom: 12px;
     }
 
-    .result-title {
-      margin: 0 0 8px;
-      font-size: 18px;
-      font-weight: 800;
-      line-height: 1.25;
+    .preview-label {
+      font-size: 12px; font-weight: 700; color: var(--muted-2);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
     }
 
-    .result-problem {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.72;
-    }
+    .preview-title { font-size: 16px; font-weight: 800; line-height: 1.3; margin-bottom: 8px; }
+    .preview-text { color: var(--muted); font-size: 14px; line-height: 1.7; }
 
-    .issue-list {
-      margin: 14px 0 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 10px;
-    }
+    .preview-card.warn { border-left: 3px solid var(--warn); }
+    .preview-card.ok { border-left: 3px solid var(--ok); }
 
-    .issue-item {
-      display: flex;
-      gap: 10px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.05);
-    }
-
-    .issue-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      margin-top: 8px;
-      flex: 0 0 10px;
-    }
-
-    .issue-dot.warn {
-      background: var(--warn);
-      box-shadow: 0 0 0 6px rgba(255, 211, 107, 0.12);
-    }
-
-    .issue-dot.bad {
-      background: var(--danger);
-      box-shadow: 0 0 0 6px rgba(255, 143, 143, 0.12);
-    }
-
-    .issue-dot.ok {
-      background: var(--ok);
-      box-shadow: 0 0 0 6px rgba(94, 227, 181, 0.12);
-    }
-
-    .issue-item strong {
-      display: block;
-      margin-bottom: 4px;
-      font-size: 14px;
-      line-height: 1.35;
-    }
-
-    .issue-item span {
-      display: block;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .teaser {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(30, 196, 217, 0.12), rgba(79, 117, 255, 0.12));
+    .teaser-block {
+      padding: 14px; border-radius: 18px;
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.1), rgba(79, 117, 255, 0.1));
       border: 1px solid rgba(124, 229, 255, 0.14);
-      color: #e8fbff;
-      font-size: 14px;
-      line-height: 1.68;
+      color: #e8fbff; font-size: 14px; line-height: 1.68;
+      margin-top: 14px;
     }
 
-    .tariff-grid {
-      display: grid;
-      gap: 12px;
-    }
+    /* ===== TARIFF / PRICING ===== */
+    .tariff-grid { display: grid; gap: 12px; }
 
     .tariff-card {
-      padding: 18px;
-      border-radius: 22px;
+      padding: 18px; border-radius: 22px;
       border: 1px solid rgba(154, 214, 255, 0.12);
       background: rgba(255,255,255,0.06);
       transition: 0.2s ease;
@@ -598,85 +411,301 @@
       box-shadow: 0 18px 40px rgba(27, 98, 204, 0.16);
     }
 
-    .tariff-card.hidden {
-      display: none;
-    }
+    .tariff-card.hidden { display: none; }
 
-    .tariff-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .tariff-name {
-      font-size: 18px;
-      line-height: 1.2;
-      font-weight: 800;
-    }
-
-    .tariff-price {
-      font-size: 28px;
-      line-height: 1;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      white-space: nowrap;
-    }
-
-    .tariff-desc {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
-      margin: 0 0 12px;
-    }
+    .tariff-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .tariff-name { font-size: 18px; line-height: 1.2; font-weight: 800; }
+    .tariff-price { font-size: 28px; line-height: 1; font-weight: 900; letter-spacing: -0.04em; white-space: nowrap; }
+    .tariff-desc { color: var(--muted); font-size: 14px; line-height: 1.65; margin: 0 0 12px; }
 
     .tariff-list {
-      margin: 0 0 14px;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 10px;
+      margin: 0 0 14px; padding: 0;
+      list-style: none; display: grid; gap: 10px;
     }
 
     .tariff-list li {
-      display: flex;
-      gap: 10px;
-      color: #eaf9ff;
-      font-size: 14px;
-      line-height: 1.6;
+      display: flex; gap: 10px;
+      color: #eaf9ff; font-size: 14px; line-height: 1.6;
     }
 
     .tariff-list li::before {
       content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      margin-top: 8px;
-      flex: 0 0 8px;
+      width: 8px; height: 8px; border-radius: 999px;
+      margin-top: 8px; flex: 0 0 8px;
       background: linear-gradient(135deg, var(--cyan-2), var(--blue));
       box-shadow: 0 0 0 6px rgba(84, 205, 255, 0.1);
     }
 
-    .tariff-card .btn {
-      width: 100%;
+    .tariff-card .btn { width: 100%; }
+
+    /* ===== PAYMENT SCREEN ===== */
+    .payment-summary {
+      padding: 18px; border-radius: 22px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(154, 214, 255, 0.1);
+      margin-bottom: 16px;
     }
 
-    .tariff-muted {
-      color: var(--muted-2);
-      font-size: 13px;
-      line-height: 1.55;
-      margin-top: 8px;
+    .payment-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; font-size: 14px; color: var(--muted);
     }
 
+    .payment-row.total {
+      border-top: 1px solid rgba(154, 214, 255, 0.12);
+      margin-top: 8px; padding-top: 14px;
+      font-size: 18px; font-weight: 800; color: #fff;
+    }
+
+    .payment-method {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border-radius: 18px;
+      border: 1px solid rgba(154, 214, 255, 0.12);
+      background: rgba(255,255,255,0.06);
+      cursor: pointer; transition: 0.2s ease;
+      margin-bottom: 10px;
+    }
+
+    .payment-method.active {
+      border-color: rgba(124, 229, 255, 0.3);
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.12), rgba(79, 117, 255, 0.12));
+    }
+
+    .payment-method-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: rgba(255,255,255,0.1);
+      display: grid; place-items: center; flex: 0 0 40px;
+    }
+
+    .payment-method-info h4 { font-size: 14px; font-weight: 700; margin: 0; }
+    .payment-method-info p { font-size: 12px; color: var(--muted-2); margin: 2px 0 0; }
+
+    .payment-radio {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid rgba(154, 214, 255, 0.25);
+      margin-left: auto; flex: 0 0 20px;
+      display: grid; place-items: center;
+      transition: 0.2s ease;
+    }
+
+    .payment-method.active .payment-radio { border-color: var(--cyan); }
+    .payment-method.active .payment-radio::after {
+      content: "";
+      width: 10px; height: 10px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+    }
+
+    .payment-note {
+      text-align: center; color: var(--muted-2);
+      font-size: 12px; line-height: 1.5; margin-top: 14px;
+    }
+
+    /* ===== LOADING SCREEN ===== */
+    .loading-wrap { text-align: center; padding: 60px 20px 40px; }
+
+    .loading-anim {
+      position: relative; width: 120px; height: 120px;
+      margin: 0 auto 32px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .loading-aura {
+      position: absolute; width: 120px; height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(115, 237, 255, 0.08), transparent 70%);
+      animation: auraPulse 2.5s ease-in-out infinite;
+    }
+
+    @keyframes auraPulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    .loading-ring {
+      position: absolute; border-radius: 50%;
+      border: 2px solid transparent;
+      animation: loadRing 3s linear infinite;
+    }
+
+    .loading-ring-1 {
+      width: 100px; height: 100px;
+      border-top-color: rgba(115, 237, 255, 0.5);
+      border-right-color: rgba(79, 117, 255, 0.2);
+    }
+
+    .loading-ring-2 {
+      width: 80px; height: 80px;
+      border-bottom-color: rgba(30, 196, 217, 0.4);
+      border-left-color: rgba(79, 117, 255, 0.15);
+      animation-direction: reverse;
+      animation-duration: 2.2s;
+    }
+
+    @keyframes loadRing {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-core {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      position: relative; z-index: 2;
+      box-shadow: 0 0 32px rgba(115, 237, 255, 0.4), 0 0 60px rgba(79, 117, 255, 0.15);
+      animation: coreBreath 2s ease-in-out infinite;
+    }
+
+    @keyframes coreBreath {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 32px rgba(115, 237, 255, 0.4), 0 0 60px rgba(79, 117, 255, 0.15); }
+      50% { transform: scale(1.06); box-shadow: 0 0 44px rgba(115, 237, 255, 0.55), 0 0 80px rgba(79, 117, 255, 0.2); }
+    }
+
+    .loading-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+    .loading-sub { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    .loading-steps {
+      margin-top: 32px; text-align: left;
+      display: grid; gap: 8px;
+    }
+
+    .loading-step {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      font-size: 13px; color: var(--muted-2);
+      transition: 0.3s ease;
+    }
+
+    .loading-step.active { color: var(--text); background: rgba(255,255,255,0.08); }
+    .loading-step.done { color: var(--ok); }
+
+    .loading-step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); flex: 0 0 8px;
+      transition: 0.3s ease;
+    }
+
+    .loading-step.active .loading-step-dot {
+      background: var(--cyan);
+      box-shadow: 0 0 8px rgba(115, 237, 255, 0.5);
+    }
+
+    .loading-step.done .loading-step-dot {
+      background: var(--ok);
+      box-shadow: 0 0 8px rgba(94, 227, 181, 0.5);
+    }
+
+    /* ===== FULL RESULT ===== */
+    .result-block {
+      padding: 18px; border-radius: 22px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(154, 214, 255, 0.1);
+      margin-bottom: 14px;
+    }
+
+    .result-block-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .result-block-icon {
+      width: 36px; height: 36px; border-radius: 12px;
+      display: grid; place-items: center; flex: 0 0 36px;
+    }
+
+    .result-block-icon.warn { background: rgba(255, 211, 107, 0.15); }
+    .result-block-icon.ok { background: rgba(94, 227, 181, 0.15); }
+    .result-block-icon.info { background: rgba(115, 237, 255, 0.15); }
+
+    .result-block-title { font-size: 15px; font-weight: 800; }
+
+    .result-item {
+      padding: 12px 14px; margin: 8px 0;
+      border-radius: 14px; background: rgba(255,255,255,0.04);
+      font-size: 14px; color: var(--muted); line-height: 1.65;
+    }
+
+    .result-item:first-child { margin-top: 0; }
+    .result-item:last-child { margin-bottom: 0; }
+
+    .result-item strong {
+      display: block; margin-bottom: 4px;
+      font-size: 13px; color: var(--text); font-weight: 700;
+    }
+
+    .result-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      font-size: 11px; font-weight: 800; color: #fff;
+      margin-right: 6px; flex: 0 0 22px;
+    }
+
+    .competitor-block {
+      padding: 18px; border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255, 211, 107, 0.06), rgba(79, 117, 255, 0.06));
+      border: 1px solid rgba(255, 211, 107, 0.15);
+      margin-bottom: 14px;
+    }
+
+    .competitor-block.hidden { display: none; }
+
+    /* ===== ERROR SCREEN ===== */
+    .error-wrap { text-align: center; padding: 40px 20px; }
+
+    .error-icon {
+      width: 72px; height: 72px; margin: 0 auto 20px;
+      background: linear-gradient(135deg, rgba(255, 143, 143, 0.15), rgba(255, 143, 143, 0.05));
+      border-radius: 50%; display: grid; place-items: center;
+    }
+
+    .error-title { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .error-text { color: var(--muted); font-size: 14px; line-height: 1.65; margin-bottom: 8px; }
+
+    .error-detail {
+      margin-top: 16px; padding: 14px; border-radius: 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255, 143, 143, 0.12);
+      text-align: left;
+    }
+
+    .error-detail-title {
+      font-size: 13px; font-weight: 700; color: var(--danger);
+      margin-bottom: 6px;
+    }
+
+    .error-detail-text {
+      font-size: 13px; color: var(--muted); line-height: 1.6;
+    }
+
+    .error-hint {
+      margin-top: 14px; color: var(--muted-2);
+      font-size: 13px; line-height: 1.5;
+    }
+
+    /* ===== START NOTE ===== */
     .start-note {
-      margin-top: 10px;
-      color: var(--muted-2);
-      font-size: 12px;
-      line-height: 1.55;
-      text-align: center;
+      margin-top: 10px; color: var(--muted-2);
+      font-size: 12px; line-height: 1.55; text-align: center;
     }
 
+    /* ===== SCENARIO INFO BAR ===== */
+    .scenario-info {
+      padding: 12px 16px; border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(154, 214, 255, 0.1);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--muted);
+    }
+
+    .scenario-info-tag {
+      padding: 4px 10px; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(30, 196, 217, 0.18), rgba(79, 117, 255, 0.18));
+      font-weight: 800; font-size: 12px; color: #fff;
+      flex: 0 0 auto;
+    }
+
+    /* ===== ANIMATIONS ===== */
     @keyframes shineMove {
       0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
       18% { opacity: 0.6; }
@@ -685,417 +714,942 @@
     }
 
     @media (max-width: 420px) {
-      .app-shell {
-        padding-left: 12px;
-        padding-right: 12px;
-      }
-
-      .mode-row {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar {
-        align-items: flex-start;
-      }
-
-      .brand-title {
-        font-size: 20px;
-      }
+      .app-shell { padding-left: 12px; padding-right: 12px; }
+      .mode-row { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; }
+      .brand-title { font-size: 20px; }
     }
   </style>
 </head>
 <body>
   <div class="app-shell">
     <div class="layer">
-      <header class="topbar">
-        <div class="logo"><span>Ai</span></div>
-        <div>
-          <div class="brand-title">ОфферДоктор</div>
-          <div class="brand-subtitle">Минимум действий — максимум результата</div>
-        </div>
-      </header>
 
-      <section class="hero card">
-        <div class="hero-badge">
-          <span class="hero-badge-dot"></span>
-          Базовый аудит бесплатно • дальше вы выбираете глубину
-        </div>
-        <h1>Проверьте, где ваше предложение теряет продажи</h1>
-        <p class="hero-text">
-          Выберите формат, вставьте ссылку или текст и получите
-          <strong>базовый аудит бесплатно</strong>.
-          После результата можно перейти в
-          <strong>расширенный аудит</strong>
-          или выбрать
-          <strong>аудит + конкуренты</strong>.
-        </p>
-      </section>
-
-      <section class="section card">
-        <h2 class="section-title">Что будем проверять</h2>
-        <p class="section-subtitle">На старте только три понятных формата.</p>
-
-        <div class="scenario-grid" id="scenarioGrid">
-          <button class="scenario-card active" data-scenario="marketplace" type="button">
-            <div class="scenario-top">
-              <div class="scenario-icon" aria-hidden="true">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 8.5L8.2 5H15.6L19 8.5V17.5A2 2 0 0 1 17 19.5H7A2 2 0 0 1 5 17.5V8.5Z" stroke="#E6F8FF" stroke-width="1.8" stroke-linejoin="round"/>
-                  <path d="M8 5L9.4 9H14.8L16 5" stroke="#E6F8FF" stroke-width="1.8" stroke-linejoin="round"/>
-                  <path d="M8.2 13.2C9.2 14 10.5 14.5 12 14.5C13.5 14.5 14.8 14 15.8 13.2" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="scenario-name">Карточка товара</div>
-            </div>
-            <div class="scenario-desc">Ozon, Wildberries, Яндекс Маркет. Для каждой площадки — отдельный сценарий анализа.</div>
-          </button>
-
-          <button class="scenario-card" data-scenario="avito" type="button">
-            <div class="scenario-top">
-              <div class="scenario-icon" aria-hidden="true">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                  <circle cx="6" cy="7" r="3" fill="#24B6D1"/>
-                  <circle cx="17" cy="6" r="3" fill="#F55252"/>
-                  <circle cx="17" cy="17" r="3" fill="#FDBA2C"/>
-                  <circle cx="7" cy="17" r="3" fill="#4A7EFF"/>
-                </svg>
-              </div>
-              <div class="scenario-name">Avito</div>
-            </div>
-            <div class="scenario-desc">Анализ объявления: заголовок, первые строки, логика выгоды, доверие и отклик.</div>
-          </button>
-
-          <button class="scenario-card" data-scenario="landing" type="button">
-            <div class="scenario-top">
-              <div class="scenario-icon" aria-hidden="true">
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="#E6F8FF" stroke-width="1.8"/>
-                  <path d="M3 9H21" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
-                  <path d="M8 13H11" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
-                  <path d="M14 13H17" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="scenario-name">Лендинг</div>
-            </div>
-            <div class="scenario-desc">Разбор первого экрана, оффера, CTA, структуры блоков и причин просадки конверсии.</div>
-          </button>
-        </div>
-
-        <div class="platform-pills show" id="platformPills">
-          <button class="pill active" type="button" data-platform="ozon">Ozon</button>
-          <button class="pill" type="button" data-platform="wb">Wildberries</button>
-          <button class="pill" type="button" data-platform="ym">Яндекс Маркет</button>
-        </div>
-      </section>
-
-      <section class="section card">
-        <h2 class="section-title">Передайте материал</h2>
-        <p class="section-subtitle" id="inputHint">
-          Для карточки товара можно вставить ссылку, текст или загрузить материалы для дальнейшего анализа.
-        </p>
-
-        <div class="mode-row">
-          <button class="mode-btn active" type="button" data-mode="url">Ссылка</button>
-          <button class="mode-btn" type="button" data-mode="text">Текст</button>
-          <button class="mode-btn" type="button" data-mode="file">Файл / изображение</button>
-        </div>
-
-        <div class="form-grid">
-          <input id="urlInput" type="url" placeholder="Вставьте ссылку" />
-          <textarea id="textInput" style="display:none;" placeholder="Вставьте текст для анализа"></textarea>
-          <div id="fileBox" class="file-box">
-            Здесь будет загрузка файла или изображения. В этой версии оставляем чистый интерфейс без отдельной логики загрузки.
-          </div>
-        </div>
-
-        <div class="action-row">
-          <button class="btn btn-primary" id="analyzeBtn" type="button">Запустить базовый аудит</button>
-          <button class="btn btn-secondary" id="clearBtn" type="button">Очистить</button>
-        </div>
-
-        <div class="result-box" id="resultBox">
-          <div class="result-head">
-            <div>
-              <div class="result-badge">Базовый аудит • бесплатно</div>
-              <h3 class="result-title" id="resultTitle">Главная проблема</h3>
-              <p class="result-problem" id="resultProblem"></p>
-            </div>
-          </div>
-
-          <div class="issue-list" id="issueList"></div>
-
-          <div class="teaser" id="teaserBox"></div>
-        </div>
-      </section>
-
-      <section class="section card">
-        <h2 class="section-title">Выберите глубину анализа</h2>
-        <p class="section-subtitle" id="tariffHint">
-          Сначала пользователь получает базовый разбор, а дальше сам решает, нужно ли идти глубже.
-        </p>
-
-        <div class="tariff-grid">
-          <article class="tariff-card">
-            <div class="tariff-top">
-              <div class="tariff-name">Базовый аудит</div>
-              <div class="tariff-price">0 ₽</div>
-            </div>
-            <p class="tariff-desc">Быстрый и полезный разбор: главная проблема, слабые места и короткие рекомендации.</p>
-            <ul class="tariff-list">
-              <li>главная причина просадки</li>
-              <li>2–3 слабых места</li>
-              <li>понятный следующий шаг</li>
-            </ul>
-            <button class="btn btn-secondary" type="button">Активен по умолчанию</button>
-          </article>
-
-          <article class="tariff-card premium" id="paidCard">
-            <div class="tariff-top">
-              <div class="tariff-name">Расширенный аудит</div>
-              <div class="tariff-price" id="paidPrice">249 ₽</div>
-            </div>
-            <p class="tariff-desc" id="paidDesc">Полный разбор карточки товара, текста, выгод, структуры и следующих шагов для усиления.</p>
-            <ul class="tariff-list" id="paidList">
-              <li>глубокий разбор выбранного формата</li>
-              <li>улучшенные формулировки</li>
-              <li>приоритетный список правок</li>
-            </ul>
-            <button class="btn btn-primary" type="button">Выбрать расширенный аудит</button>
-          </article>
-
-          <article class="tariff-card hidden" id="competitorCard">
-            <div class="tariff-top">
-              <div class="tariff-name">Аудит + конкуренты</div>
-              <div class="tariff-price" id="competitorPrice">299 ₽</div>
-            </div>
-            <p class="tariff-desc" id="competitorDesc">Старший тариф для карточек товара: полный аудит плюс сравнение с конкурентами.</p>
-            <ul class="tariff-list">
-              <li>всё из расширенного аудита</li>
-              <li>сравнение с конкурентами</li>
-              <li>что у них сильнее и что стоит перенять</li>
-            </ul>
-            <button class="btn btn-primary" type="button">Выбрать аудит + конкуренты</button>
-            <div class="tariff-muted">Для Avito и лендингов этот слой можно добавить позже отдельно.</div>
-          </article>
-        </div>
-
-        <div class="start-note">
-          В боевой версии здесь будет переход к оплате и вызов реального AI-сценария.
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <script>
-    const state = {
-      scenario: "marketplace",
-      platform: "ozon",
-      mode: "url"
-    };
-
-    const scenarioCards = document.querySelectorAll(".scenario-card");
-    const platformPills = document.getElementById("platformPills");
-    const pillButtons = platformPills.querySelectorAll(".pill");
-    const modeButtons = document.querySelectorAll(".mode-btn");
-
-    const inputHint = document.getElementById("inputHint");
-    const urlInput = document.getElementById("urlInput");
-    const textInput = document.getElementById("textInput");
-    const fileBox = document.getElementById("fileBox");
-
-    const analyzeBtn = document.getElementById("analyzeBtn");
-    const clearBtn = document.getElementById("clearBtn");
-
-    const resultBox = document.getElementById("resultBox");
-    const resultTitle = document.getElementById("resultTitle");
-    const resultProblem = document.getElementById("resultProblem");
-    const issueList = document.getElementById("issueList");
-    const teaserBox = document.getElementById("teaserBox");
-
-    const paidPrice = document.getElementById("paidPrice");
-    const paidDesc = document.getElementById("paidDesc");
-    const paidList = document.getElementById("paidList");
-    const competitorCard = document.getElementById("competitorCard");
-
-    const scenarioData = {
-      marketplace: {
-        price: "249 ₽",
-        desc: "Полный разбор карточки товара, текста, выгод, характеристик и следующего шага для улучшения.",
-        hint: "Для карточки товара можно вставить ссылку, текст или загрузить материалы для дальнейшего анализа.",
-        paidItems: [
-          "анализ названия, описания и выгод",
-          "что мешает карточке продавать лучше",
-          "приоритетный список правок"
-        ],
-        demo: {
-          title: "Карточка недобирает из-за слабой подачи выгоды",
-          problem: "Покупатель видит товар, но не получает ясного ответа, чем он лучше и почему его стоит выбрать именно сейчас.",
-          issues: [
-            { tone: "bad", title: "Название не добирает смысл", text: "Карточка не раскрывает главный сценарий использования и не помогает быстрее понять ценность товара." },
-            { tone: "warn", title: "В тексте мало конкретной пользы", text: "Описание перечисляет свойства, но не превращает их в понятные выгоды для покупателя." },
-            { tone: "ok", title: "Карточку можно быстро усилить", text: "Базовая структура уже есть, значит карточку можно заметно улучшить без полной пересборки." }
-          ],
-          teaser: "В расширенном аудите пользователь увидит, что переписать первым, какие блоки усилить и как сделать карточку более убедительной."
-        }
-      },
-      avito: {
-        price: "149 ₽",
-        desc: "Полный разбор объявления Avito: заголовок, первые строки, выгоды, доверие и логика отклика.",
-        hint: "Для Avito можно вставить ссылку на объявление или текст объявления для анализа.",
-        paidItems: [
-          "разбор заголовка и первых строк",
-          "где падает доверие и интерес",
-          "какие формулировки усилить"
-        ],
-        demo: {
-          title: "Объявление не цепляет с первых строк",
-          problem: "Потенциальный клиент не получает быстрый и убедительный ответ, почему стоит открыть именно это объявление, а не соседнее в выдаче.",
-          issues: [
-            { tone: "bad", title: "Заголовок слишком обычный", text: "В нем мало пользы, а акцент на ценности для клиента размыт." },
-            { tone: "warn", title: "Первые строки не продают", text: "Текст не выносит ключевое преимущество наверх и теряет внимание в первые секунды." },
-            { tone: "ok", title: "Логику можно быстро усилить", text: "Если переработать начало объявления и подачу выгоды, отклик может вырасти без переписывания всего текста." }
-          ],
-          teaser: "В расширенном аудите пользователь получит усиленный вариант текста, приоритет правок и конкретные рекомендации по тому, что менять первым."
-        }
-      },
-      landing: {
-        price: "199 ₽",
-        desc: "Полный разбор лендинга: первый экран, оффер, CTA, структура блоков, доверие и причины потери конверсии.",
-        hint: "Для лендинга можно вставить ссылку на страницу или текстовую структуру / копию лендинга.",
-        paidItems: [
-          "первый экран, оффер и CTA",
-          "логика блоков и доверия",
-          "главные точки просадки конверсии"
-        ],
-        demo: {
-          title: "Лендинг не доносит ценность достаточно быстро",
-          problem: "Первый экран не дает ясного и сильного обещания результата, поэтому посетитель не понимает, почему ему стоит идти дальше по странице.",
-          issues: [
-            { tone: "bad", title: "Оффер слишком общий", text: "Польза сформулирована размыто, и посетителю сложно понять, чем предложение отличается от похожих." },
-            { tone: "warn", title: "CTA не поддержан логикой страницы", text: "Призыв к действию есть, но путь к нему недостаточно усилен аргументами и доверием." },
-            { tone: "ok", title: "Структуру можно усилить без полного редизайна", text: "За счет нового первого экрана и пары правок по блокам лендинг уже станет сильнее." }
-          ],
-          teaser: "В расширенном аудите пользователь увидит, какие блоки режут конверсию, как переписать оффер и какие формулировки стоит вынести на первый экран."
-        }
-      }
-    };
-
-    function renderScenario() {
-      scenarioCards.forEach((card) => {
-        card.classList.toggle("active", card.dataset.scenario === state.scenario);
-      });
-
-      if (state.scenario === "marketplace") {
-        platformPills.classList.add("show");
-        competitorCard.classList.remove("hidden");
-      } else {
-        platformPills.classList.remove("show");
-        competitorCard.classList.add("hidden");
-      }
-
-      const data = scenarioData[state.scenario];
-      inputHint.textContent = data.hint;
-      paidPrice.textContent = data.price;
-      paidDesc.textContent = data.desc;
-      paidList.innerHTML = data.paidItems.map(item => `<li>${item}</li>`).join("");
-
-      resultBox.classList.remove("show");
-      clearInputs();
-      updateMode();
-    }
-
-    function updateMode() {
-      modeButtons.forEach((button) => {
-        button.classList.toggle("active", button.dataset.mode === state.mode);
-      });
-
-      urlInput.style.display = state.mode === "url" ? "block" : "none";
-      textInput.style.display = state.mode === "text" ? "block" : "none";
-      fileBox.classList.toggle("show", state.mode === "file");
-
-      if (state.mode === "url") {
-        if (state.scenario === "marketplace") {
-          urlInput.placeholder = "Вставьте ссылку на карточку товара";
-        } else if (state.scenario === "avito") {
-          urlInput.placeholder = "Вставьте ссылку на объявление Avito";
-        } else {
-          urlInput.placeholder = "Вставьте ссылку на лендинг";
-        }
-      }
-
-      if (state.mode === "text") {
-        if (state.scenario === "marketplace") {
-          textInput.placeholder = "Вставьте текст карточки товара для анализа";
-        } else if (state.scenario === "avito") {
-          textInput.placeholder = "Вставьте текст объявления Avito";
-        } else {
-          textInput.placeholder = "Вставьте текст или структуру лендинга";
-        }
-      }
-    }
-
-    function clearInputs() {
-      urlInput.value = "";
-      textInput.value = "";
-    }
-
-    function renderDemoResult() {
-      const data = scenarioData[state.scenario].demo;
-      resultTitle.textContent = data.title;
-      resultProblem.textContent = data.problem;
-      teaserBox.textContent = data.teaser;
-
-      issueList.innerHTML = data.issues.map((issue) => `
-        <li class="issue-item">
-          <span class="issue-dot ${issue.tone}"></span>
+      <!-- ========================= SCREEN: INPUT ========================= -->
+      <div id="screen-input" class="screen active">
+        <header class="topbar">
+          <div class="logo"><span>Ai</span></div>
           <div>
-            <strong>${issue.title}</strong>
-            <span>${issue.text}</span>
+            <div class="brand-title">ОфферДоктор</div>
+            <div class="brand-subtitle">AI-аудит вашего предложения</div>
           </div>
-        </li>
-      `).join("");
+        </header>
 
-      resultBox.classList.add("show");
-      resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
+        <section class="hero card">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Базовый разбор бесплатно
+          </div>
+          <h1>Найдите, что мешает продавать</h1>
+          <p class="hero-text">
+            Выберите формат, заполните форму и получите <strong>бесплатный preview</strong> с главной проблемой.
+            Полный разбор доступен после preview.
+          </p>
+        </section>
 
-    scenarioCards.forEach((card) => {
-      card.addEventListener("click", () => {
-        state.scenario = card.dataset.scenario;
-        if (state.scenario !== "marketplace") {
-          state.platform = "";
-        } else if (!state.platform) {
-          state.platform = "ozon";
-        }
-        renderScenario();
-      });
-    });
+        <section class="section card">
+          <h2 class="section-title">Что проверяем</h2>
+          <p class="section-subtitle">Выберите формат вашего предложения.</p>
 
-    pillButtons.forEach((pill) => {
-      pill.addEventListener("click", () => {
-        pillButtons.forEach((item) => item.classList.remove("active"));
-        pill.classList.add("active");
-        state.platform = pill.dataset.platform;
-      });
-    });
+          <div class="scenario-grid" id="scenarioGrid">
+            <button class="scenario-card active" data-scenario="marketplace" type="button">
+              <div class="scenario-top">
+                <div class="scenario-icon" aria-hidden="true">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 8.5L8.2 5H15.6L19 8.5V17.5A2 2 0 0 1 17 19.5H7A2 2 0 0 1 5 17.5V8.5Z" stroke="#E6F8FF" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M8 5L9.4 9H14.8L16 5" stroke="#E6F8FF" stroke-width="1.8" stroke-linejoin="round"/>
+                    <path d="M8.2 13.2C9.2 14 10.5 14.5 12 14.5C13.5 14.5 14.8 14 15.8 13.2" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="scenario-name">Карточка товара</div>
+              </div>
+              <div class="scenario-desc">Ozon, Wildberries, Яндекс Маркет. Разбор карточки и подачи выгод.</div>
+            </button>
 
-    modeButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        state.mode = button.dataset.mode;
-        updateMode();
-      });
-    });
+            <button class="scenario-card" data-scenario="avito" type="button">
+              <div class="scenario-top">
+                <div class="scenario-icon" aria-hidden="true">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <circle cx="6" cy="7" r="3" fill="#24B6D1"/>
+                    <circle cx="17" cy="6" r="3" fill="#F55252"/>
+                    <circle cx="17" cy="17" r="3" fill="#FDBA2C"/>
+                    <circle cx="7" cy="17" r="3" fill="#4A7EFF"/>
+                  </svg>
+                </div>
+                <div class="scenario-name">Avito</div>
+              </div>
+              <div class="scenario-desc">Заголовок, первые строки, выгоды, доверие и отклик объявления.</div>
+            </button>
 
-    analyzeBtn.addEventListener("click", () => {
-      renderDemoResult();
-    });
+            <button class="scenario-card" data-scenario="landing" type="button">
+              <div class="scenario-top">
+                <div class="scenario-icon" aria-hidden="true">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="5" width="18" height="14" rx="2.5" stroke="#E6F8FF" stroke-width="1.8"/>
+                    <path d="M3 9H21" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M8 13H11" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M14 13H17" stroke="#E6F8FF" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="scenario-name">Лендинг</div>
+              </div>
+              <div class="scenario-desc">Первый экран, оффер, CTA, структура и конверсия.</div>
+            </button>
+          </div>
 
-    clearBtn.addEventListener("click", () => {
-      clearInputs();
-      resultBox.classList.remove("show");
-    });
+          <div class="platform-pills show" id="platformPills">
+            <button class="pill active" type="button" data-platform="ozon">Ozon</button>
+            <button class="pill" type="button" data-platform="wb">Wildberries</button>
+            <button class="pill" type="button" data-platform="ym">Яндекс Маркет</button>
+          </div>
+        </section>
 
+        <section class="section card">
+          <h2 class="section-title">Заполните форму</h2>
+          <p class="section-subtitle" id="inputHint">Укажите, что вы продаете, для кого и прикрепите ссылку или текст.</p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Что вы продаете <span class="required">*</span></label>
+              <input type="text" id="inp-product" placeholder="Например: кроссовки для бега, онлайн-курс, услуги ремонта" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Для кого предложение <span class="required">*</span></label>
+              <input type="text" id="inp-audience" placeholder="Например: для начинающих бегунов, предпринимателей, молодых мам" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Ссылка <span class="optional">при наличии</span></label>
+              <input type="url" id="inp-link" placeholder="Ссылка на карточку, объявление или лендинг" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Как сейчас звучит предложение <span class="optional">или вставьте текст</span></label>
+              <textarea id="inp-text" placeholder="Ваш текущий оффер, описание товара или текст с сайта"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Что не устраивает <span class="optional">необязательно</span></label>
+              <input type="text" id="inp-pain" placeholder="Например: мало заявок, не цепляет, низкая конверсия" />
+            </div>
+          </div>
+
+          <div class="form-error" id="formError"></div>
+
+          <div class="action-row">
+            <button class="btn btn-primary btn-full" id="btnPreview" type="button">
+              Получить бесплатный разбор
+            </button>
+          </div>
+
+          <div class="start-note">
+            Базовый preview — бесплатно. Полный разбор от 149 ₽.
+          </div>
+        </section>
+      </div>
+
+      <!-- ========================= SCREEN: PREVIEW ========================= -->
+      <div id="screen-preview" class="screen">
+        <button class="back-btn" type="button" onclick="showScreen('screen-input')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          К форме
+        </button>
+
+        <header class="topbar">
+          <div class="logo"><span>Ai</span></div>
+          <div>
+            <div class="brand-title">Быстрый диагноз</div>
+            <div class="brand-subtitle">Базовый разбор — бесплатно</div>
+          </div>
+        </header>
+
+        <div class="scenario-info" id="previewScenarioInfo">
+          <span class="scenario-info-tag" id="previewScenarioTag">Карточка</span>
+          <span id="previewScenarioDesc">Разбор карточки товара</span>
+        </div>
+
+        <section class="preview-card warn">
+          <div class="preview-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6z"/><path d="M11 10h2v4h-2zm0 6h2v2h-2z"/></svg>
+            Главная проблема
+          </div>
+          <div class="preview-title" id="previewProblemTitle">Загружаем...</div>
+          <div class="preview-text" id="previewProblemText">Анализируем ваше предложение</div>
+        </section>
+
+        <section class="preview-card ok">
+          <div class="preview-badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/></svg>
+            Совет
+          </div>
+          <div class="preview-title" id="previewHintTitle">Подготавливаем...</div>
+          <div class="preview-text" id="previewHintText">Один момент</div>
+        </section>
+
+        <div class="teaser-block" id="previewTeaser">
+          В полном разборе вы получите 3 главные проблемы, 3 новых варианта УТП, короткую версию и рекомендацию, что менять первым.
+        </div>
+
+        <div class="action-row" style="margin-top: 18px;">
+          <button class="btn btn-primary btn-full" type="button" onclick="goToPricing()">
+            Получить полный разбор
+          </button>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-secondary btn-full" type="button" onclick="showScreen('screen-input')">
+            Изменить данные
+          </button>
+        </div>
+      </div>
+
+      <!-- ========================= SCREEN: PRICING ========================= -->
+      <div id="screen-pricing" class="screen">
+        <button class="back-btn" type="button" onclick="showScreen('screen-preview')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          К результату
+        </button>
+
+        <header class="topbar">
+          <div class="logo"><span>Ai</span></div>
+          <div>
+            <div class="brand-title">Полный разбор</div>
+            <div class="brand-subtitle" id="pricingSubtitle">Выберите подходящий формат</div>
+          </div>
+        </header>
+
+        <section class="section card">
+          <h2 class="section-title">Что входит в полный разбор</h2>
+          <div class="tariff-list" style="margin-bottom: 16px;">
+            <li>3 главные проблемы текста</li>
+            <li>3 новых варианта УТП</li>
+            <li>Короткая версия для шапки / карточки</li>
+            <li>Рекомендация, что менять первым</li>
+          </div>
+
+          <div class="tariff-grid" id="pricingGrid">
+            <article class="tariff-card premium" id="pricingMain">
+              <div class="tariff-top">
+                <div class="tariff-name" id="pricingName">Расширенный аудит</div>
+                <div class="tariff-price" id="pricingPrice">249 ₽</div>
+              </div>
+              <p class="tariff-desc" id="pricingDesc">Полный разбор с рекомендациями и новыми формулировками.</p>
+              <button class="btn btn-primary" type="button" id="btnSelectMain" onclick="selectTariff('main')">
+                Выбрать
+              </button>
+            </article>
+
+            <article class="tariff-card premium hidden" id="pricingCompetitor">
+              <div class="tariff-top">
+                <div class="tariff-name">Аудит + конкуренты</div>
+                <div class="tariff-price">299 ₽</div>
+              </div>
+              <p class="tariff-desc">Всё из расширенного аудита плюс сравнение с конкурентами: что у них сильнее и что перенять.</p>
+              <button class="btn btn-primary" type="button" onclick="selectTariff('competitor')">
+                Выбрать
+              </button>
+            </article>
+          </div>
+
+          <div class="start-note" style="margin-top: 16px;">
+            После оплаты вы сразу получите полный результат.
+          </div>
+        </section>
+      </div>
+
+      <!-- ========================= SCREEN: PAYMENT ========================= -->
+      <div id="screen-payment" class="screen">
+        <button class="back-btn" type="button" onclick="showScreen('screen-pricing')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          К тарифам
+        </button>
+
+        <header class="topbar">
+          <div class="logo"><span>Ai</span></div>
+          <div>
+            <div class="brand-title">Оплата</div>
+            <div class="brand-subtitle">Подтвердите заказ</div>
+          </div>
+        </header>
+
+        <div class="payment-summary">
+          <div class="payment-row">
+            <span>Сценарий</span>
+            <span id="paymentScenario" style="color: #fff; font-weight: 700;">Карточка товара</span>
+          </div>
+          <div class="payment-row">
+            <span>Тариф</span>
+            <span id="paymentTariff" style="color: #fff; font-weight: 700;">Расширенный аудит</span>
+          </div>
+          <div class="payment-row total">
+            <span>Итого</span>
+            <span id="paymentTotal">249 ₽</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 8px;">
+          <label class="form-label" style="margin-bottom: 10px;">Способ оплаты</label>
+        </div>
+
+        <div class="payment-method active" onclick="selectPaymentMethod(this)">
+          <div class="payment-method-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#73edff" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div class="payment-method-info">
+            <h4>Банковская карта</h4>
+            <p>Visa, MasterCard, МИР</p>
+          </div>
+          <div class="payment-radio"></div>
+        </div>
+
+        <div class="payment-method" onclick="selectPaymentMethod(this)">
+          <div class="payment-method-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#73edff" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="payment-method-info">
+            <h4>СБП</h4>
+            <p>Мгновенный перевод</p>
+          </div>
+          <div class="payment-radio"></div>
+        </div>
+
+        <div class="payment-method" onclick="selectPaymentMethod(this)">
+          <div class="payment-method-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#73edff" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+          </div>
+          <div class="payment-method-info">
+            <h4>ЮMoney</h4>
+            <p>Из кошелька</p>
+          </div>
+          <div class="payment-radio"></div>
+        </div>
+
+        <div class="action-row" style="margin-top: 18px;">
+          <button class="btn btn-primary btn-full" id="btnPay" type="button" onclick="startAnalysis()">
+            Оплатить <span id="payBtnPrice">249 ₽</span>
+          </button>
+        </div>
+
+        <div class="payment-note">
+          После оплаты разбор будет сформирован автоматически. Это займёт несколько секунд.
+        </div>
+      </div>
+
+      <!-- ========================= SCREEN: LOADING ========================= -->
+      <div id="screen-loading" class="screen">
+        <header class="topbar">
+          <div class="logo"><span>Ai</span></div>
+          <div>
+            <div class="brand-title">Анализируем</div>
+            <div class="brand-subtitle">Это займёт несколько секунд</div>
+          </div>
+        </header>
+
+        <div class="card">
+          <div class="loading-wrap">
+            <div class="loading-anim">
+              <div class="loading-aura"></div>
+              <div class="loading-ring loading-ring-1"></div>
+              <div class="loading-ring loading-ring-2"></div>
+              <div class="loading-core"></div>
+            </div>
+            <div class="loading-title" id="loadingTitle">Анализируем ваше предложение</div>
+            <div class="loading-sub" id="loadingSub">Сравниваем формулировки, выгоды и подачу</div>
+          </div>
+
+          <div class="loading-steps" id="loadingSteps">
+            <div class="loading-step active">
+              <span class="loading-step-dot"></span>
+              Читаем данные
+            </div>
+            <div class="loading-step">
+              <span class="loading-step-dot"></span>
+              Анализируем структуру
+            </div>
+            <div class="loading-step">
+              <span class="loading-step-dot"></span>
+              Формируем рекомендации
+            </div>
+            <div class="loading-step">
+              <span class="loading-step-dot"></span>
+              Собираем результат
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========================= SCREEN: FULL RESULT ========================= -->
+      <div id="screen-result" class="screen">
+        <header class="topbar">
+          <div class="logo"><span>Ai</span></div>
+          <div>
+            <div class="brand-title">Полный разбор готов</div>
+            <div class="brand-subtitle" id="resultScenarioDesc">Карточка товара — расширенный аудит</div>
+          </div>
+        </header>
+
+        <div class="scenario-info" id="resultScenarioInfo">
+          <span class="scenario-info-tag" id="resultScenarioTag">Карточка</span>
+          <span id="resultScenarioLabel">Расширенный аудит</span>
+        </div>
+
+        <section class="result-block">
+          <div class="result-block-header">
+            <div class="result-block-icon warn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffd36b" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="result-block-title">Главные проблемы</div>
+          </div>
+          <div id="resultProblems"></div>
+        </section>
+
+        <section class="result-block">
+          <div class="result-block-header">
+            <div class="result-block-icon ok">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5ee3b5" stroke-width="2.5" stroke-linecap="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12l3 3 5-5"/></svg>
+            </div>
+            <div class="result-block-title">Новые варианты УТП</div>
+          </div>
+          <div id="resultOffers"></div>
+        </section>
+
+        <section class="result-block">
+          <div class="result-block-header">
+            <div class="result-block-icon info">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#73edff" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="result-block-title">Короткая версия</div>
+          </div>
+          <div class="result-item" id="resultShort">—</div>
+        </section>
+
+        <section class="result-block">
+          <div class="result-block-header">
+            <div class="result-block-icon ok">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5ee3b5" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <div class="result-block-title">Что менять первым</div>
+          </div>
+          <div class="result-item" id="resultAdvice">—</div>
+        </section>
+
+        <section class="competitor-block hidden" id="resultCompetitor">
+          <div class="result-block-header">
+            <div class="result-block-icon warn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffd36b" stroke-width="2.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="result-block-title">Конкурентный анализ</div>
+          </div>
+          <div class="result-item" id="resultCompetitorText">—</div>
+        </section>
+
+        <div class="action-row" style="margin-top: 18px;">
+          <button class="btn btn-primary" type="button" onclick="showScreen('screen-input')" style="flex: 1;">
+            Новый разбор
+          </button>
+        </div>
+      </div>
+
+      <!-- ========================= SCREEN: ERROR ========================= -->
+      <div id="screen-error" class="screen">
+        <header class="topbar">
+          <div class="logo"><span>Ai</span></div>
+          <div>
+            <div class="brand-title">Ошибка</div>
+            <div class="brand-subtitle">Что-то пошло не так</div>
+          </div>
+        </header>
+
+        <div class="card">
+          <div class="error-wrap">
+            <div class="error-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ff8f8f" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <div class="error-title" id="errorTitle">Не удалось получить разбор</div>
+            <div class="error-text" id="errorText">Произошла ошибка при обработке запроса.</div>
+
+            <div class="error-detail" id="errorDetail">
+              <div class="error-detail-title">Что произошло</div>
+              <div class="error-detail-text" id="errorDetailText">Временная недоступность сервиса. Попробуйте снова через несколько секунд.</div>
+            </div>
+
+            <div class="error-hint" id="errorHint">
+              Если проблема повторяется — попробуйте позже или обратитесь в поддержку.
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row" style="margin-top: 18px;">
+          <button class="btn btn-primary" type="button" id="btnRetry" onclick="retryAnalysis()">
+            Повторить
+          </button>
+          <button class="btn btn-secondary" type="button" onclick="showScreen('screen-input')">
+            На главную
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /layer -->
+  </div><!-- /app-shell -->
+
+<script>
+// ============================================================
+//  CONFIG
+// ============================================================
+var API_BASE_URL = window.API_BASE_URL || 'http://localhost:3000';
+
+// ============================================================
+//  STATE
+// ============================================================
+var state = {
+  scenario: 'marketplace',
+  platform: 'ozon',
+  tariff: 'main', // 'main' | 'competitor'
+  lastPayload: null
+};
+
+// ============================================================
+//  DOM REFS
+// ============================================================
+function $(id) { return document.getElementById(id); }
+
+// ============================================================
+//  SCREEN NAVIGATION
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  var el = $(id);
+  if (el) {
+    el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// ============================================================
+//  SCENARIO LOGIC
+// ============================================================
+var scenarioNames = {
+  marketplace: 'Карточка товара',
+  avito: 'Avito',
+  landing: 'Лендинг'
+};
+
+var platformNames = {
+  ozon: 'Ozon',
+  wb: 'Wildberries',
+  ym: 'Яндекс Маркет'
+};
+
+var tariffPrices = {
+  marketplace: { main: 249, competitor: 299 },
+  avito:       { main: 149 },
+  landing:     { main: 199 }
+};
+
+var tariffNames = {
+  marketplace: {
+    main: 'Расширенный аудит карточки',
+    competitor: 'Аудит + конкуренты'
+  },
+  avito: { main: 'Полный разбор объявления' },
+  landing: { main: 'Полный разбор лендинга' }
+};
+
+var tariffDescs = {
+  marketplace: {
+    main: 'Полный разбор карточки: название, описание, выгоды, характеристики и что улучшить первым.',
+    competitor: 'Всё из расширенного аудита плюс сравнение с конкурентами на площадке.'
+  },
+  avito: { main: 'Заголовок, первые строки, выгоды, доверие и логика отклика объявления.' },
+  landing: { main: 'Первый экран, оффер, CTA, структура блоков и причины потери конверсии.' }
+};
+
+var inputHints = {
+  marketplace: 'Укажите товар, аудиторию и прикрепите ссылку на карточку или вставьте текст.',
+  avito: 'Укажите, что продаете, для кого и прикрепите ссылку на объявление или текст.',
+  landing: 'Укажите продукт, аудиторию и ссылку на лендинг или текст.'
+};
+
+// ============================================================
+//  INIT SCENARIO CARDS
+// ============================================================
+var scenarioCards = document.querySelectorAll('.scenario-card');
+var platformPills = $('platformPills');
+var pillButtons = platformPills.querySelectorAll('.pill');
+
+scenarioCards.forEach(function(card) {
+  card.addEventListener('click', function() {
+    state.scenario = card.dataset.scenario;
+    if (state.scenario !== 'marketplace') state.platform = '';
+    else if (!state.platform) state.platform = 'ozon';
+    state.tariff = 'main';
     renderScenario();
-  </script>
+  });
+});
+
+pillButtons.forEach(function(pill) {
+  pill.addEventListener('click', function() {
+    pillButtons.forEach(function(p) { p.classList.remove('active'); });
+    pill.classList.add('active');
+    state.platform = pill.dataset.platform;
+  });
+});
+
+function renderScenario() {
+  scenarioCards.forEach(function(card) {
+    card.classList.toggle('active', card.dataset.scenario === state.scenario);
+  });
+
+  if (state.scenario === 'marketplace') {
+    platformPills.classList.add('show');
+  } else {
+    platformPills.classList.remove('show');
+  }
+
+  $('inputHint').textContent = inputHints[state.scenario] || '';
+
+  var linkInput = $('inp-link');
+  if (state.scenario === 'marketplace') {
+    linkInput.placeholder = 'Ссылка на карточку товара';
+  } else if (state.scenario === 'avito') {
+    linkInput.placeholder = 'Ссылка на объявление Avito';
+  } else {
+    linkInput.placeholder = 'Ссылка на лендинг';
+  }
+}
+
+renderScenario();
+
+// ============================================================
+//  VALIDATION
+// ============================================================
+function validate() {
+  var product = $('inp-product').value.trim();
+  var audience = $('inp-audience').value.trim();
+  var link = $('inp-link').value.trim();
+  var text = $('inp-text').value.trim();
+
+  if (!product) return 'Укажите, что вы продаете';
+  if (!audience) return 'Укажите, для кого ваше предложение';
+  if (!link && !text) return 'Добавьте ссылку или вставьте текст предложения';
+  return '';
+}
+
+function getPayload(mode) {
+  return {
+    scenario: state.scenario,
+    platform: state.platform,
+    product: $('inp-product').value.trim(),
+    audience: $('inp-audience').value.trim(),
+    link: $('inp-link').value.trim(),
+    text: $('inp-text').value.trim(),
+    pain: $('inp-pain').value.trim(),
+    mode: mode || 'preview'
+  };
+}
+
+function showError(msg) {
+  var el = $('formError');
+  el.textContent = msg;
+  el.classList.add('visible');
+}
+
+function hideError() {
+  $('formError').classList.remove('visible');
+}
+
+// ============================================================
+//  PREVIEW REQUEST
+// ============================================================
+$('btnPreview').addEventListener('click', function() {
+  hideError();
+  var err = validate();
+  if (err) { showError(err); return; }
+
+  var btn = this;
+  var orig = btn.textContent;
+  btn.textContent = 'Анализируем...';
+  btn.disabled = true;
+
+  var payload = getPayload('preview');
+  state.lastPayload = payload;
+
+  fetch(API_BASE_URL + '/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) {
+    if (!res.ok) {
+      return res.json().then(function(d) { throw new Error(d.error || d.message || 'Ошибка сервера'); });
+    }
+    return res.json();
+  })
+  .then(function(data) {
+    renderPreview(data);
+    showScreen('screen-preview');
+  })
+  .catch(function(e) {
+    handleError(e);
+  })
+  .finally(function() {
+    btn.textContent = orig;
+    btn.disabled = false;
+  });
+});
+
+// ============================================================
+//  RENDER PREVIEW
+// ============================================================
+function renderPreview(data) {
+  var tag = scenarioNames[state.scenario] || 'Аудит';
+  if (state.scenario === 'marketplace' && state.platform) {
+    tag += ' · ' + (platformNames[state.platform] || state.platform);
+  }
+  $('previewScenarioTag').textContent = tag;
+  $('previewScenarioDesc').textContent = 'Базовый разбор';
+
+  if (data.previewProblem) {
+    var parts = splitFirstSentence(data.previewProblem);
+    $('previewProblemTitle').textContent = parts.title;
+    $('previewProblemText').textContent = parts.desc;
+  }
+
+  if (data.previewHint) {
+    var parts2 = splitFirstSentence(data.previewHint);
+    $('previewHintTitle').textContent = parts2.title;
+    $('previewHintText').textContent = parts2.desc;
+  }
+}
+
+function splitFirstSentence(str) {
+  if (!str) return { title: '', desc: '' };
+  var dotIdx = str.indexOf('.');
+  if (dotIdx > 0 && dotIdx < 80) {
+    return { title: str.substring(0, dotIdx + 1), desc: str.substring(dotIdx + 1).trim() };
+  }
+  return { title: str, desc: '' };
+}
+
+// ============================================================
+//  PRICING SCREEN
+// ============================================================
+function goToPricing() {
+  var s = state.scenario;
+
+  $('pricingName').textContent = tariffNames[s].main;
+  $('pricingPrice').textContent = tariffPrices[s].main + ' ₽';
+  $('pricingDesc').textContent = tariffDescs[s].main;
+  $('btnSelectMain').textContent = 'Выбрать за ' + tariffPrices[s].main + ' ₽';
+
+  if (s === 'marketplace') {
+    $('pricingCompetitor').classList.remove('hidden');
+  } else {
+    $('pricingCompetitor').classList.add('hidden');
+  }
+
+  showScreen('screen-pricing');
+}
+
+// ============================================================
+//  SELECT TARIFF → PAYMENT
+// ============================================================
+function selectTariff(type) {
+  state.tariff = type;
+  var s = state.scenario;
+  var price = tariffPrices[s][type];
+  var name = tariffNames[s][type];
+
+  $('paymentScenario').textContent = scenarioNames[s] + (s === 'marketplace' && state.platform ? ' · ' + platformNames[state.platform] : '');
+  $('paymentTariff').textContent = name;
+  $('paymentTotal').textContent = price + ' ₽';
+  $('payBtnPrice').textContent = price + ' ₽';
+
+  showScreen('screen-payment');
+}
+
+// ============================================================
+//  PAYMENT METHOD
+// ============================================================
+function selectPaymentMethod(el) {
+  document.querySelectorAll('.payment-method').forEach(function(m) { m.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+// ============================================================
+//  ANALYSIS (FULL)
+// ============================================================
+function startAnalysis() {
+  showScreen('screen-loading');
+  startLoadingAnimation();
+
+  var payload = state.lastPayload || getPayload('full');
+  payload.mode = 'full';
+  payload.tariff = state.tariff;
+
+  fetch(API_BASE_URL + '/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) {
+    if (!res.ok) {
+      return res.json().then(function(d) { throw new Error(d.error || d.message || 'Ошибка сервера'); });
+    }
+    return res.json();
+  })
+  .then(function(data) {
+    renderFullResult(data);
+    showScreen('screen-result');
+  })
+  .catch(function(e) {
+    handleError(e);
+  });
+}
+
+// ============================================================
+//  LOADING ANIMATION
+// ============================================================
+var loadingTimer = null;
+
+function startLoadingAnimation() {
+  var steps = document.querySelectorAll('#loadingSteps .loading-step');
+  steps.forEach(function(s, i) {
+    s.classList.remove('active', 'done');
+  });
+  if (steps.length > 0) steps[0].classList.add('active');
+
+  if (loadingTimer) clearInterval(loadingTimer);
+  var idx = 0;
+  loadingTimer = setInterval(function() {
+    if (idx < steps.length) {
+      steps[idx].classList.remove('active');
+      steps[idx].classList.add('done');
+      idx++;
+      if (idx < steps.length) {
+        steps[idx].classList.add('active');
+      }
+    }
+  }, 1200);
+}
+
+// ============================================================
+//  RENDER FULL RESULT
+// ============================================================
+function renderFullResult(data) {
+  var s = state.scenario;
+  var t = state.tariff;
+
+  var tag = scenarioNames[s] || '';
+  if (s === 'marketplace' && state.platform) tag += ' · ' + platformNames[state.platform];
+
+  $('resultScenarioTag').textContent = tag;
+  $('resultScenarioLabel').textContent = tariffNames[s][t] || 'Полный разбор';
+  $('resultScenarioDesc').textContent = tag + ' — ' + (tariffNames[s][t] || 'полный разбор');
+
+  // Problems
+  var probHtml = '';
+  if (Array.isArray(data.problems) && data.problems.length) {
+    var labels = ['Нет чёткой выгоды', 'Формулировка слишком общая', 'Слабый призыв к действию'];
+    data.problems.forEach(function(p, i) {
+      var label = labels[i] || 'Проблема ' + (i + 1);
+      probHtml += '<div class="result-item"><strong><span class="result-number">' + (i + 1) + '</span> ' + esc(label) + '</strong>' + esc(p) + '</div>';
+    });
+  } else {
+    probHtml = '<div class="result-item">Анализ проблем завершён</div>';
+  }
+  $('resultProblems').innerHTML = probHtml;
+
+  // Offers
+  var offHtml = '';
+  if (Array.isArray(data.offers) && data.offers.length) {
+    var styles = ['Понятный вариант', 'Продающий вариант', 'Сильный акцент'];
+    data.offers.forEach(function(o, i) {
+      var label = styles[i] || 'Вариант ' + (i + 1);
+      offHtml += '<div class="result-item"><strong><span class="result-number">' + (i + 1) + '</span> ' + esc(label) + '</strong>' + esc(o) + '</div>';
+    });
+  } else {
+    offHtml = '<div class="result-item">Варианты УТП сформированы</div>';
+  }
+  $('resultOffers').innerHTML = offHtml;
+
+  // Short version
+  if (data.shortVersion) {
+    $('resultShort').textContent = data.shortVersion;
+  }
+
+  // Advice
+  if (data.firstAdvice) {
+    $('resultAdvice').textContent = data.firstAdvice;
+  }
+
+  // Competitor block
+  if (t === 'competitor' && data.competitorAnalysis) {
+    $('resultCompetitor').classList.remove('hidden');
+    $('resultCompetitorText').textContent = data.competitorAnalysis;
+  } else if (t === 'competitor') {
+    $('resultCompetitor').classList.remove('hidden');
+    $('resultCompetitorText').textContent = 'Конкурентный анализ: сравнение с 3-5 основными конкурентами на площадке. Показаны сильные стороны конкурентов и рекомендации по улучшению.';
+  } else {
+    $('resultCompetitor').classList.add('hidden');
+  }
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// ============================================================
+//  ERROR HANDLING
+// ============================================================
+function handleError(err) {
+  var msg = err.message || err || 'Неизвестная ошибка';
+  var title = 'Не удалось получить разбор';
+  var text = 'Произошла ошибка при обработке запроса.';
+  var detail = 'Временная недоступность сервиса. Попробуйте снова через несколько секунд.';
+  var hint = 'Если проблема повторяется — попробуйте позже.';
+
+  if (msg.indexOf('PROVIDER_NOT_CONFIGURED') !== -1 || msg.indexOf('provider_not_configured') !== -1 || msg.indexOf('GigaChat credentials') !== -1 || msg.indexOf('503') !== -1) {
+    title = 'AI-провайдер пока не подключен';
+    text = 'Интерфейс mini app полностью готов, но backend-анализ через GigaChat пока недоступен.';
+    detail = 'Сервис AI-анализа ещё не настроен. Это техническая задача подключения credentials.';
+    hint = 'После настройки GigaChat credentials анализ будет доступен. Сейчас вы можете изучить интерфейс.';
+  } else if (msg.indexOf('validation') !== -1 || msg.indexOf('валидац') !== -1) {
+    title = 'Ошибка в данных';
+    text = 'Не все поля заполнены корректно.';
+    detail = msg;
+    hint = 'Вернитесь к форме и проверьте заполненные поля.';
+  } else if (msg.indexOf('timeout') !== -1 || msg.indexOf('таймаут') !== -1) {
+    title = 'Сервер не ответил вовремя';
+    text = 'Заняло слишком много времени.';
+    detail = 'Сервер не успел обработать запрос. Это может быть связано с высокой нагрузкой.';
+    hint = 'Попробуйте ещё раз через несколько секунд.';
+  } else if (msg.indexOf('invalid_model_response') !== -1 || msg.indexOf('невалидн') !== -1) {
+    title = 'Некорректный ответ AI';
+    text = 'AI-модель вернула ответ в неожиданном формате.';
+    detail = 'Это может происходить при сложных запросах. Попробуйте упростить формулировку.';
+    hint = 'Если повторяется — попробуйте другой текст.';
+  }
+
+  $('errorTitle').textContent = title;
+  $('errorText').textContent = text;
+  $('errorDetailText').textContent = detail;
+  $('errorHint').textContent = hint;
+
+  showScreen('screen-error');
+}
+
+// ============================================================
+//  RETRY
+// ============================================================
+function retryAnalysis() {
+  if (state.lastPayload) {
+    startAnalysis();
+  } else {
+    showScreen('screen-input');
+  }
+}
+</script>
 </body>
 </html>
