@@ -500,70 +500,228 @@
       font-size: 12px; line-height: 1.5; margin-top: 14px;
     }
 
-    /* ===== LOADING SCREEN ===== */
-    .loading-wrap { text-align: center; padding: 60px 20px 40px; }
-
-    .loading-anim {
-      position: relative; width: 120px; height: 120px;
-      margin: 0 auto 32px;
-      display: flex; align-items: center; justify-content: center;
+    /* ===== THINKING ANIMATIONS ===== */
+    .od-thinking-wrap {
+      text-align: center; padding: 30px 20px 16px;
+      display: none;
     }
 
-    .loading-aura {
-      position: absolute; width: 120px; height: 120px;
+    .od-thinking-wrap.active { display: block; }
+
+    .od-thinking-container {
+      position: relative;
+      width: 240px; height: 240px;
+      margin: 0 auto 24px;
+      display: flex; justify-content: center; align-items: center;
+      background: radial-gradient(circle at center, rgba(0, 200, 255, 0.06) 0%, transparent 70%);
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(115, 237, 255, 0.08), transparent 70%);
-      animation: auraPulse 2.5s ease-in-out infinite;
+      box-shadow: 0 0 24px rgba(0, 200, 255, 0.08);
     }
 
-    @keyframes auraPulse {
-      0%, 100% { transform: scale(1); opacity: 0.6; }
-      50% { transform: scale(1.3); opacity: 1; }
+    /* Atom core */
+    .od-thinking-core {
+      position: relative; border-radius: 50%;
+      box-shadow: 0 0 25px #00f2fe, 0 0 45px rgba(0, 242, 254, 0.5);
     }
 
-    .loading-ring {
+    .od-thinking-variant-basic .od-thinking-core {
+      width: 50px; height: 50px;
+      background: radial-gradient(circle, #00f2fe 0%, #0066aa 100%);
+      animation: odCorePulse1 1.6s ease-in-out infinite;
+    }
+
+    .od-thinking-variant-enhanced .od-thinking-core {
+      width: 60px; height: 60px;
+      background: radial-gradient(circle, #00b4d8 0%, #004466 100%);
+      display: flex; align-items: center; justify-content: center;
+      animation: odCorePulse2 1.8s ease-in-out infinite;
+    }
+
+    .od-thinking-variant-premium .od-thinking-core {
+      width: 65px; height: 65px;
+      border-radius: 50%; overflow: hidden;
+      animation: odCorePulse2 2s ease-in-out infinite;
+    }
+
+    .od-thinking-variant-premium .od-thinking-core canvas {
+      width: 100% !important; height: 100% !important;
+      border-radius: 50%;
+    }
+
+    .od-thinking-ai-text {
+      font-size: 20px; font-weight: 800;
+      background: linear-gradient(135deg, #ffffff, #00f2fe, #4efff5);
+      background-size: 200% 200%;
+      background-clip: text; -webkit-background-clip: text;
+      color: transparent;
+      animation: odTextGrad 2.5s ease infinite;
+    }
+
+    @keyframes odCorePulse1 {
+      0% { transform: scale(0.92); opacity: 0.8; box-shadow: 0 0 20px #00f2fe; }
+      50% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 45px #00f2fe, 0 0 70px #4efff5; }
+      100% { transform: scale(0.92); opacity: 0.8; box-shadow: 0 0 20px #00f2fe; }
+    }
+
+    @keyframes odCorePulse2 {
+      0% { transform: scale(0.94); box-shadow: 0 0 20px #00f2fe; }
+      50% { transform: scale(1.06); box-shadow: 0 0 45px #00f2fe, 0 0 70px #4efff5; }
+      100% { transform: scale(0.94); box-shadow: 0 0 20px #00f2fe; }
+    }
+
+    @keyframes odTextGrad {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Orbits */
+    .od-thinking-orbit {
+      position: absolute; top: 50%; left: 50%;
+      border: 1.5px solid rgba(0, 230, 255, 0.4);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .od-thinking-variant-basic .od-thinking-orbit:nth-child(1) { width: 120px; height: 120px; border-color: rgba(0,230,255,0.5); animation: odOrbitSpin 6s linear infinite; }
+    .od-thinking-variant-basic .od-thinking-orbit:nth-child(2) { width: 170px; height: 170px; border-color: rgba(0,200,255,0.35); animation: odOrbitSpin 10s linear infinite reverse; }
+    .od-thinking-variant-basic .od-thinking-orbit:nth-child(3) { width: 220px; height: 220px; border-color: rgba(0,170,220,0.25); animation: odOrbitSpin 14s linear infinite; }
+
+    .od-thinking-variant-enhanced .od-thinking-orbit:nth-child(1) { width: 130px; height: 130px; border-color: rgba(0,230,255,0.5); animation: odOrbitSpin 6s linear infinite; }
+    .od-thinking-variant-enhanced .od-thinking-orbit:nth-child(2) { width: 180px; height: 180px; border-color: rgba(0,200,255,0.35); animation: odOrbitSpin 10s linear infinite reverse; }
+    .od-thinking-variant-enhanced .od-thinking-orbit:nth-child(3) { width: 230px; height: 230px; border-color: rgba(0,170,220,0.25); animation: odOrbitSpin 14s linear infinite; }
+
+    .od-thinking-variant-premium .od-thinking-orbit:nth-child(1) { width: 140px; height: 140px; border-color: rgba(0,230,255,0.5); animation: odOrbitSpin 6s linear infinite; }
+    .od-thinking-variant-premium .od-thinking-orbit:nth-child(2) { width: 195px; height: 195px; border-color: rgba(0,200,255,0.35); animation: odOrbitSpin 10s linear infinite reverse; }
+    .od-thinking-variant-premium .od-thinking-orbit:nth-child(3) { width: 240px; height: 240px; border-color: rgba(0,170,220,0.25); animation: odOrbitSpin 14s linear infinite; }
+
+    @keyframes odOrbitSpin { from { transform: translate(-50%,-50%) rotate(0deg); } to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+    /* Electrons */
+    .od-thinking-electron {
+      position: absolute; width: 7px; height: 7px;
+      background: #4efff5; border-radius: 50%;
+      box-shadow: 0 0 10px #00f2fe;
+      top: -3.5px; left: 50%; transform: translateX(-50%);
+    }
+
+    /* Basic: 1 per orbit */
+    .od-thinking-variant-basic .od-orbit-1 .od-thinking-electron:nth-child(1) { animation: odElec1 6s linear infinite; }
+    .od-thinking-variant-basic .od-orbit-2 .od-thinking-electron:nth-child(1) { animation: odElec2 10s linear infinite; }
+    .od-thinking-variant-basic .od-orbit-3 .od-thinking-electron:nth-child(1) { animation: odElec3 14s linear infinite; }
+
+    /* Enhanced: 2 per orbit */
+    .od-thinking-variant-enhanced .od-orbit-1 .od-thinking-electron:nth-child(1) { animation: odElec1 6s linear infinite; }
+    .od-thinking-variant-enhanced .od-orbit-1 .od-thinking-electron:nth-child(2) { animation: odElec1b 6s linear infinite; }
+    .od-thinking-variant-enhanced .od-orbit-2 .od-thinking-electron:nth-child(1) { animation: odElec2 10s linear infinite; }
+    .od-thinking-variant-enhanced .od-orbit-2 .od-thinking-electron:nth-child(2) { animation: odElec2b 10s linear infinite; }
+    .od-thinking-variant-enhanced .od-orbit-3 .od-thinking-electron:nth-child(1) { animation: odElec3 14s linear infinite; }
+    .od-thinking-variant-enhanced .od-orbit-3 .od-thinking-electron:nth-child(2) { animation: odElec3b 14s linear infinite; }
+
+    /* Premium: 3 per orbit */
+    .od-thinking-variant-premium .od-orbit-1 .od-thinking-electron:nth-child(1) { animation: odElec1 6s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-1 .od-thinking-electron:nth-child(2) { animation: odElec1b 6s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-1 .od-thinking-electron:nth-child(3) { animation: odElec1c 6s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-2 .od-thinking-electron:nth-child(1) { animation: odElec2 10s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-2 .od-thinking-electron:nth-child(2) { animation: odElec2b 10s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-2 .od-thinking-electron:nth-child(3) { animation: odElec2c 10s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-3 .od-thinking-electron:nth-child(1) { animation: odElec3 14s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-3 .od-thinking-electron:nth-child(2) { animation: odElec3b 14s linear infinite; }
+    .od-thinking-variant-premium .od-orbit-3 .od-thinking-electron:nth-child(3) { animation: odElec3c 14s linear infinite; }
+
+    @keyframes odElec1  { from { transform: translateX(-50%) rotate(0deg) translateX(60px) rotate(0deg); } to { transform: translateX(-50%) rotate(360deg) translateX(60px) rotate(-360deg); } }
+    @keyframes odElec1b { from { transform: translateX(-50%) rotate(180deg) translateX(60px) rotate(-180deg); } to { transform: translateX(-50%) rotate(540deg) translateX(60px) rotate(-540deg); } }
+    @keyframes odElec1c { from { transform: translateX(-50%) rotate(120deg) translateX(60px) rotate(-120deg); } to { transform: translateX(-50%) rotate(480deg) translateX(60px) rotate(-480deg); } }
+    @keyframes odElec2  { from { transform: translateX(-50%) rotate(0deg) translateX(85px) rotate(0deg); } to { transform: translateX(-50%) rotate(360deg) translateX(85px) rotate(-360deg); } }
+    @keyframes odElec2b { from { transform: translateX(-50%) rotate(180deg) translateX(85px) rotate(-180deg); } to { transform: translateX(-50%) rotate(540deg) translateX(85px) rotate(-540deg); } }
+    @keyframes odElec2c { from { transform: translateX(-50%) rotate(120deg) translateX(85px) rotate(-120deg); } to { transform: translateX(-50%) rotate(480deg) translateX(85px) rotate(-480deg); } }
+    @keyframes odElec3  { from { transform: translateX(-50%) rotate(0deg) translateX(110px) rotate(0deg); } to { transform: translateX(-50%) rotate(360deg) translateX(110px) rotate(-360deg); } }
+    @keyframes odElec3b { from { transform: translateX(-50%) rotate(180deg) translateX(110px) rotate(-180deg); } to { transform: translateX(-50%) rotate(540deg) translateX(110px) rotate(-540deg); } }
+    @keyframes odElec3c { from { transform: translateX(-50%) rotate(120deg) translateX(110px) rotate(-120deg); } to { transform: translateX(-50%) rotate(480deg) translateX(110px) rotate(-480deg); } }
+
+    /* Protons (enhanced: 6, premium: 12) */
+    .od-thinking-proton {
+      position: absolute; width: 7px; height: 7px;
+      background: #fff; border-radius: 50%;
+      box-shadow: 0 0 10px #fff, 0 0 15px #00f2fe;
+    }
+
+    .od-thinking-variant-enhanced .od-thinking-proton:nth-child(1) { top:10px;left:10px;animation:odP1 2.2s ease-in-out infinite; }
+    .od-thinking-variant-enhanced .od-thinking-proton:nth-child(2) { bottom:10px;right:10px;animation:odP2 2.5s ease-in-out infinite; }
+    .od-thinking-variant-enhanced .od-thinking-proton:nth-child(3) { top:50%;left:6px;animation:odP3 2s ease-in-out infinite; }
+    .od-thinking-variant-enhanced .od-thinking-proton:nth-child(4) { top:50%;right:6px;animation:odP4 2.7s ease-in-out infinite; }
+    .od-thinking-variant-enhanced .od-thinking-proton:nth-child(5) { top:15px;right:15px;animation:odP5 2.3s ease-in-out infinite; }
+    .od-thinking-variant-enhanced .od-thinking-proton:nth-child(6) { bottom:15px;left:15px;animation:odP6 2.6s ease-in-out infinite; }
+
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(1) { top:6px;left:8px;animation:odP1 2.2s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(2) { bottom:6px;right:8px;animation:odP2 2.5s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(3) { top:50%;left:5px;animation:odP3 2s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(4) { top:50%;right:5px;animation:odP4 2.7s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(5) { top:12px;right:12px;animation:odP5 2.3s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(6) { bottom:12px;left:12px;animation:odP6 2.6s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(7) { top:22px;left:22px;animation:odP7 2.1s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(8) { bottom:22px;right:22px;animation:odP8 2.4s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(9) { top:18px;right:26px;animation:odP9 2.8s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(10) { bottom:18px;left:26px;animation:odP10 2s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(11) { top:30px;left:14px;animation:odP11 2.9s ease-in-out infinite; }
+    .od-thinking-variant-premium .od-thinking-proton:nth-child(12) { bottom:30px;right:14px;animation:odP12 2.4s ease-in-out infinite; }
+
+    @keyframes odP1 { 0%,100%{transform:translate(0,0)}50%{transform:translate(5px,7px)} }
+    @keyframes odP2 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-5px,-7px)} }
+    @keyframes odP3 { 0%,100%{transform:translate(0,0)}50%{transform:translate(7px,-4px)} }
+    @keyframes odP4 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-7px,4px)} }
+    @keyframes odP5 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-4px,8px)} }
+    @keyframes odP6 { 0%,100%{transform:translate(0,0)}50%{transform:translate(4px,-8px)} }
+    @keyframes odP7 { 0%,100%{transform:translate(0,0)}50%{transform:translate(6px,5px)} }
+    @keyframes odP8 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-6px,-5px)} }
+    @keyframes odP9 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-7px,6px)} }
+    @keyframes odP10 { 0%,100%{transform:translate(0,0)}50%{transform:translate(7px,-6px)} }
+    @keyframes odP11 { 0%,100%{transform:translate(0,0)}50%{transform:translate(5px,9px)} }
+    @keyframes odP12 { 0%,100%{transform:translate(0,0)}50%{transform:translate(-5px,-9px)} }
+
+    /* Hologram overlay */
+    .od-thinking-hologram {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,200,255,0.1) 2px, rgba(0,200,255,0.1) 4px);
+      border-radius: 50%; pointer-events: none;
+      animation: odHoloScan 2.5s linear infinite;
+    }
+
+    @keyframes odHoloScan {
+      0% { background-position: 0 0; opacity: 0.15; }
+      100% { background-position: 0 18px; opacity: 0.5; }
+    }
+
+    /* Glitch */
+    .od-thinking-glitch {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, rgba(0,255,255,0.12) 0%, transparent 70%);
+      animation: odGlitchPulse 3.5s infinite;
+    }
+
+    @keyframes odGlitchPulse {
+      0%,90%,100%{opacity:0}
+      92%{opacity:0.5;transform:translateX(1px)}
+      94%{opacity:0.2;transform:translateX(-1px)}
+      96%{opacity:0.6;transform:translateX(0.5px)}
+    }
+
+    /* Trail */
+    .od-thinking-trail {
       position: absolute; border-radius: 50%;
-      border: 2px solid transparent;
-      animation: loadRing 3s linear infinite;
+      pointer-events: none; z-index: 5;
+      animation: odTrailFade 0.8s ease-out forwards;
     }
 
-    .loading-ring-1 {
-      width: 100px; height: 100px;
-      border-top-color: rgba(115, 237, 255, 0.5);
-      border-right-color: rgba(79, 117, 255, 0.2);
-    }
+    @keyframes odTrailFade { 0%{opacity:0.8;transform:scale(1)}100%{opacity:0;transform:scale(0.3)} }
 
-    .loading-ring-2 {
-      width: 80px; height: 80px;
-      border-bottom-color: rgba(30, 196, 217, 0.4);
-      border-left-color: rgba(79, 117, 255, 0.15);
-      animation-direction: reverse;
-      animation-duration: 2.2s;
-    }
+    .od-thinking-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .od-thinking-sub { color: var(--muted); font-size: 13px; line-height: 1.5; }
 
-    @keyframes loadRing {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-core {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-      position: relative; z-index: 2;
-      box-shadow: 0 0 32px rgba(115, 237, 255, 0.4), 0 0 60px rgba(79, 117, 255, 0.15);
-      animation: coreBreath 2s ease-in-out infinite;
-    }
-
-    @keyframes coreBreath {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 32px rgba(115, 237, 255, 0.4), 0 0 60px rgba(79, 117, 255, 0.15); }
-      50% { transform: scale(1.06); box-shadow: 0 0 44px rgba(115, 237, 255, 0.55), 0 0 80px rgba(79, 117, 255, 0.2); }
-    }
-
-    .loading-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-    .loading-sub { color: var(--muted); font-size: 14px; line-height: 1.5; }
-
+    /* ===== LOADING SCREEN STEPS ===== */
     .loading-steps {
-      margin-top: 32px; text-align: left;
+      margin-top: 24px; text-align: left;
       display: grid; gap: 8px;
     }
 
@@ -592,6 +750,19 @@
     .loading-step.done .loading-step-dot {
       background: var(--ok);
       box-shadow: 0 0 8px rgba(94, 227, 181, 0.5);
+    }
+
+    @media (max-width: 420px) {
+      .od-thinking-container { width: 200px; height: 200px; }
+      .od-thinking-variant-basic .od-thinking-orbit:nth-child(3),
+      .od-thinking-variant-enhanced .od-thinking-orbit:nth-child(3),
+      .od-thinking-variant-premium .od-thinking-orbit:nth-child(3) {
+        width: 195px; height: 195px;
+      }
+      .od-thinking-variant-enhanced .od-thinking-orbit:nth-child(2),
+      .od-thinking-variant-premium .od-thinking-orbit:nth-child(2) {
+        width: 155px; height: 155px;
+      }
     }
 
     /* ===== FULL RESULT ===== */
@@ -1041,20 +1212,20 @@
           <div class="logo"><span>Ai</span></div>
           <div>
             <div class="brand-title">Анализируем</div>
-            <div class="brand-subtitle">Это займёт несколько секунд</div>
+            <div class="brand-subtitle" id="loadingSubtitle">Это займёт несколько секунд</div>
           </div>
         </header>
 
         <div class="card">
-          <div class="loading-wrap">
-            <div class="loading-anim">
-              <div class="loading-aura"></div>
-              <div class="loading-ring loading-ring-1"></div>
-              <div class="loading-ring loading-ring-2"></div>
-              <div class="loading-core"></div>
+          <div class="od-thinking-wrap active" id="thinkingWrap">
+            <div class="od-thinking-container" id="thinkingContainer">
+              <!-- Orbits (injected by JS based on variant) -->
+              <div class="od-thinking-core" id="thinkingCore"></div>
+              <div class="od-thinking-hologram"></div>
+              <div class="od-thinking-glitch"></div>
             </div>
-            <div class="loading-title" id="loadingTitle">Анализируем ваше предложение</div>
-            <div class="loading-sub" id="loadingSub">Сравниваем формулировки, выгоды и подачу</div>
+            <div class="od-thinking-title" id="loadingTitle">Анализируем ваше предложение</div>
+            <div class="od-thinking-sub" id="loadingSub">Сравниваем формулировки, выгоды и подачу</div>
           </div>
 
           <div class="loading-steps" id="loadingSteps">
@@ -1374,6 +1545,9 @@ $('btnPreview').addEventListener('click', function() {
   var payload = getPayload('preview');
   state.lastPayload = payload;
 
+  showScreen('screen-loading');
+  startThinkingAnimation('preview');
+
   fetch(API_BASE_URL + '/api/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1386,10 +1560,12 @@ $('btnPreview').addEventListener('click', function() {
     return res.json();
   })
   .then(function(data) {
+    stopThinkingAnimation();
     renderPreview(data);
     showScreen('screen-preview');
   })
   .catch(function(e) {
+    stopThinkingAnimation();
     handleError(e);
   })
   .finally(function() {
@@ -1481,7 +1657,7 @@ function selectPaymentMethod(el) {
 // ============================================================
 function startAnalysis() {
   showScreen('screen-loading');
-  startLoadingAnimation();
+  startThinkingAnimation('full');
 
   var payload = state.lastPayload || getPayload('full');
   payload.mode = 'full';
@@ -1499,29 +1675,318 @@ function startAnalysis() {
     return res.json();
   })
   .then(function(data) {
+    stopThinkingAnimation();
     renderFullResult(data);
     showScreen('screen-result');
   })
   .catch(function(e) {
+    stopThinkingAnimation();
     handleError(e);
   });
 }
 
 // ============================================================
-//  LOADING ANIMATION
+//  THINKING ANIMATION SYSTEM
 // ============================================================
-var loadingTimer = null;
+var odThinkingState = {
+  variant: null, // 'basic' | 'enhanced' | 'premium'
+  loadingTimer: null,
+  trailRAFs: [],
+  trailTimeouts: [],
+  threeRenderer: null,
+  threeAnimFrame: null,
+  threeScene: null,
+  threeCamera: null
+};
 
-function startLoadingAnimation() {
-  var steps = document.querySelectorAll('#loadingSteps .loading-step');
-  steps.forEach(function(s, i) {
-    s.classList.remove('active', 'done');
+function startThinkingAnimation(mode) {
+  // Determine variant: preview=basic, full+main=enhanced, full+competitor=premium
+  var variant = 'basic';
+  if (mode === 'full') {
+    variant = state.tariff === 'competitor' ? 'premium' : 'enhanced';
+  }
+  odThinkingState.variant = variant;
+
+  // Update subtitle
+  $('loadingSubtitle').textContent = mode === 'preview'
+    ? 'Быстрая проверка вашего предложения'
+    : 'Глубокий AI-анализ';
+
+  // Titles per variant
+  var titles = {
+    basic: 'Быстро анализируем',
+    enhanced: 'Анализируем ваше предложение',
+    premium: 'Глубокий анализ с конкурентами'
+  };
+  var subs = {
+    basic: 'Проверяем ключевые моменты',
+    enhanced: 'Сравниваем формулировки, выгоды и подачу',
+    premium: 'Анализируем конкурентный контекст и формулировки'
+  };
+  $('loadingTitle').textContent = titles[variant] || titles.basic;
+  $('loadingSub').textContent = subs[variant] || subs.basic;
+
+  // Build animation HTML
+  buildThinkingAnimation(variant);
+
+  // Steps
+  startLoadingSteps();
+}
+
+function buildThinkingAnimation(variant) {
+  var container = $('thinkingContainer');
+  var core = $('thinkingCore');
+
+  // Clean previous
+  cleanupThinkingAnimation();
+
+  // Remove old orbits, protons, canvas
+  container.querySelectorAll('.od-thinking-orbit, .od-thinking-proton').forEach(function(el) { el.remove(); });
+  var oldCanvas = core.querySelector('canvas');
+  if (oldCanvas) oldCanvas.remove();
+
+  // Set variant class
+  container.className = 'od-thinking-container od-thinking-variant-' + variant;
+
+  // Build orbits
+  var electronCounts = { basic: 1, enhanced: 2, premium: 3 };
+  var count = electronCounts[variant] || 1;
+
+  for (var o = 1; o <= 3; o++) {
+    var orbit = document.createElement('div');
+    orbit.className = 'od-thinking-orbit od-orbit-' + o;
+    for (var e = 1; e <= count; e++) {
+      var elec = document.createElement('div');
+      elec.className = 'od-thinking-electron';
+      orbit.appendChild(elec);
+    }
+    container.insertBefore(orbit, core);
+  }
+
+  // Build protons (enhanced: 6, premium: 12)
+  if (variant === 'enhanced') {
+    for (var p = 1; p <= 6; p++) {
+      var proton = document.createElement('div');
+      proton.className = 'od-thinking-proton';
+      container.appendChild(proton);
+    }
+  } else if (variant === 'premium') {
+    for (var p2 = 1; p2 <= 12; p2++) {
+      var proton2 = document.createElement('div');
+      proton2.className = 'od-thinking-proton';
+      container.appendChild(proton2);
+    }
+  }
+
+  // Core content
+  if (variant === 'enhanced') {
+    core.innerHTML = '<div class="od-thinking-ai-text">AI</div>';
+  } else if (variant === 'basic') {
+    core.innerHTML = '';
+  } else {
+    core.innerHTML = '';
+  }
+
+  // Trail tracking
+  startTrailTracking(container);
+
+  // Three.js for premium
+  if (variant === 'premium') {
+    initThreeBrain(core);
+  }
+}
+
+// ---- TRAIL TRACKING ----
+function startTrailTracking(container) {
+  var els = container.querySelectorAll('.od-thinking-electron, .od-thinking-proton');
+  els.forEach(function(el) {
+    var lastX = null, lastY = null;
+    var rafId;
+
+    function track() {
+      if (!el.parentNode || !container.parentNode) { cancelAnimationFrame(rafId); return; }
+      var rect = el.getBoundingClientRect();
+      var cRect = container.getBoundingClientRect();
+      var cx = rect.left - cRect.left + rect.width / 2;
+      var cy = rect.top - cRect.top + rect.height / 2;
+
+      if (lastX !== null && lastY !== null) {
+        var dist = Math.hypot(cx - lastX, cy - lastY);
+        if (dist > 4) {
+          createOdTrail(container, cx, cy, el.classList.contains('od-thinking-proton'));
+        }
+      }
+      lastX = cx; lastY = cy;
+      rafId = requestAnimationFrame(track);
+    }
+
+    rafId = requestAnimationFrame(track);
+    odThinkingState.trailRAFs.push(rafId);
   });
+}
+
+function createOdTrail(container, x, y, isProton) {
+  var trail = document.createElement('div');
+  trail.className = 'od-thinking-trail';
+  var size = isProton ? '6px' : '5px';
+  trail.style.width = size;
+  trail.style.height = size;
+  trail.style.left = (x - 3) + 'px';
+  trail.style.top = (y - 3) + 'px';
+  trail.style.backgroundColor = isProton ? '#ffffff' : '#4efff5';
+  trail.style.boxShadow = isProton
+    ? '0 0 6px #ffffff, 0 0 10px #00f2fe'
+    : '0 0 6px #00f2fe, 0 0 10px #4efff5';
+  container.appendChild(trail);
+
+  var tid = setTimeout(function() {
+    if (trail.parentNode) trail.parentNode.removeChild(trail);
+  }, 800);
+  odThinkingState.trailTimeouts.push(tid);
+}
+
+// ---- THREE.JS BRAIN (PREMIUM) ----
+function initThreeBrain(container) {
+  var script = document.createElement('script');
+  script.src = 'https://unpkg.com/three@0.128.0/build/three.min.js';
+  script.onload = function() {
+    if (odThinkingState.variant !== 'premium') return;
+
+    var canvas = document.createElement('canvas');
+    container.appendChild(canvas);
+
+    var scene = new THREE.Scene();
+    odThinkingState.threeScene = scene;
+
+    var cam = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+    cam.position.set(0, 0, 2.2);
+    cam.lookAt(0, 0, 0);
+    odThinkingState.threeCamera = cam;
+
+    var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+    renderer.setSize(65, 65);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    odThinkingState.threeRenderer = renderer;
+
+    scene.add(new THREE.AmbientLight(0x224466));
+    var dl = new THREE.DirectionalLight(0x00ccff, 0.9);
+    dl.position.set(1, 1, 1);
+    scene.add(dl);
+    var pl = new THREE.PointLight(0x00aaff, 0.7);
+    pl.position.set(0.5, 1, 1.5);
+    scene.add(pl);
+
+    var brain = new THREE.Group();
+
+    var lm = new THREE.MeshPhongMaterial({ color: 0x00aaff, emissive: 0x004466, transparent: true, opacity: 0.8 });
+    var lh = new THREE.Mesh(new THREE.SphereGeometry(0.55, 48, 48), lm);
+    lh.position.set(-0.38, 0.04, 0); lh.scale.set(1.05, 1.15, 0.85);
+    brain.add(lh);
+
+    var rm = new THREE.MeshPhongMaterial({ color: 0x00ccff, emissive: 0x004466, transparent: true, opacity: 0.8 });
+    var rh = new THREE.Mesh(new THREE.SphereGeometry(0.55, 48, 48), rm);
+    rh.position.set(0.38, 0.04, 0); rh.scale.set(1.05, 1.15, 0.85);
+    brain.add(rh);
+
+    var cb = new THREE.Mesh(new THREE.SphereGeometry(0.32, 32, 32), new THREE.MeshPhongMaterial({ color: 0x0088cc, emissive: 0x003355, transparent: true, opacity: 0.7 }));
+    cb.position.set(0, -0.45, 0.15); cb.scale.set(0.85, 0.45, 0.65);
+    brain.add(cb);
+
+    var wm = new THREE.MeshBasicMaterial({ color: 0x00f2fe, wireframe: true, transparent: true, opacity: 0.4 });
+    var lw = new THREE.Mesh(new THREE.SphereGeometry(0.56, 20, 20), wm);
+    lw.position.set(-0.38, 0.04, 0); lw.scale.set(1.05, 1.15, 0.85);
+    brain.add(lw);
+    var rw = new THREE.Mesh(new THREE.SphereGeometry(0.56, 20, 20), wm);
+    rw.position.set(0.38, 0.04, 0); rw.scale.set(1.05, 1.15, 0.85);
+    brain.add(rw);
+
+    var n = 150, pos = new Float32Array(n * 3);
+    for (var i = 0; i < n; i++) {
+      var r = 0.95 + Math.random() * 0.45;
+      var th = Math.random() * Math.PI * 2;
+      var ph = Math.acos(2 * Math.random() - 1);
+      pos[i*3] = r * Math.sin(ph) * Math.cos(th);
+      pos[i*3+1] = r * Math.sin(ph) * Math.sin(th) * 0.8;
+      pos[i*3+2] = r * Math.cos(ph);
+    }
+    var pg = new THREE.BufferGeometry();
+    pg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    var pts = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0x00f2fe, size: 0.02, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending }));
+    brain.add(pts);
+
+    scene.add(brain);
+
+    var t = 0;
+    function animate() {
+      odThinkingState.threeAnimFrame = requestAnimationFrame(animate);
+      if (odThinkingState.variant !== 'premium') { cancelAnimationFrame(odThinkingState.threeAnimFrame); return; }
+      t += 0.01;
+      brain.rotation.y = Math.sin(t * 0.3) * 0.4;
+      brain.rotation.x = Math.sin(t * 0.2) * 0.15;
+      pts.rotation.y += 0.004;
+      dl.intensity = 0.7 + Math.sin(t * 2.5) * 0.3;
+      renderer.render(scene, cam);
+    }
+    animate();
+  };
+  document.head.appendChild(script);
+  odThinkingState.threeScript = script;
+}
+
+// ---- CLEANUP ----
+function stopThinkingAnimation() {
+  odThinkingState.variant = null;
+
+  // Clear loading steps timer
+  if (odThinkingState.loadingTimer) {
+    clearInterval(odThinkingState.loadingTimer);
+    odThinkingState.loadingTimer = null;
+  }
+
+  // Cancel trail rAFs
+  odThinkingState.trailRAFs.forEach(function(id) { cancelAnimationFrame(id); });
+  odThinkingState.trailRAFs = [];
+
+  // Clear trail timeouts
+  odThinkingState.trailTimeouts.forEach(function(id) { clearTimeout(id); });
+  odThinkingState.trailTimeouts = [];
+
+  // Remove trail DOM elements
+  var container = $('thinkingContainer');
+  if (container) {
+    container.querySelectorAll('.od-thinking-trail').forEach(function(el) { el.remove(); });
+  }
+
+  // Cleanup Three.js
+  if (odThinkingState.threeAnimFrame) {
+    cancelAnimationFrame(odThinkingState.threeAnimFrame);
+    odThinkingState.threeAnimFrame = null;
+  }
+  if (odThinkingState.threeRenderer) {
+    odThinkingState.threeRenderer.dispose();
+    odThinkingState.threeRenderer = null;
+  }
+  odThinkingState.threeScene = null;
+  odThinkingState.threeCamera = null;
+
+  // Remove Three.js canvas
+  var core = $('thinkingCore');
+  if (core) {
+    var c = core.querySelector('canvas');
+    if (c) c.remove();
+  }
+}
+
+// ---- LOADING STEPS ----
+function startLoadingSteps() {
+  var steps = document.querySelectorAll('#loadingSteps .loading-step');
+  steps.forEach(function(s) { s.classList.remove('active', 'done'); });
   if (steps.length > 0) steps[0].classList.add('active');
 
-  if (loadingTimer) clearInterval(loadingTimer);
+  if (odThinkingState.loadingTimer) clearInterval(odThinkingState.loadingTimer);
   var idx = 0;
-  loadingTimer = setInterval(function() {
+  odThinkingState.loadingTimer = setInterval(function() {
     if (idx < steps.length) {
       steps[idx].classList.remove('active');
       steps[idx].classList.add('done');
