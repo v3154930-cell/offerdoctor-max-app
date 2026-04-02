@@ -150,3 +150,57 @@ backend/
 ## CORS
 
 CORS настроен на разрешение всех origins. Для production рекомендуется ограничить в `server.js`.
+
+## Robokassa (опционально)
+
+Для приёма оплат через Robokassa:
+
+### 1. Регистрация и настройка
+
+1. Зарегистрируйтесь на https://robokassa.ru
+2. Создайте магазин и получите **Login** ( MerchantLogin )
+3. В настройках магазина:
+   - **Алгоритм подписи**: MD5
+   - **Result URL**: `https://your-domain.com/api/payment/result`
+   - **Success URL**: `https://your-domain.com/#?orderId={InvId}`
+   - **Fail URL**: `https://your-domain.com/#?fail=true`
+   - Включите **Тестовый режим** для проверки
+
+### 2. Переменные окружения
+
+```bash
+# Базовый URL вашего deployed приложения (обязательно для callback!)
+ROBOKASSA_BASE_URL=https://your-domain.com
+
+# Login магазина
+ROBOKASSA_LOGIN=your_shop_login
+
+# Password1 (для подписи)
+ROBOKASSA_PASSWORD1=your_password1
+
+# Тестовый режим (true/false)
+ROBOKASSA_IS_TEST=true
+```
+
+### 3. URLs в кабинете Robokassa
+
+| Параметр | Значение | Примечание |
+|----------|----------|------------|
+| ResultURL | `https://your-domain.com/api/payment/result` | Robokassa шлёт POST после оплаты |
+| SuccessURL | `https://your-domain.com/#?orderId={InvId}` | Редирект после успешной оплаты |
+| FailURL | `https://your-domain.com/#?fail=true` | Редирект после отмены |
+
+### 4. Важно
+
+- **ResultURL должен быть публичным** — localhost не работает. Используйте ngrok для локального тестирования.
+- **HTTPS обязателен** — Robokassa требует защищённое соединение для callback.
+- **IsTest=1** — в тестовом режиме используйте тестовые карты (можно получить в кабинете Robokassa).
+- После проверки переключите `ROBOKASSA_IS_TEST=false` и пройдите модерацию.
+
+### 5. Проверка callback
+
+После оплаты в тестовом режиме:
+1. Пользователь оплачивает
+2. Robokassa шлёт POST на ResultURL
+3. Backend запускает анализ
+4. Frontend polling проверяет статус и показывает результат

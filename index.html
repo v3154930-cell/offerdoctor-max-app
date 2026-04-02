@@ -1531,8 +1531,14 @@
 // ============================================================
 // Production: замените URL ниже на адрес вашего backend.
 // Local dev: оставьте localhost.
+// Vercel deployment: будет автоматически использоваться текущий хост
 // Также можно задать window.API_BASE_URL перед загрузкой страницы.
 var API_BASE_URL = window.API_BASE_URL || '{{API_BASE_URL}}' || 'http://localhost:3000';
+
+// Vercel auto-detect: использует текущий хост если не задан явно
+if (!window.API_BASE_URL && !'{{API_BASE_URL}}'.replace) {
+  API_BASE_URL = window.location.origin;
+}
 
 // URL лендинга. Заполните когда лендинг будет опубликован.
 // Пустая строка = ссылка не показывается.
@@ -1547,8 +1553,27 @@ var state = {
   tariff: 'main',
   lastPayload: null,
   requestActive: false,
-  lastErrorMode: null // 'preview' | 'full' для retry
+  lastErrorMode: null, // 'preview' | 'full' для retry
+  currentOrderId: null, // order_id для polling после оплаты
+  pollingTimer: null,
+  pollingAttempts: 0
 };
+
+// ============================================================
+//  POLLING AFTER PAYMENT — check URL on load
+// ============================================================
+(function checkOrderIdOnLoad() {
+  var url = new URL(window.location.href);
+  var orderId = url.searchParams.get('orderId');
+  if (orderId) {
+    state.currentOrderId = orderId;
+    // Очищаем URL от orderId
+    url.searchParams.delete('orderId');
+    window.history.replaceState({}, '', url.toString());
+    // Запускаем polling
+    startPolling(orderId);
+  }
+})();
 
 // ============================================================
 //  DOM REFS
@@ -1866,8 +1891,18 @@ function processPayment() {
   })
   .then(function(data) {
     if (data.payment_url) {
-      window.location.href = data.payment_url;
+      // Сохраняем order_id для polling после возврата
+      state.currentOrderId = data.order_id;
+      // Добавляем order_id в URL для восстановления после редиректа
+      var separator = data.payment_url.indexOf('?') >= 0 ? '&' : '?';
+      var returnUrl = data.payment_url + separator + 'orderId=' + encodeURIComponent(data.order_id);
+      window.location.href = returnUrl;
+    } else if (data.result) {
+      // Stub mode — результат уже в ответе
+      renderFullResult(data.result);
+      showScreen('screen-result');
     } else {
+      // Fallback — запускаем анализ
       startAnalysis();
     }
   })
@@ -1914,6 +1949,158 @@ function startAnalysis() {
   .finally(function() {
     state.requestActive = false;
   });
+}
+
+// ============================================================
+//  POLLING — check payment status after redirect
+// ============================================================
+var POLL_INTERVAL_MS = 2000;
+var MAX_POLL_ATTEMPTS = 60; // 2 min max
+
+function startPolling(orderId) {
+  state.currentOrderId = orderId;
+  state.pollingAttempts = 0;
+  showScreen('screen-loading');
+  updateLoadingForPolling();
+  pollStatus(orderId);
+}
+
+function updateLoadingForPolling() {
+  $('loadingSubtitle').textContent = 'Проверка оплаты';
+  $('loadingTitle').textContent = 'Ожидаем подтверждение';
+  $('loadingSub').textContent = 'Проверяем статус заказа';
+  
+  // Update steps to show payment check
+  var stepsEl = $('loadingSteps');
+  if (stepsEl) {
+    stepsEl.innerHTML = 
+      '<div class="loading-step active">' +
+        '<span class="loading-step-dot"></span>Проверка оплаты' +
+      '</div>' +
+      '<div class="loading-step">' +
+        '<span class="loading-step-dot"></span>Запуск анализа' +
+      '</div>' +
+      '<div class="loading-step">' +
+        '<span class="loading-step-dot"></span>Формирование результата' +
+      '</div>';
+  }
+}
+
+function pollStatus(orderId) {
+  if (state.pollingTimer) {
+    clearTimeout(state.pollingTimer);
+  }
+  
+  state.pollingAttempts++;
+  
+  fetch(API_BASE_URL + '/api/payment/status/' + encodeURIComponent(orderId), {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(function(res) {
+    if (!res.ok) {
+      throw new Error('Status check failed');
+    }
+    return res.json();
+  })
+  .then(function(data) {
+    handlePollResponse(data);
+  })
+  .catch(function(e) {
+    // Network error — continue polling
+    console.log('[Polling] Network error, retrying...');
+    scheduleNextPoll(orderId);
+  });
+}
+
+function handlePollResponse(data) {
+  if (data.status === 'awaiting_payment') {
+    // Still waiting for payment — continue polling
+    scheduleNextPoll(state.currentOrderId);
+  } else if (data.status === 'paid_processing') {
+    // Payment received, analysis in progress
+    updatePollingProgress('analysis');
+    scheduleNextPoll(state.currentOrderId);
+  } else if (data.status === 'paid_ready') {
+    // Done! Show result
+    stopPolling();
+    stopThinkingAnimation();
+    if (data.result) {
+      renderFullResult(data.result);
+      showScreen('screen-result');
+    } else {
+      handleError({ message: 'Результат не найден', errorType: 'generic' });
+    }
+  } else if (data.status === 'paid_failed') {
+    // Analysis failed
+    stopPolling();
+    stopThinkingAnimation();
+    handleError({ 
+      message: data.error || 'Ошибка при формировании результата', 
+      errorType: 'analysis_failed' 
+    });
+  } else {
+    // Unknown status or not_found
+    if (state.pollingAttempts >= MAX_POLL_ATTEMPTS) {
+      stopPolling();
+      handleError({ message: 'Превышено время ожидания', errorType: 'timeout' });
+    } else {
+      scheduleNextPoll(state.currentOrderId);
+    }
+  }
+}
+
+function updatePollingProgress(stage) {
+  var stepsEl = $('loadingSteps');
+  if (!stepsEl) return;
+  
+  if (stage === 'analysis') {
+    stepsEl.innerHTML = 
+      '<div class="loading-step done">' +
+        '<span class="loading-step-dot"></span>Оплата подтверждена' +
+      '</div>' +
+      '<div class="loading-step active">' +
+        '<span class="loading-step-dot"></span>AI-анализ' +
+      '</div>' +
+      '<div class="loading-step">' +
+        '<span class="loading-step-dot"></span>Формирование результата' +
+      '</div>';
+    $('loadingTitle').textContent = 'Анализируем ваше предложение';
+    $('loadingSub').textContent = 'AI обрабатывает данные';
+  } else if (stage === 'ready') {
+    stepsEl.innerHTML = 
+      '<div class="loading-step done">' +
+        '<span class="loading-step-dot"></span>Оплата подтверждена' +
+      '</div>' +
+      '<div class="loading-step done">' +
+        '<span class="loading-step-dot"></span>AI-анализ завершён' +
+      '</div>' +
+      '<div class="loading-step active">' +
+        '<span class="loading-step-dot"></span>Подготовка результата' +
+      '</div>';
+    $('loadingTitle').textContent = 'Собираем результат';
+    $('loadingSub').textContent = 'Форматируем данные';
+  }
+}
+
+function scheduleNextPoll(orderId) {
+  if (state.pollingAttempts >= MAX_POLL_ATTEMPTS) {
+    stopPolling();
+    handleError({ message: 'Превышено время ожидания результата', errorType: 'timeout' });
+    return;
+  }
+  
+  state.pollingTimer = setTimeout(function() {
+    pollStatus(orderId);
+  }, POLL_INTERVAL_MS);
+}
+
+function stopPolling() {
+  if (state.pollingTimer) {
+    clearTimeout(state.pollingTimer);
+    state.pollingTimer = null;
+  }
+  state.pollingAttempts = 0;
 }
 
 // ============================================================
@@ -2457,6 +2644,13 @@ function handleError(err) {
     detailLabel = 'Что произошло';
     detail = 'Время ожидания ответа истекло. Это может быть связано с высокой нагрузкой на AI-провайдер.';
     hint = 'Попробуйте ещё раз через несколько секунд.';
+  } else if (type === 'analysis_failed') {
+    title = 'Не удалось сформировать результат';
+    sub = 'Ошибка при обработке';
+    text = 'После оплаты произошла ошибка при анализе.';
+    detailLabel = 'Подробности';
+    detail = msg;
+    hint = 'Свяжитесь с поддержкой или попробуйте снова.';
   } else if (type === 'invalid_response') {
     title = 'Некорректный ответ AI';
     sub = 'Попробуйте повторить';
@@ -2488,10 +2682,12 @@ function retryFromError() {
 
 function startOver() {
   stopThinkingAnimation();
+  stopPolling();
   state.requestActive = false;
   state.lastPayload = null;
   state.lastErrorMode = null;
   state.tariff = 'main';
+  state.currentOrderId = null;
   showScreen('screen-input');
 }
 </script>
