@@ -21,8 +21,6 @@
     }
   ],
   "env": {
-    "DEMO_MODE": "true",
-    "SUPABASE_URL": "@supabase-url",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase-service-key"
+    "DEMO_MODE": "true"
   }
 }
