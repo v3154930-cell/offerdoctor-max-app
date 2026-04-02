@@ -1330,7 +1330,7 @@
         </div>
 
         <div class="action-row" style="margin-top: 18px;">
-          <button class="btn btn-primary btn-full" id="btnPay" type="button" onclick="startAnalysis()">
+          <button class="btn btn-primary btn-full" id="btnPay" type="button" onclick="processPayment()">
             Оплатить <span id="payBtnPrice">249 ₽</span>
           </button>
         </div>
@@ -1839,6 +1839,46 @@ function selectPaymentMethod(el) {
 // ============================================================
 //  ANALYSIS (FULL)
 // ============================================================
+function processPayment() {
+  if (state.requestActive) return;
+  state.requestActive = true;
+  state.lastErrorMode = 'payment';
+
+  var btn = $('btnPay');
+  btn.disabled = true;
+  btn.textContent = 'Обрабатываем...';
+
+  fetch(API_BASE_URL + '/api/payment/create', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      scenario: state.scenario,
+      platform: state.platform,
+      tariff: state.tariff,
+      payload: state.lastPayload || getPayload('full')
+    })
+  })
+  .then(function(res) {
+    if (!res.ok) {
+      return res.json().then(function(d) { throw new Error(d.error || d.message || 'Ошибка оплаты'); });
+    }
+    return res.json();
+  })
+  .then(function(data) {
+    if (data.payment_url) {
+      window.location.href = data.payment_url;
+    } else {
+      startAnalysis();
+    }
+  })
+  .catch(function(e) {
+    state.requestActive = false;
+    btn.disabled = false;
+    btn.innerHTML = 'Оплатить <span id="payBtnPrice">' + (tariffPrices[state.scenario] || {})[state.tariff] + ' ₽</span>';
+    handleError(e);
+  });
+}
+
 function startAnalysis() {
   if (state.requestActive) return;
   state.requestActive = true;

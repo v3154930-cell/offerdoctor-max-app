@@ -183,6 +183,53 @@ app.post('/api/analyze', function (req, res) {
         });
 });
 
+// ===== POST /api/payment/create =====
+app.post('/api/payment/create', function (req, res) {
+    var data = req.body;
+    var scenario = data.scenario || 'marketplace';
+    var platform = data.platform || '';
+    var tariff = data.tariff || 'main';
+
+    var prices = {
+        marketplace: { main: 249, competitor: 299 },
+        avito: { main: 149 },
+        landing: { main: 199 }
+    };
+    var amount = (prices[scenario] || prices.marketplace)[tariff] || 249;
+
+    var robokassaLogin = process.env.ROBOKASSA_LOGIN;
+    var robokassaPassword1 = process.env.ROBOKASSA_PASSWORD1;
+
+    // Stub mode: Robokassa not configured
+    if (!robokassaLogin || !robokassaPassword1) {
+        var orderId = 'OD-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+        console.log('[PAYMENT][stub] Создан заказ:', orderId, scenario, tariff, amount + '₽');
+        return res.json({
+            ok: true,
+            order_id: orderId,
+            payment_url: null,
+            provider: 'stub',
+            amount: amount,
+            currency: 'RUB'
+        });
+    }
+
+    // TODO: Real Robokassa integration
+    // var signature = md5(robokassaLogin + ':' + amount + ':' + orderId + ':' + robokassaPassword1);
+    // var paymentUrl = 'https://auth.robokassa.ru/Merchant/Index.aspx?...'
+    // For now, return stub even if credentials exist until full integration is built
+    var orderIdReal = 'OD-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8);
+    console.log('[PAYMENT][stub-creds] Создан заказ:', orderIdReal, scenario, tariff, amount + '₽');
+    res.json({
+        ok: true,
+        order_id: orderIdReal,
+        payment_url: null,
+        provider: 'stub',
+        amount: amount,
+        currency: 'RUB'
+    });
+});
+
 // ===== 404 =====
 app.use(function (req, res) {
     res.status(404).json({ error: 'not_found', message: 'Endpoint не найден' });
