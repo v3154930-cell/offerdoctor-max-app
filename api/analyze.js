@@ -3,7 +3,7 @@
  * AI analysis via GigaChat
  */
 
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 const express = require('express');
 const router = express.Router();

@@ -35,7 +35,7 @@ app.get('/health', function (req, res) {
 });
 
 // Mount routes
-app.use(require('./analyze'));
-app.use(require('./payment'));
+app.use('/api/analyze', require('./analyze'));
+app.use('/api/payment', require('./payment'));
 
 module.exports = app;
