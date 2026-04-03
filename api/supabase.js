@@ -75,6 +75,33 @@ async function createOrder(orderId, payload, amount) {
     return orderId;
   }
 
+  console.log('[Supabase] Attempting DB insert for:', orderId);
+  const { error } = await supabase
+    .from('orders')
+    .insert({
+      order_id: orderId,
+      scenario: payload.scenario,
+      platform: payload.platform,
+      tariff: payload.tariff,
+      product: payload.product,
+      audience: payload.audience,
+      link: payload.link,
+      text: payload.text,
+      pain: payload.pain,
+      amount: amount,
+      payment_status: PaymentStatus.PENDING,
+      analysis_status: AnalysisStatus.PENDING,
+      created_at: new Date().toISOString()
+    });
+
+  if (error) {
+    console.error('[Supabase] Error creating order:', error.message, error.code, error.details);
+    return null;
+  }
+  console.log('[Supabase] Order created in DB:', orderId);
+  return orderId;
+}
+
   const { error } = await supabase
     .from('orders')
     .insert({
