@@ -13,7 +13,11 @@ let supabase = null;
 
 function getSupabase() {
   if (!supabase && supabaseUrl && supabaseKey) {
+    console.log('[Supabase] Initializing with URL:', supabaseUrl.substring(0, 20) + '...');
     supabase = createClient(supabaseUrl, supabaseKey);
+  }
+  if (!supabase) {
+    console.warn('[Supabase] Not initialized - missing URL or Key. URL:', !!supabaseUrl, 'Key:', !!supabaseKey);
   }
   return supabase;
 }
@@ -34,6 +38,7 @@ const AnalysisStatus = {
 
 async function createOrder(orderId, payload, amount) {
   const supabase = getSupabase();
+  console.log('[Supabase] createOrder called. Client:', !!supabase, 'URL:', supabaseUrl ? 'set' : 'null', 'Key:', supabaseKey ? 'set' : 'null');
   if (!supabase) {
     console.warn('[Supabase] Not configured, using memory fallback');
     return null;

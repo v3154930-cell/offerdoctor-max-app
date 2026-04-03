@@ -57,8 +57,12 @@ router.post('/create', function (req, res) {
     createdAt: new Date().toISOString()
   };
 
-  // Save to Supabase
-  supabase.createOrder(orderId, orderPayload, amount);
+  // Save to Supabase (await for completion)
+  supabase.createOrder(orderId, orderPayload, amount).then(function(created) {
+    if (!created) {
+      console.error('[Supabase] Failed to create order:', orderId);
+    }
+  });
 
   // Stub mode: Robokassa not configured
   if (!robokassaConfigured) {
