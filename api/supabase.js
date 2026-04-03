@@ -9,23 +9,21 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// In-memory fallback for debugging
+const memoryOrders = {};
+
 console.log('[Supabase] Module loaded. URL present:', !!supabaseUrl, 'Key present:', !!supabaseKey);
 
 let supabase = null;
 
 function getSupabase() {
-  console.log('[Supabase] getSupabase called. Current client:', !!supabase, 'URL present:', !!supabaseUrl, 'Key present:', !!supabaseKey);
   if (!supabase && supabaseUrl && supabaseKey) {
     try {
-      console.log('[Supabase] Creating client with URL:', supabaseUrl.substring(0, 25) + '...');
       supabase = createClient(supabaseUrl, supabaseKey);
-      console.log('[Supabase] Client created successfully');
+      console.log('[Supabase] Client created');
     } catch(e) {
       console.error('[Supabase] Error creating client:', e.message);
     }
-  }
-  if (!supabase) {
-    console.warn('[Supabase] Not initialized - returning null');
   }
   return supabase;
 }
@@ -46,10 +44,25 @@ const AnalysisStatus = {
 
 async function createOrder(orderId, payload, amount) {
   const supabase = getSupabase();
-  console.log('[Supabase] createOrder called. Client:', !!supabase, 'URL:', supabaseUrl ? 'set' : 'null', 'Key:', supabaseKey ? 'set' : 'null');
   if (!supabase) {
     console.warn('[Supabase] Not configured, using memory fallback');
-    return null;
+    memoryOrders[orderId] = {
+      order_id: orderId,
+      scenario: payload.scenario,
+      platform: payload.platform,
+      tariff: payload.tariff,
+      product: payload.product,
+      audience: payload.audience,
+      link: payload.link,
+      text: payload.text,
+      pain: payload.pain,
+      amount: amount,
+      payment_status: PaymentStatus.PENDING,
+      analysis_status: AnalysisStatus.PENDING,
+      created_at: new Date().toISOString()
+    };
+    console.log('[Supabase] Saved to memory:', orderId);
+    return orderId;
   }
 
   const { error } = await supabase
@@ -79,10 +92,13 @@ async function createOrder(orderId, payload, amount) {
 
 async function getOrder(orderId) {
   const supabase = getSupabase();
-  console.log('[Supabase] getOrder called. OrderId:', orderId, 'Client:', !!supabase);
-  if (!supabase) return null;
+  if (!supabase) {
+    console.log('[Supabase] getOrder: checking memory for', orderId);
+    const memOrder = memoryOrders[orderId];
+    console.log('[Supabase] getOrder: found in memory:', !!memOrder);
+    return memOrder || null;
+  }
 
-  console.log('[Supabase] Querying orders table for:', orderId);
   const { data, error } = await supabase
     .from('orders')
     .select('*')
@@ -93,7 +109,6 @@ async function getOrder(orderId) {
     console.error('[Supabase] Error getting order:', error.message, error.code);
     return null;
   }
-  console.log('[Supabase] Found order:', !!data);
   return data;
 }
 
