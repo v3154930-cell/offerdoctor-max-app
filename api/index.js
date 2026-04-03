@@ -10,6 +10,11 @@ const cors = require('cors');
 
 const app = express();
 
+console.log('[index.js] Starting. ENV check:');
+console.log('[index.js] DEMO_MODE:', process.env.DEMO_MODE);
+console.log('[index.js] SUPABASE_URL:', process.env.SUPABASE_URL ? 'present' : 'missing');
+console.log('[index.js] SUPABASE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'present' : 'missing');
+
 // Middleware
 app.use(cors({
   origin: function (origin, callback) {
