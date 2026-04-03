@@ -29,6 +29,10 @@ const prices = {
 // ===== POST /api/payment/create =====
 router.post('/create', function (req, res) {
   const data = req.body;
+  
+  console.log('[CREATE] SUPABASE_URL present:', !!process.env.SUPABASE_URL);
+  console.log('[CREATE] SUPABASE_SERVICE_ROLE_KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+  
   const scenario = data.scenario || 'marketplace';
   const platform = data.platform || '';
   const tariff = data.tariff || 'main';
@@ -203,6 +207,10 @@ router.post('/result', function (req, res) {
 // ===== GET /api/payment/status/:orderId =====
 router.get('/status/:orderId', function(req, res) {
   const orderId = req.params.orderId;
+  
+  console.log('[STATUS] Request received for orderId:', orderId);
+  console.log('[STATUS] SUPABASE_URL present:', !!process.env.SUPABASE_URL);
+  console.log('[STATUS] SUPABASE_SERVICE_ROLE_KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
 
   supabase.getOrder(orderId).then(function(order) {
     if (order) {
