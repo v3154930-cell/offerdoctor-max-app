@@ -21,18 +21,19 @@ const memoryOrders = {};
 function getSupabase() {
   const { supabaseUrl: url, supabaseKey: key } = getEnvVars();
   
-  if (!supabase && url && key) {
+  // Always recreate the client - lazy init on every call
+  if (url && key) {
     try {
       supabase = createClient(url, key);
-      console.log('[Supabase] Client created successfully');
+      console.log('[Supabase] Client created on this call');
+      return supabase;
     } catch(e) {
       console.error('[Supabase] Error creating client:', e.message);
     }
   }
-  if (!supabase) {
-    console.log('[Supabase] Client NOT created. URL:', !!url, 'Key:', !!key);
-  }
-  return supabase;
+  
+  console.log('[Supabase] No client created. URL:', !!url, 'Key:', !!key);
+  return null;
 }
 
 // Order statuses
