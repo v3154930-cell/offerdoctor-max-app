@@ -9,15 +9,23 @@ const { createClient } = require('@supabase/supabase-js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+console.log('[Supabase] Module loaded. URL present:', !!supabaseUrl, 'Key present:', !!supabaseKey);
+
 let supabase = null;
 
 function getSupabase() {
+  console.log('[Supabase] getSupabase called. Current client:', !!supabase, 'URL present:', !!supabaseUrl, 'Key present:', !!supabaseKey);
   if (!supabase && supabaseUrl && supabaseKey) {
-    console.log('[Supabase] Initializing with URL:', supabaseUrl.substring(0, 20) + '...');
-    supabase = createClient(supabaseUrl, supabaseKey);
+    try {
+      console.log('[Supabase] Creating client with URL:', supabaseUrl.substring(0, 25) + '...');
+      supabase = createClient(supabaseUrl, supabaseKey);
+      console.log('[Supabase] Client created successfully');
+    } catch(e) {
+      console.error('[Supabase] Error creating client:', e.message);
+    }
   }
   if (!supabase) {
-    console.warn('[Supabase] Not initialized - missing URL or Key. URL:', !!supabaseUrl, 'Key:', !!supabaseKey);
+    console.warn('[Supabase] Not initialized - returning null');
   }
   return supabase;
 }
