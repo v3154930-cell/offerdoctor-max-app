@@ -25,6 +25,8 @@
     }
   ],
   "env": {
-    "DEMO_MODE": "true"
+    "DEMO_MODE": "false",
+    "GIGACHAT_SCOPE": "GIGACHAT_API_PERS",
+    "GIGACHAT_MODEL": "GigaChat-2-Pro"
   }
 }
