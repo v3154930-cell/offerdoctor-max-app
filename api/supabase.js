@@ -14,23 +14,21 @@ function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
-  console.log('[Supabase] getSupabase - URL length:', url ? url.length : 0);
-  console.log('[Supabase] getSupabase - KEY length:', key ? key.length : 0);
-  console.log('[Supabase] getSupabase - URL starts with:', url ? url.substring(0, 30) : 'empty');
-  console.log('[Supabase] getSupabase - KEY starts with:', key ? key.substring(0, 20) + '...' : 'empty');
+  console.log('[Supabase] URL value:', url ? `present (${url.length} chars, starts: ${url.substring(0, 20)})` : 'NOT PRESENT');
+  console.log('[Supabase] KEY value:', key ? `present (${key.length} chars)` : 'NOT PRESENT');
   
   if (url && key) {
     try {
       const client = createClient(url, key);
-      console.log('[Supabase] Client created successfully');
+      console.log('[Supabase] Client created OK');
       return client;
     } catch(e) {
-      console.error('[Supabase] Error creating client:', e.message, e.stack);
+      console.error('[Supabase] Client creation FAILED:', e.message);
       return null;
     }
   }
   
-  console.log('[Supabase] No client - env vars missing or empty');
+  console.log('[Supabase] No client - env vars are empty/missing');
   return null;
 }
 

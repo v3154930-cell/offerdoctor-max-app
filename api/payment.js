@@ -30,9 +30,6 @@ const prices = {
 router.post('/create', async function (req, res) {
   const data = req.body;
   
-  console.log('[CREATE] SUPABASE_URL present:', !!process.env.SUPABASE_URL);
-  console.log('[CREATE] SUPABASE_SERVICE_ROLE_KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
-  
   const scenario = data.scenario || 'marketplace';
   const platform = data.platform || '';
   const tariff = data.tariff || 'main';
@@ -63,9 +60,7 @@ router.post('/create', async function (req, res) {
 
   // Save to Supabase (await for completion before responding)
   const orderCreated = await supabase.createOrder(orderId, orderPayload, amount);
-  if (!orderCreated) {
-    console.error('[Supabase] Failed to create order:', orderId);
-  }
+  console.log('[CREATE] Order created result:', orderCreated ? 'success' : 'failed');
 
   // Stub mode: Robokassa not configured
   if (!robokassaConfigured) {
