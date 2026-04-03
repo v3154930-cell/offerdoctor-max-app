@@ -48,10 +48,10 @@ const AnalysisStatus = {
 
 async function createOrder(orderId, payload, amount) {
   const supabase = getSupabase();
-  console.log('[Supabase] createOrder. OrderId:', orderId, 'Client exists:', !!supabase);
+  console.log('[createOrder] START. OrderId:', orderId, 'Client:', supabase ? 'EXISTS' : 'NULL');
   
   if (!supabase) {
-    console.warn('[Supabase] No client - using memory fallback');
+    console.warn('[createOrder] Using memory fallback (no client)');
     memoryOrders[orderId] = {
       order_id: orderId,
       scenario: payload.scenario,
@@ -67,11 +67,11 @@ async function createOrder(orderId, payload, amount) {
       analysis_status: AnalysisStatus.PENDING,
       created_at: new Date().toISOString()
     };
-    console.log('[Supabase] Saved to memory:', orderId, '. Total in memory:', Object.keys(memoryOrders).length);
+    console.log('[createOrder] Saved to memory:', orderId);
     return orderId;
   }
 
-  console.log('[Supabase] Attempting DB insert for:', orderId);
+  console.log('[createOrder] Attempting DB insert for:', orderId);
   const { data, error } = await supabase
     .from('orders')
     .insert({
@@ -92,26 +92,26 @@ async function createOrder(orderId, payload, amount) {
     .select();
 
   if (error) {
-    console.error('[Supabase] Error creating order:', error.message, error.code, error.details);
+    console.error('[createOrder] DB ERROR:', error.message, error.code, error.details);
     return null;
   }
-  console.log('[Supabase] Order created in DB:', orderId, '. Insert result:', JSON.stringify(data));
+  console.log('[createOrder] SUCCESS. Insert data:', JSON.stringify(data));
   return orderId;
 }
 
 async function getOrder(orderId) {
   const supabase = getSupabase();
-  console.log('[Supabase] getOrder called. OrderId:', orderId, 'Client exists:', !!supabase);
+  console.log('[getOrder] START. Looking for orderId:', orderId, 'Client:', supabase ? 'EXISTS' : 'NULL');
   
   if (!supabase) {
-    console.log('[Supabase] No client - checking memory. Keys in memory:', Object.keys(memoryOrders).length);
+    console.log('[getOrder] No client - checking memory. Keys:', Object.keys(memoryOrders).length);
     const memOrder = memoryOrders[orderId];
-    console.log('[Supabase] Found in memory:', !!memOrder);
+    console.log('[getOrder] Found in memory:', memOrder ? 'YES' : 'NO');
     return memOrder || null;
   }
 
   try {
-    console.log('[Supabase] Querying orders table with order_id:', orderId);
+    console.log('[getOrder] Query: SELECT * FROM orders WHERE order_id =', orderId);
     const { data, error } = await supabase
       .from('orders')
       .select('*')
@@ -119,13 +119,13 @@ async function getOrder(orderId) {
       .single();
 
     if (error) {
-      console.error('[Supabase] Error getting order:', error.message, error.code, error.details);
+      console.error('[getOrder] Query ERROR:', error.message, error.code);
       return null;
     }
-    console.log('[Supabase] Found in DB:', !!data, data ? 'id=' + data.id : '');
+    console.log('[getOrder] Found:', data ? 'YES, id=' + data.id : 'NO');
     return data;
   } catch(e) {
-    console.error('[Supabase] Exception in getOrder:', e.message, e.stack);
+    console.error('[getOrder] Exception:', e.message);
     return null;
   }
 }
