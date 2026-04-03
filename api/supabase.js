@@ -14,34 +14,23 @@ function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
-  if (url && key) {
-    try {
-      const client = createClient(url, key);
-      return client;
-    } catch(e) {
-      console.error('[Supabase] Error creating client:', e.message);
-    }
-  }
-  
-  console.log('[Supabase] No client. URL present:', !!url, 'Key present:', !!key);
-  return null;
-}
-
-// Always read fresh env vars for each serverless invocation
-function getSupabase() {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  console.log('[Supabase] getSupabase - URL length:', url ? url.length : 0);
+  console.log('[Supabase] getSupabase - KEY length:', key ? key.length : 0);
+  console.log('[Supabase] getSupabase - URL starts with:', url ? url.substring(0, 30) : 'empty');
+  console.log('[Supabase] getSupabase - KEY starts with:', key ? key.substring(0, 20) + '...' : 'empty');
   
   if (url && key) {
     try {
       const client = createClient(url, key);
+      console.log('[Supabase] Client created successfully');
       return client;
     } catch(e) {
-      console.error('[Supabase] Error creating client:', e.message);
+      console.error('[Supabase] Error creating client:', e.message, e.stack);
+      return null;
     }
   }
   
-  console.log('[Supabase] No client. URL present:', !!url, 'Key present:', !!key);
+  console.log('[Supabase] No client - env vars missing or empty');
   return null;
 }
 
@@ -62,8 +51,6 @@ const AnalysisStatus = {
 async function createOrder(orderId, payload, amount) {
   const supabase = getSupabase();
   console.log('[Supabase] createOrder. OrderId:', orderId, 'Client exists:', !!supabase);
-  console.log('[Supabase] createOrder - env URL present:', !!process.env.SUPABASE_URL);
-  console.log('[Supabase] createOrder - env KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
   
   if (!supabase) {
     console.warn('[Supabase] No client - using memory fallback');
@@ -117,8 +104,6 @@ async function createOrder(orderId, payload, amount) {
 async function getOrder(orderId) {
   const supabase = getSupabase();
   console.log('[Supabase] getOrder called. OrderId:', orderId, 'Client exists:', !!supabase);
-  console.log('[Supabase] getOrder - env URL present:', !!process.env.SUPABASE_URL);
-  console.log('[Supabase] getOrder - env KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
   
   if (!supabase) {
     console.log('[Supabase] No client - checking memory. Keys in memory:', Object.keys(memoryOrders).length);
