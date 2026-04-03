@@ -42,11 +42,26 @@ app.use('/api/payment', require('./payment'));
 app.get('/api/debug/orders', async function(req, res) {
   try {
     const supabase = require('./supabase');
-    const orders = await supabase.listAllOrders();
-    res.json({ count: orders.length, orders: orders });
+    const hasUrl = !!process.env.SUPABASE_URL;
+    const hasKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+    res.json({ 
+      hasSupabaseUrl: hasUrl, 
+      hasServiceKey: hasKey,
+      envCheck: 'direct check in index.js'
+    });
   } catch(e) {
-    res.status(500).json({ error: e.message, stack: e.stack });
+    res.status(500).json({ error: e.message });
   }
+});
+
+// Debug: test env in isolation
+app.get('/api/debug/env', function(req, res) {
+  res.json({
+    SUPABASE_URL: process.env.SUPABASE_URL ? 'present' : 'NOT PRESENT',
+    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'present' : 'NOT PRESENT',
+    DEMO_MODE: process.env.DEMO_MODE,
+    GIGACHAT_MODEL: process.env.GIGACHAT_MODEL
+  });
 });
 
 module.exports = app;
