@@ -27,7 +27,7 @@ const prices = {
 };
 
 // ===== POST /api/payment/create =====
-router.post('/create', function (req, res) {
+router.post('/create', async function (req, res) {
   const data = req.body;
   
   console.log('[CREATE] SUPABASE_URL present:', !!process.env.SUPABASE_URL);
@@ -61,12 +61,11 @@ router.post('/create', function (req, res) {
     createdAt: new Date().toISOString()
   };
 
-  // Save to Supabase (await for completion)
-  supabase.createOrder(orderId, orderPayload, amount).then(function(created) {
-    if (!created) {
-      console.error('[Supabase] Failed to create order:', orderId);
-    }
-  });
+  // Save to Supabase (await for completion before responding)
+  const orderCreated = await supabase.createOrder(orderId, orderPayload, amount);
+  if (!orderCreated) {
+    console.error('[Supabase] Failed to create order:', orderId);
+  }
 
   // Stub mode: Robokassa not configured
   if (!robokassaConfigured) {
