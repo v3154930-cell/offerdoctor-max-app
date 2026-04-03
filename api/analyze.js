@@ -95,33 +95,46 @@ router.post('/', function (req, res) {
     prompt = prompts.buildFullPrompt(normalizedData);
   }
 
-  // ===== Request to GigaChat =====
-  gigachat.requestGigachatWithRetry(prompt)
-    .then(function (responseText) {
-      console.log('[' + normalizedData.mode + '] Ответ от GigaChat получен (' + responseText.length + ' символов)');
+  // ===== Request to GigaChat with retry for preview =====
+  var attempt = 0;
+  var maxAttempts = 2;
 
-      const parsed = gigachat.safeParseJsonFromModel(responseText);
+  function tryRequest() {
+    return gigachat.requestGigachatWithRetry(prompt)
+      .then(function (responseText) {
+        console.log('[' + normalizedData.mode + '] Ответ от GigaChat получен (' + responseText.length + ' символов)');
 
-      if (!parsed) {
-        console.error('[' + normalizedData.mode + '] Не удалось распарсить JSON. Ответ:', responseText.substring(0, 500));
-        return res.status(502).json({
-          error: 'invalid_model_response',
-          message: 'AI вернул ответ в невалидном формате. Попробуйте снова.'
-        });
-      }
+        var parsed = gigachat.safeParseJsonFromModel(responseText);
 
-      let result;
-      if (normalizedData.mode === 'preview') {
-        result = gigachat.normalizePreviewResponse(parsed);
-      } else if (normalizedData.tariff === 'competitor') {
-        result = gigachat.normalizeFullWithCompetitorResponse(parsed);
-      } else {
-        result = gigachat.normalizeFullResponse(parsed);
-      }
+        if (!parsed && normalizedData.mode === 'preview' && attempt < maxAttempts) {
+          attempt++;
+          console.log('[' + normalizedData.mode + '] Попытка ' + attempt + ' не удалась, пробуем снова...');
+          return tryRequest();
+        }
 
-      console.log('[' + normalizedData.mode + '] Результат отправлен');
-      res.json(result);
-    })
+        if (!parsed) {
+          console.error('[' + normalizedData.mode + '] Не удалось распарсить JSON. Ответ:', responseText.substring(0, 500));
+          return res.status(502).json({
+            error: 'invalid_model_response',
+            message: 'AI вернул ответ в невалидном формате. Попробуйте снова.'
+          });
+        }
+
+        var result;
+        if (normalizedData.mode === 'preview') {
+          result = gigachat.normalizePreviewResponse(parsed);
+        } else if (normalizedData.tariff === 'competitor') {
+          result = gigachat.normalizeFullWithCompetitorResponse(parsed);
+        } else {
+          result = gigachat.normalizeFullResponse(parsed);
+        }
+
+        console.log('[' + normalizedData.mode + '] Результат отправлен');
+        res.json(result);
+      });
+  }
+
+  tryRequest()
     .catch(function (error) {
       console.error('[' + normalizedData.mode + '] Ошибка:', error.message);
 

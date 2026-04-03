@@ -253,6 +253,23 @@ function safeParseJsonFromModel(text) {
         } catch (e) { }
     }
 
+    // Попытка 5: ищем текст после "{" или перед "}"
+    var jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+        try {
+            return JSON.parse(jsonMatch[0]);
+        } catch (e) { }
+    }
+
+    // Попытка 6: убираем все что вне фигурных скобок
+    var braceMatch = cleaned.match(/\{[^}]*\}/g);
+    if (braceMatch && braceMatch.length > 0) {
+        var combined = '{' + braceMatch.slice(1, -1).map(function(s) { return s.replace(/^\{|\}$/g, ''); }).join(',') + '}';
+        try {
+            return JSON.parse(combined);
+        } catch (e) { }
+    }
+
     return null;
 }
 
