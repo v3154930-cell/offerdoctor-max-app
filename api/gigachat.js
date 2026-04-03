@@ -270,6 +270,27 @@ function safeParseJsonFromModel(text) {
         } catch (e) { }
     }
 
+    // Попытка 7: ищем ключевые поля в тексте и пытаемся извлечь
+    var previewProblemMatch = cleaned.match(/(?:проблема|problem)[\s:]*["«]?([^"»\n]+)/i);
+    var previewHintMatch = cleaned.match(/(?:совет|hint|advice)[\s:]*["«]?([^"»\n]+)/i);
+    if (previewProblemMatch || previewHintMatch) {
+        return {
+            previewProblem: previewProblemMatch ? previewProblemMatch[1].trim() : '',
+            previewHint: previewHintMatch ? previewHintMatch[1].trim() : '',
+            cta: 'Получить полный разбор'
+        };
+    }
+
+    // Попытка 8: ищем строки формата "1. ..." или "- ..." и парсим как JSON
+    var lines = cleaned.split(/\n|[\.;]/).filter(function(l) { return l.trim().length > 0; });
+    if (lines.length >= 2) {
+        return {
+            previewProblem: lines[0].replace(/^[\d\.\-\*\s]+/, '').trim() || 'Не удалось определить проблему',
+            previewHint: lines[1].replace(/^[\d\.\-\*\s]+/, '').trim() || 'Попробуйте повторить запрос',
+            cta: 'Получить полный разбор'
+        };
+    }
+
     return null;
 }
 
