@@ -38,4 +38,11 @@ app.get('/health', function (req, res) {
 app.use('/api/analyze', require('./analyze'));
 app.use('/api/payment', require('./payment'));
 
+// Debug: list all orders
+app.get('/api/debug/orders', async function(req, res) {
+  const supabase = require('./supabase');
+  const orders = await supabase.listAllOrders();
+  res.json({ count: orders.length, orders: orders });
+});
+
 module.exports = app;
