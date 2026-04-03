@@ -7,6 +7,7 @@
 const { createClient } = require('@supabase/supabase-js');
 
 let supabaseUrl, supabaseKey;
+let supabaseClient = null;
 
 // Lazy load env vars to ensure they're available
 function getEnvVars() {
@@ -19,14 +20,17 @@ function getEnvVars() {
 const memoryOrders = {};
 
 function getSupabase() {
+  if (supabaseClient) {
+    return supabaseClient;
+  }
+  
   const { supabaseUrl: url, supabaseKey: key } = getEnvVars();
   
-  // Always recreate the client - lazy init on every call
   if (url && key) {
     try {
-      supabase = createClient(url, key);
-      console.log('[Supabase] Client created on this call');
-      return supabase;
+      supabaseClient = createClient(url, key);
+      console.log('[Supabase] Client created and cached');
+      return supabaseClient;
     } catch(e) {
       console.error('[Supabase] Error creating client:', e.message);
     }
