@@ -194,6 +194,31 @@ async function updateAnalysisStatus(orderId, status, result, error) {
     .eq('order_id', orderId);
 }
 
+async function listAllOrders() {
+  const supabase = getSupabase();
+  console.log('[listAllOrders] START. Client:', supabase ? 'EXISTS' : 'NULL');
+  
+  if (!supabase) {
+    console.log('[listAllOrders] No client - returning memory orders. Count:', Object.keys(memoryOrders).length);
+    return Object.values(memoryOrders);
+  }
+
+  console.log('[listAllOrders] Query: SELECT * FROM orders');
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    console.error('[listAllOrders] Query ERROR:', error.message);
+    return [];
+  }
+  
+  console.log('[listAllOrders] Found rows:', data ? data.length : 0);
+  return data || [];
+}
+
 module.exports = {
   getSupabase,
   createOrder,
@@ -201,6 +226,7 @@ module.exports = {
   updatePaymentStatus,
   updateAnalysisStatus,
   testSupabase,
+  listAllOrders,
   PaymentStatus,
   AnalysisStatus
 };

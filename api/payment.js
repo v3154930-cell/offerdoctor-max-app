@@ -63,8 +63,22 @@ router.post('/create', async function (req, res) {
   };
 
   // Save to Supabase (await for completion before responding)
+  console.log('[CREATE] BEFORE supabase.createOrder call');
   const orderCreated = await supabase.createOrder(orderId, orderPayload, amount);
-  console.log('[CREATE] Order created result:', orderCreated ? 'success' : 'failed');
+  console.log('[CREATE] AFTER supabase.createOrder call');
+  console.log('[CREATE] Order created result:', orderCreated ? 'success. orderId=' + orderCreated : 'failed. result=' + JSON.stringify(orderCreated));
+  
+  // Additional debug: verify the order was actually saved
+  if (orderCreated) {
+    console.log('[CREATE] VERIFY: Attempting to read back orderId:', orderId);
+    const verifyOrder = await supabase.getOrder(orderId);
+    console.log('[CREATE] VERIFY result:', verifyOrder ? 'FOUND in DB' : 'NOT FOUND in DB');
+    if (!verifyOrder) {
+      console.log('[CREATE] CRITICAL: Order was created but not found in DB. This means insert succeeded but query returns nothing.');
+    }
+  } else {
+    console.log('[CREATE] CRITICAL: createOrder returned falsy value - insert failed or returned null');
+  }
 
   // Stub mode: Robokassa not configured
   if (!robokassaConfigured) {
@@ -208,10 +222,17 @@ router.get('/status/:orderId', function(req, res) {
   
   const hasSupabaseUrl = !!process.env.SUPABASE_URL;
   const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
-  console.log('[STATUS] hasSupabaseUrl:', hasSupabaseUrl, 'hasServiceKey:', hasServiceKey);
-  console.log('[STATUS] Looking up orderId:', orderId);
+  console.log('[STATUS] === START ===');
+  console.log('[STATUS] orderId received:', orderId);
+  console.log('[STATUS] hasSupabaseUrl:', hasSupabaseUrl);
+  console.log('[STATUS] hasServiceKey:', hasServiceKey);
+  console.log('[STATUS] About to call getOrder...');
   
   supabase.getOrder(orderId).then(function(order) {
+    console.log('[STATUS] getOrder returned:', order ? 'object' : 'null');
+    console.log('[STATUS] order object keys:', order ? Object.keys(order).join(', ') : 'N/A');
+    console.log('[STATUS] order.order_id field:', order ? order.order_id : 'N/A');
+    console.log('[STATUS] === END ===');
     if (order) {
       // Map to statuses
       let status;

@@ -43,6 +43,11 @@ app.get('/health', function (req, res) {
 app.use('/api/analyze', require('./analyze'));
 app.use('/api/payment', require('./payment'));
 
+// Debug: simple test - must be after all routes
+app.get('/test', function(req, res) {
+  res.json({ test: 'ok', timestamp: Date.now() });
+});
+
 // Debug: list all orders
 app.get('/api/debug/orders', async function(req, res) {
   try {
@@ -68,6 +73,21 @@ app.get('/api/debug/supabase', async function(req, res) {
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+// Debug: verify env reachability
+app.get('/api/debug/env', function(req, res) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  res.json({
+    hasSupabaseUrl: !!supabaseUrl,
+    hasServiceRoleKey: !!serviceKey,
+    urlLength: supabaseUrl ? supabaseUrl.length : 0,
+    keyLength: serviceKey ? serviceKey.length : 0,
+    urlPrefix: supabaseUrl ? supabaseUrl.substring(0, 30) + '...' : 'N/A',
+    timestamp: new Date().toISOString()
+  });
 });
 
 module.exports = app;
