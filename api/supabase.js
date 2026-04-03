@@ -71,8 +71,10 @@ async function createOrder(orderId, payload, amount) {
 
 async function getOrder(orderId) {
   const supabase = getSupabase();
+  console.log('[Supabase] getOrder called. OrderId:', orderId, 'Client:', !!supabase);
   if (!supabase) return null;
 
+  console.log('[Supabase] Querying orders table for:', orderId);
   const { data, error } = await supabase
     .from('orders')
     .select('*')
@@ -80,9 +82,10 @@ async function getOrder(orderId) {
     .single();
 
   if (error) {
-    console.error('[Supabase] Error getting order:', error);
+    console.error('[Supabase] Error getting order:', error.message, error.code);
     return null;
   }
+  console.log('[Supabase] Found order:', !!data);
   return data;
 }
 
