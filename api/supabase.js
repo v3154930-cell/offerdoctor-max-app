@@ -6,37 +6,42 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-let supabaseUrl, supabaseKey;
-let supabaseClient = null;
-
-// Lazy load env vars to ensure they're available
-function getEnvVars() {
-  if (!supabaseUrl) supabaseUrl = process.env.SUPABASE_URL;
-  if (!supabaseKey) supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  return { supabaseUrl, supabaseKey };
-}
-
-// In-memory fallback for debugging
+// In-memory fallback for debugging (per-request in serverless)
 const memoryOrders = {};
 
+// Always read fresh env vars for each serverless invocation
 function getSupabase() {
-  if (supabaseClient) {
-    return supabaseClient;
-  }
-  
-  const { supabaseUrl: url, supabaseKey: key } = getEnvVars();
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
   if (url && key) {
     try {
-      supabaseClient = createClient(url, key);
-      console.log('[Supabase] Client created and cached');
-      return supabaseClient;
+      const client = createClient(url, key);
+      return client;
     } catch(e) {
       console.error('[Supabase] Error creating client:', e.message);
     }
   }
   
-  console.log('[Supabase] No client created. URL:', !!url, 'Key:', !!key);
+  console.log('[Supabase] No client. URL present:', !!url, 'Key present:', !!key);
+  return null;
+}
+
+// Always read fresh env vars for each serverless invocation
+function getSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (url && key) {
+    try {
+      const client = createClient(url, key);
+      return client;
+    } catch(e) {
+      console.error('[Supabase] Error creating client:', e.message);
+    }
+  }
+  
+  console.log('[Supabase] No client. URL present:', !!url, 'Key present:', !!key);
   return null;
 }
 
