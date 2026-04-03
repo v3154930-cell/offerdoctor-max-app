@@ -11,10 +11,17 @@ const memoryOrders = {};
 
 // Always read fresh env vars for each serverless invocation
 function getSupabase() {
+  // List ALL env vars starting with common prefixes to debug
+  const allEnvKeys = Object.keys(process.env).filter(k => 
+    k.includes('SUPABASE') || k.includes('DB') || k.includes('POSTGRES')
+  );
+  console.log('[getSupabase] Available env keys with SUPABASE/DB/POSTGRES:', allEnvKeys.join(', '));
+  
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
-  console.log('[getSupabase] URL present:', !!url, 'KEY present:', !!key);
+  console.log('[getSupabase] Direct check - SUPABASE_URL:', url ? `present (${url.length} chars)` : 'NOT PRESENT');
+  console.log('[getSupabase] Direct check - SUPABASE_SERVICE_ROLE_KEY:', key ? `present (${key.length} chars)` : 'NOT PRESENT');
   
   if (url && key) {
     try {
