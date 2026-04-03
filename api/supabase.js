@@ -6,24 +6,31 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+let supabaseUrl, supabaseKey;
+
+// Lazy load env vars to ensure they're available
+function getEnvVars() {
+  if (!supabaseUrl) supabaseUrl = process.env.SUPABASE_URL;
+  if (!supabaseKey) supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return { supabaseUrl, supabaseKey };
+}
 
 // In-memory fallback for debugging
 const memoryOrders = {};
 
-console.log('[Supabase] Module loaded. URL present:', !!supabaseUrl, 'Key present:', !!supabaseKey);
-
-let supabase = null;
-
 function getSupabase() {
-  if (!supabase && supabaseUrl && supabaseKey) {
+  const { supabaseUrl: url, supabaseKey: key } = getEnvVars();
+  
+  if (!supabase && url && key) {
     try {
-      supabase = createClient(supabaseUrl, supabaseKey);
-      console.log('[Supabase] Client created');
+      supabase = createClient(url, key);
+      console.log('[Supabase] Client created successfully');
     } catch(e) {
       console.error('[Supabase] Error creating client:', e.message);
     }
+  }
+  if (!supabase) {
+    console.log('[Supabase] Client NOT created. URL:', !!url, 'Key:', !!key);
   }
   return supabase;
 }
