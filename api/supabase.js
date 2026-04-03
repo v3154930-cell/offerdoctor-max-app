@@ -38,27 +38,28 @@ function getSupabase() {
   return null;
 }
 
-// Debug: list all orders in DB
-async function listAllOrders() {
-  const supabase = getSupabase();
-  if (!supabase) {
-    console.log('[listAllOrders] No supabase client');
-    return [];
+// Debug: test Supabase connection directly
+async function testSupabase() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  console.log('[testSupabase] Testing with URL:', url ? 'present' : 'missing');
+  console.log('[testSupabase] Testing with KEY:', key ? 'present' : 'missing');
+  
+  if (!url || !key) {
+    return { success: false, error: 'Missing credentials' };
   }
   
-  console.log('[listAllOrders] Fetching all orders...');
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .limit(10);
-  
-  if (error) {
-    console.error('[listAllOrders] Error:', error.message);
-    return [];
+  try {
+    const supabase = createClient(url, key);
+    // Try a simple query
+    const { data, error } = await supabase.from('orders').select('id').limit(1);
+    console.log('[testSupabase] Query result:', error ? error.message : 'success');
+    return { success: !error, error: error?.message };
+  } catch(e) {
+    console.log('[testSupabase] Exception:', e.message);
+    return { success: false, error: e.message };
   }
-  
-  console.log('[listAllOrders] Found', data?.length || 0, 'orders');
-  return data || [];
 }
 
 // Order statuses
@@ -199,7 +200,7 @@ module.exports = {
   getOrder,
   updatePaymentStatus,
   updateAnalysisStatus,
-  listAllOrders,
+  testSupabase,
   PaymentStatus,
   AnalysisStatus
 };

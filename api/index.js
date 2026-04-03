@@ -54,14 +54,15 @@ app.get('/api/debug/orders', async function(req, res) {
   }
 });
 
-// Debug: test env in isolation
-app.get('/api/debug/env', function(req, res) {
-  res.json({
-    SUPABASE_URL: process.env.SUPABASE_URL ? 'present' : 'NOT PRESENT',
-    SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'present' : 'NOT PRESENT',
-    DEMO_MODE: process.env.DEMO_MODE,
-    GIGACHAT_MODEL: process.env.GIGACHAT_MODEL
-  });
+// Debug: test Supabase connection
+app.get('/api/debug/supabase', async function(req, res) {
+  try {
+    const supabase = require('./supabase');
+    const result = await supabase.testSupabase();
+    res.json(result);
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 module.exports = app;
