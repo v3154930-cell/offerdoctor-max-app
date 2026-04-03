@@ -210,6 +210,10 @@ router.get('/status/:orderId', function(req, res) {
   console.log('[STATUS] Request received for orderId:', orderId);
   console.log('[STATUS] SUPABASE_URL present:', !!process.env.SUPABASE_URL);
   console.log('[STATUS] SUPABASE_SERVICE_ROLE_KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+  
+  // Debug: log what environment is available
+  const supClient = supabase.getSupabase();
+  console.log('[STATUS] getSupabase returned:', !!supClient);
 
   supabase.getOrder(orderId).then(function(order) {
     if (order) {
