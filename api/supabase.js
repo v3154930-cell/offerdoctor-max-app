@@ -51,8 +51,10 @@ const AnalysisStatus = {
 
 async function createOrder(orderId, payload, amount) {
   const supabase = getSupabase();
+  console.log('[Supabase] createOrder. OrderId:', orderId, 'Client exists:', !!supabase);
+  
   if (!supabase) {
-    console.warn('[Supabase] Not configured, using memory fallback');
+    console.warn('[Supabase] No client - using memory fallback');
     memoryOrders[orderId] = {
       order_id: orderId,
       scenario: payload.scenario,
@@ -68,7 +70,7 @@ async function createOrder(orderId, payload, amount) {
       analysis_status: AnalysisStatus.PENDING,
       created_at: new Date().toISOString()
     };
-    console.log('[Supabase] Saved to memory:', orderId);
+    console.log('[Supabase] Saved to memory:', orderId, '. Total in memory:', Object.keys(memoryOrders).length);
     return orderId;
   }
 
@@ -99,24 +101,32 @@ async function createOrder(orderId, payload, amount) {
 
 async function getOrder(orderId) {
   const supabase = getSupabase();
+  console.log('[Supabase] getOrder called. OrderId:', orderId, 'Client exists:', !!supabase);
+  
   if (!supabase) {
-    console.log('[Supabase] getOrder: checking memory for', orderId);
+    console.log('[Supabase] No client - checking memory. Keys in memory:', Object.keys(memoryOrders).length);
     const memOrder = memoryOrders[orderId];
-    console.log('[Supabase] getOrder: found in memory:', !!memOrder);
+    console.log('[Supabase] Found in memory:', !!memOrder);
     return memOrder || null;
   }
 
-  const { data, error } = await supabase
-    .from('orders')
-    .select('*')
-    .eq('order_id', orderId)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('order_id', orderId)
+      .single();
 
-  if (error) {
-    console.error('[Supabase] Error getting order:', error.message, error.code);
+    if (error) {
+      console.error('[Supabase] Error getting order:', error.message, error.code);
+      return null;
+    }
+    console.log('[Supabase] Found in DB:', !!data);
+    return data;
+  } catch(e) {
+    console.error('[Supabase] Exception in getOrder:', e.message);
     return null;
   }
-  return data;
 }
 
 async function updatePaymentStatus(orderId, status, amount) {
