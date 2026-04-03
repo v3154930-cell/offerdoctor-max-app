@@ -202,14 +202,6 @@ router.post('/result', function (req, res) {
 router.get('/status/:orderId', function(req, res) {
   const orderId = req.params.orderId;
   
-  console.log('[STATUS] Request received for orderId:', orderId);
-  console.log('[STATUS] SUPABASE_URL present:', !!process.env.SUPABASE_URL);
-  console.log('[STATUS] SUPABASE_SERVICE_ROLE_KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
-  
-  // Debug: log what environment is available
-  const supClient = supabase.getSupabase();
-  console.log('[STATUS] getSupabase returned:', !!supClient);
-
   supabase.getOrder(orderId).then(function(order) {
     if (order) {
       // Map to statuses
@@ -324,5 +316,15 @@ function runFullAnalysis(orderId, payload, callback) {
       callback(error);
     });
 }
+
+// ===== DEBUG: GET /api/payment/debug/orders =====
+// Lists all orders in the database for debugging
+router.get('/debug/orders', function(req, res) {
+  supabase.listAllOrders().then(function(orders) {
+    res.json({ count: orders.length, orders: orders });
+  }).catch(function(err) {
+    res.status(500).json({ error: err.message });
+  });
+});
 
 module.exports = router;

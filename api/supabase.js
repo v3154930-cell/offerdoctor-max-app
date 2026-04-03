@@ -14,22 +14,44 @@ function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   
-  console.log('[Supabase] URL value:', url ? `present (${url.length} chars, starts: ${url.substring(0, 20)})` : 'NOT PRESENT');
-  console.log('[Supabase] KEY value:', key ? `present (${key.length} chars)` : 'NOT PRESENT');
+  console.log('[getSupabase] URL present:', !!url, 'KEY present:', !!key);
   
   if (url && key) {
     try {
       const client = createClient(url, key);
-      console.log('[Supabase] Client created OK');
+      console.log('[getSupabase] Client: OK');
       return client;
     } catch(e) {
-      console.error('[Supabase] Client creation FAILED:', e.message);
+      console.error('[getSupabase] Client ERROR:', e.message);
       return null;
     }
   }
   
-  console.log('[Supabase] No client - env vars are empty/missing');
+  console.log('[getSupabase] Client: NULL (no credentials)');
   return null;
+}
+
+// Debug: list all orders in DB
+async function listAllOrders() {
+  const supabase = getSupabase();
+  if (!supabase) {
+    console.log('[listAllOrders] No supabase client');
+    return [];
+  }
+  
+  console.log('[listAllOrders] Fetching all orders...');
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .limit(10);
+  
+  if (error) {
+    console.error('[listAllOrders] Error:', error.message);
+    return [];
+  }
+  
+  console.log('[listAllOrders] Found', data?.length || 0, 'orders');
+  return data || [];
 }
 
 // Order statuses
