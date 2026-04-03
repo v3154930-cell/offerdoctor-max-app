@@ -102,31 +102,6 @@ async function createOrder(orderId, payload, amount) {
   return orderId;
 }
 
-  const { error } = await supabase
-    .from('orders')
-    .insert({
-      order_id: orderId,
-      scenario: payload.scenario,
-      platform: payload.platform,
-      tariff: payload.tariff,
-      product: payload.product,
-      audience: payload.audience,
-      link: payload.link,
-      text: payload.text,
-      pain: payload.pain,
-      amount: amount,
-      payment_status: PaymentStatus.PENDING,
-      analysis_status: AnalysisStatus.PENDING,
-      created_at: new Date().toISOString()
-    });
-
-  if (error) {
-    console.error('[Supabase] Error creating order:', error);
-    return null;
-  }
-  return orderId;
-}
-
 async function getOrder(orderId) {
   const supabase = getSupabase();
   console.log('[Supabase] getOrder called. OrderId:', orderId, 'Client exists:', !!supabase);
