@@ -57,6 +57,8 @@ const AnalysisStatus = {
 async function createOrder(orderId, payload, amount) {
   const supabase = getSupabase();
   console.log('[Supabase] createOrder. OrderId:', orderId, 'Client exists:', !!supabase);
+  console.log('[Supabase] createOrder - env URL present:', !!process.env.SUPABASE_URL);
+  console.log('[Supabase] createOrder - env KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
   
   if (!supabase) {
     console.warn('[Supabase] No client - using memory fallback');
@@ -80,7 +82,7 @@ async function createOrder(orderId, payload, amount) {
   }
 
   console.log('[Supabase] Attempting DB insert for:', orderId);
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('orders')
     .insert({
       order_id: orderId,
@@ -96,19 +98,22 @@ async function createOrder(orderId, payload, amount) {
       payment_status: PaymentStatus.PENDING,
       analysis_status: AnalysisStatus.PENDING,
       created_at: new Date().toISOString()
-    });
+    })
+    .select();
 
   if (error) {
     console.error('[Supabase] Error creating order:', error.message, error.code, error.details);
     return null;
   }
-  console.log('[Supabase] Order created in DB:', orderId);
+  console.log('[Supabase] Order created in DB:', orderId, '. Insert result:', JSON.stringify(data));
   return orderId;
 }
 
 async function getOrder(orderId) {
   const supabase = getSupabase();
   console.log('[Supabase] getOrder called. OrderId:', orderId, 'Client exists:', !!supabase);
+  console.log('[Supabase] getOrder - env URL present:', !!process.env.SUPABASE_URL);
+  console.log('[Supabase] getOrder - env KEY present:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
   
   if (!supabase) {
     console.log('[Supabase] No client - checking memory. Keys in memory:', Object.keys(memoryOrders).length);
@@ -118,6 +123,7 @@ async function getOrder(orderId) {
   }
 
   try {
+    console.log('[Supabase] Querying orders table with order_id:', orderId);
     const { data, error } = await supabase
       .from('orders')
       .select('*')
@@ -125,13 +131,13 @@ async function getOrder(orderId) {
       .single();
 
     if (error) {
-      console.error('[Supabase] Error getting order:', error.message, error.code);
+      console.error('[Supabase] Error getting order:', error.message, error.code, error.details);
       return null;
     }
-    console.log('[Supabase] Found in DB:', !!data);
+    console.log('[Supabase] Found in DB:', !!data, data ? 'id=' + data.id : '');
     return data;
   } catch(e) {
-    console.error('[Supabase] Exception in getOrder:', e.message);
+    console.error('[Supabase] Exception in getOrder:', e.message, e.stack);
     return null;
   }
 }
