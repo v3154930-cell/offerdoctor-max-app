@@ -191,6 +191,7 @@ module.exports = {
   getOrder,
   updatePaymentStatus,
   updateAnalysisStatus,
+  listAllOrders,
   PaymentStatus,
   AnalysisStatus
 };

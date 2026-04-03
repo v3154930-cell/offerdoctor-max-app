@@ -40,9 +40,13 @@ app.use('/api/payment', require('./payment'));
 
 // Debug: list all orders
 app.get('/api/debug/orders', async function(req, res) {
-  const supabase = require('./supabase');
-  const orders = await supabase.listAllOrders();
-  res.json({ count: orders.length, orders: orders });
+  try {
+    const supabase = require('./supabase');
+    const orders = await supabase.listAllOrders();
+    res.json({ count: orders.length, orders: orders });
+  } catch(e) {
+    res.status(500).json({ error: e.message, stack: e.stack });
+  }
 });
 
 module.exports = app;
