@@ -30,6 +30,10 @@ const prices = {
 router.post('/create', async function (req, res) {
   const data = req.body;
   
+  const hasSupabaseUrl = !!process.env.SUPABASE_URL;
+  const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+  console.log('[CREATE] hasSupabaseUrl:', hasSupabaseUrl, 'hasServiceKey:', hasServiceKey);
+  
   const scenario = data.scenario || 'marketplace';
   const platform = data.platform || '';
   const tariff = data.tariff || 'main';
@@ -201,6 +205,11 @@ router.post('/result', function (req, res) {
 // ===== GET /api/payment/status/:orderId =====
 router.get('/status/:orderId', function(req, res) {
   const orderId = req.params.orderId;
+  
+  const hasSupabaseUrl = !!process.env.SUPABASE_URL;
+  const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+  console.log('[STATUS] hasSupabaseUrl:', hasSupabaseUrl, 'hasServiceKey:', hasServiceKey);
+  console.log('[STATUS] Looking up orderId:', orderId);
   
   supabase.getOrder(orderId).then(function(order) {
     if (order) {

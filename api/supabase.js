@@ -73,7 +73,8 @@ async function createOrder(orderId, payload, amount) {
   console.log('[createOrder] START. OrderId:', orderId, 'Client:', supabase ? 'EXISTS' : 'NULL');
   
   if (!supabase) {
-    console.warn('[createOrder] Using memory fallback (no client)');
+    console.warn('[createOrder] Using memory fallback (no Supabase client)');
+    console.log('[createOrder] This means SUPABASE_URL or SERVICE_KEY is not available in this runtime');
     memoryOrders[orderId] = {
       order_id: orderId,
       scenario: payload.scenario,
@@ -93,7 +94,7 @@ async function createOrder(orderId, payload, amount) {
     return orderId;
   }
 
-  console.log('[createOrder] Attempting DB insert for:', orderId);
+  console.log('[createOrder] Attempting DB insert for order_id:', orderId);
   const { data, error } = await supabase
     .from('orders')
     .insert({
@@ -114,10 +115,10 @@ async function createOrder(orderId, payload, amount) {
     .select();
 
   if (error) {
-    console.error('[createOrder] DB ERROR:', error.message, error.code, error.details);
+    console.error('[createOrder] INSERT FAILED. Error:', error.message, 'Code:', error.code, 'Details:', error.details);
     return null;
   }
-  console.log('[createOrder] SUCCESS. Insert data:', JSON.stringify(data));
+  console.log('[createOrder] INSERT SUCCESS. Insert data:', JSON.stringify(data));
   return orderId;
 }
 
