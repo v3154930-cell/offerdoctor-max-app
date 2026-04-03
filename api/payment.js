@@ -255,7 +255,8 @@ router.get('/status/:orderId', function(req, res) {
       message: 'Order not found'
     });
   }).catch(function(err) {
-    console.error('[PAYMENT][status] Error:', err.message);
+    console.error('[PAYMENT][status] Error caught:', err.message);
+    console.error('[PAYMENT][status] Stack:', err.stack);
     return res.status(500).json({
       error: 'internal_error',
       message: 'Error retrieving order'
