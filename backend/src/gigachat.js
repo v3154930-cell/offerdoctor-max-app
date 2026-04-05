@@ -260,6 +260,7 @@ function safeParseJsonFromModel(text) {
  * Нормализовать ответ для режима preview
  */
 function normalizePreviewResponse(data) {
+    console.log('[DEBUG] normalizePreviewResponse called, data =', JSON.stringify(data));
     if (!data) return {
         previewProblem: 'Не удалось определить проблему',
         previewHint: 'Попробуйте повторить запрос',

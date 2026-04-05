@@ -173,7 +173,10 @@ function requestGigachat(prompt, options) {
                     try {
                         var parsed = JSON.parse(data);
                         if (parsed.choices && parsed.choices.length > 0 && parsed.choices[0].message) {
-                            resolve(parsed.choices[0].message.content);
+                            var rawContent = parsed.choices[0].message.content;
+                            console.log('[GigaChat API] Raw response length:', rawContent.length);
+                            console.log('[GigaChat API] Raw response:', rawContent);
+                            resolve(rawContent);
                         } else if (parsed.error) {
                             reject(new Error('GigaChat error: ' + (parsed.error.message || JSON.stringify(parsed.error))));
                         } else {
@@ -216,6 +219,49 @@ function requestGigachatWithRetry(prompt, options) {
 }
 
 /**
+ * Исправить неэкранированные кавычки внутри JSON-строк
+ */
+function fixUnescapedQuotes(text) {
+    var result = '';
+    var inQuote = false;
+    var i = 0;
+    
+    while (i < text.length) {
+        var char = text[i];
+        
+        // Handle escape sequences
+        if (char === '\\' && i + 1 < text.length) {
+            result += char + text[i + 1];
+            i += 2;
+            continue;
+        }
+        
+        // Toggle quote state
+        if (char === '"') {
+            if (!inQuote) {
+                inQuote = true;
+            } else {
+                // Check what comes next - if it's a key character, we're ending the string
+                var nextChar = text[i + 1];
+                if (nextChar === ':' || nextChar === ',' || nextChar === '}' || nextChar === ' ' || nextChar === '\n' || nextChar === undefined) {
+                    inQuote = false;
+                } else {
+                    // This is an unescaped quote inside string - escape it
+                    result += '\\"';
+                    i++;
+                    continue;
+                }
+            }
+        }
+        
+        result += char;
+        i++;
+    }
+    
+    return result;
+}
+
+/**
  * Безопасное извлечение JSON из текста ответа модели
  */
 function safeParseJsonFromModel(text) {
@@ -232,6 +278,12 @@ function safeParseJsonFromModel(text) {
     var cleaned = text.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```\s*$/, '').trim();
     try {
         return JSON.parse(cleaned);
+    } catch (e) { }
+
+    // Попытка 2b: исправить неэкранированные кавычки внутри строк
+    var fixed = fixUnescapedQuotes(cleaned);
+    try {
+        return JSON.parse(fixed);
     } catch (e) { }
 
     // Попытка 3: ищем JSON между первой { и последней }
@@ -270,14 +322,46 @@ function safeParseJsonFromModel(text) {
         } catch (e) { }
     }
 
-    // Попытка 7: ищем ключевые поля в тексте и пытаемся извлечь
-    var previewProblemMatch = cleaned.match(/(?:проблема|problem)[\s:]*["«]?([^"»\n]+)/i);
-    var previewHintMatch = cleaned.match(/(?:совет|hint|advice)[\s:]*["«]?([^"»\n]+)/i);
-    if (previewProblemMatch || previewHintMatch) {
+    // Попытка 7: ручной парсинг JSON с экранированными кавычками
+    function extractJsonValue(str, key) {
+        var keyPos = str.indexOf('"' + key + '"');
+        if (keyPos === -1) return null;
+        
+        var colonPos = str.indexOf(':', keyPos);
+        if (colonPos === -1) return null;
+        
+        var firstQuote = str.indexOf('"', colonPos + 1);
+        if (firstQuote === -1) return null;
+        
+        var i = firstQuote + 1;
+        var result = '';
+        while (i < str.length) {
+            if (str[i] === '\\' && i + 1 < str.length) {
+                result += str[i] + str[i + 1];
+                i += 2;
+                continue;
+            }
+            if (str[i] === '"') {
+                return result;
+            }
+            result += str[i];
+            i++;
+        }
+        return null;
+    }
+    
+    var previewProblem = extractJsonValue(cleaned, 'previewProblem');
+    var previewHint = extractJsonValue(cleaned, 'previewHint');
+    var cta = extractJsonValue(cleaned, 'cta');
+    
+    if (previewProblem || previewHint) {
+        if (previewProblem) previewProblem = previewProblem.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+        if (previewHint) previewHint = previewHint.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+        
         return {
-            previewProblem: previewProblemMatch ? previewProblemMatch[1].trim() : '',
-            previewHint: previewHintMatch ? previewHintMatch[1].trim() : '',
-            cta: 'Получить полный разбор'
+            previewProblem: previewProblem || '',
+            previewHint: previewHint || '',
+            cta: cta || 'Получить полный разбор'
         };
     }
 
@@ -296,19 +380,71 @@ function safeParseJsonFromModel(text) {
 
 /**
  * Нормализовать ответ для режима preview
+ * ВНИМАНИЕ: эта функция должна вызываться ПОСЛЕ валидации isValidPreviewResponse
+ * Не используйте её как "fallback" для скрытия битых ответов!
  */
 function normalizePreviewResponse(data) {
-    if (!data) return {
-        previewProblem: 'Не удалось определить проблему',
-        previewHint: 'Попробуйте повторить запрос',
-        cta: 'Получить полный разбор'
-    };
+    console.log('[DEBUG] normalizePreviewResponse called, data =', JSON.stringify(data));
+    
+    // Safety check: should not receive null/undefined/empty object after validation
+    if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
+        console.error('[ERROR] normalizePreviewResponse received invalid data - this should not happen after validation!');
+        // Don't silently return fallback - this masks broken model responses
+        // Instead, we could throw, but since we're in Express catch handler would catch it
+        // Just log and return a clear error indicator
+        return {
+            previewProblem: '',
+            previewHint: '',
+            cta: '',
+            _isValid: false,
+            _error: 'invalid_model_response'
+        };
+    }
 
     return {
-        previewProblem: data.previewProblem || data.problem || data.main_problem || 'Не удалось определить проблему',
-        previewHint: data.previewHint || data.hint || data.advice || data.recommendation || 'Попробуйте повторить запрос',
+        previewProblem: data.previewProblem || data.problem || data.main_problem || '',
+        previewHint: data.previewHint || data.hint || data.advice || data.recommendation || '',
         cta: data.cta || 'Получить полный разбор'
     };
+}
+
+/**
+ * Проверить, валиден ли preview-ответ
+ * Проверяет наличие и непустоту полей previewProblem, previewHint, cta
+ */
+function isValidPreviewResponse(data) {
+    if (!data || typeof data !== 'object') {
+        console.log('[DEBUG] isValidPreviewResponse: data is null/undefined or not an object');
+        return false;
+    }
+    
+    if (Object.keys(data).length === 0) {
+        console.log('[DEBUG] isValidPreviewResponse: data is empty object {}');
+        return false;
+    }
+    
+    var problem = data.previewProblem;
+    var hint = data.previewHint;
+    var cta = data.cta;
+    
+    // Check if fields exist and are non-empty strings
+    if (!problem || typeof problem !== 'string' || problem.trim().length === 0) {
+        console.log('[DEBUG] isValidPreviewResponse: previewProblem is missing or empty');
+        return false;
+    }
+    
+    if (!hint || typeof hint !== 'string' || hint.trim().length === 0) {
+        console.log('[DEBUG] isValidPreviewResponse: previewHint is missing or empty');
+        return false;
+    }
+    
+    if (!cta || typeof cta !== 'string' || cta.trim().length === 0) {
+        console.log('[DEBUG] isValidPreviewResponse: cta is missing or empty');
+        return false;
+    }
+    
+    console.log('[DEBUG] isValidPreviewResponse: VALID');
+    return true;
 }
 
 /**
@@ -382,5 +518,6 @@ module.exports = {
     safeParseJsonFromModel: safeParseJsonFromModel,
     normalizePreviewResponse: normalizePreviewResponse,
     normalizeFullResponse: normalizeFullResponse,
-    normalizeFullWithCompetitorResponse: normalizeFullWithCompetitorResponse
+    normalizeFullWithCompetitorResponse: normalizeFullWithCompetitorResponse,
+    isValidPreviewResponse: isValidPreviewResponse
 };

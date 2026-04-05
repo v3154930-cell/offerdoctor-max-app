@@ -1533,12 +1533,50 @@
 // Local dev: оставьте localhost.
 // Vercel deployment: будет автоматически использоваться текущий хост
 // Также можно задать window.API_BASE_URL перед загрузкой страницы.
-var API_BASE_URL = window.API_BASE_URL || '{{API_BASE_URL}}' || 'http://localhost:3000';
 
-// Vercel auto-detect: использует текущий хост если не задан явно
-if (!window.API_BASE_URL && !'{{API_BASE_URL}}'.replace) {
-  API_BASE_URL = window.location.origin;
+var API_BASE_URL;
+
+// Production backend URL (замените на реальный endpoint для прода)
+var PRODUCTION_API_URL = 'https://your-production-backend.com';
+
+// Приоритеты:
+// 1. Явно заданное window.API_BASE_URL (наивысший приоритет)
+// 2. Для локальной разработки (127.0.0.1, localhost) -> локальный backend
+// 3. Для production (vercel и др.) -> production backend или текущий хост
+
+if (window.API_BASE_URL) {
+    // Явное указание через глобальную переменную
+    API_BASE_URL = window.API_BASE_URL;
 }
+else if (window.location.hostname === 'localhost' || 
+         window.location.hostname === '127.0.0.1' || 
+         window.location.hostname === '0.0.0.0') {
+    // Локальная разработка - используем локальный backend на том же хосте
+    API_BASE_URL = 'http://127.0.0.1:3000';
+}
+else if (window.location.port === '5500' || 
+         window.location.port === '5501' ||
+         window.location.port === '8080') {
+    // Live Server или подобные локальные серверы
+    API_BASE_URL = 'http://127.0.0.1:3000';
+}
+else if (window.location.origin && window.location.origin.indexOf('http') === 0) {
+    // Vercel или production - используем production URL или текущий хост
+    // Если PRODUCTION_API_URL настроен, используем его, иначе текущий хост
+    API_BASE_URL = PRODUCTION_API_URL !== 'https://your-production-backend.com' 
+        ? PRODUCTION_API_URL 
+        : window.location.origin;
+}
+// Финальный fallback - локальный backend
+else {
+    API_BASE_URL = 'http://127.0.0.1:3000';
+}
+
+// DEBUG: Логируем определённый API URL
+console.log('[DEBUG FRONTEND] API_BASE_URL =', API_BASE_URL);
+console.log('[DEBUG FRONTEND] window.location.origin =', window.location.origin);
+console.log('[DEBUG FRONTEND] window.location.hostname =', window.location.hostname);
+console.log('[DEBUG FRONTEND] window.location.port =', window.location.port);
 
 // URL лендинга. Заполните когда лендинг будет опубликован.
 // Пустая строка = ссылка не показывается.
@@ -1753,8 +1791,19 @@ $('btnPreview').addEventListener('click', function() {
   var payload = getPayload('preview');
   state.lastPayload = payload;
 
+  // DEBUG: Логируем перед отправкой запроса
+  console.log('[DEBUG FRONTEND] === ANALYZE REQUEST ===');
+  console.log('[DEBUG FRONTEND] URL:', API_BASE_URL + '/api/analyze');
+  console.log('[DEBUG FRONTEND] Payload:', JSON.stringify(payload, null, 2));
+  console.log('[DEBUG FRONTEND] scenario:', payload.scenario);
+  console.log('[DEBUG FRONTEND] platform:', payload.platform);
+  console.log('[DEBUG FRONTEND] product:', payload.product);
+  console.log('[DEBUG FRONTEND] audience:', payload.audience);
+
   showScreen('screen-loading');
   startThinkingAnimation('preview');
+
+  console.log('[DEBUG FRONTEND] Final request URL:', API_BASE_URL + '/api/analyze');
 
   fetch(API_BASE_URL + '/api/analyze', {
     method: 'POST',
@@ -1762,17 +1811,39 @@ $('btnPreview').addEventListener('click', function() {
     body: JSON.stringify(payload)
   })
   .then(function(res) {
-    if (!res.ok) {
-      return res.json().then(function(d) { throw classifyError(d.error || d.message); });
-    }
-    return res.json();
+    console.log('[DEBUG FRONTEND] Response status:', res.status);
+    console.log('[DEBUG FRONTEND] Response OK:', res.ok);
+    
+    // Safely handle response - first get text, then try to parse JSON
+    return res.text().then(function(text) {
+      console.log('[DEBUG FRONTEND] Response body:', text.substring(0, 500));
+      if (!res.ok) {
+        // Try to parse error JSON, otherwise use generic error
+        try {
+          var d = JSON.parse(text);
+          console.log('[DEBUG FRONTEND] Error response:', d);
+          throw classifyError(d.error || d.message);
+        } catch(e) {
+          if (e.name !== 'SyntaxError') throw e;
+          throw new Error('Server error ' + res.status + ': ' + text.substring(0, 200));
+        }
+      }
+      // Parse success JSON
+      try {
+        return JSON.parse(text);
+      } catch(e) {
+        throw new Error('Invalid JSON in response: ' + text.substring(0, 100));
+      }
+    });
   })
   .then(function(data) {
+    console.log('[DEBUG FRONTEND] Success response:', data);
     stopThinkingAnimation();
     renderPreview(data);
     showScreen('screen-preview');
   })
   .catch(function(e) {
+    console.log('[DEBUG FRONTEND] Fetch error:', e.message || e);
     stopThinkingAnimation();
     handleError(e);
   })
@@ -1884,12 +1955,28 @@ function processPayment() {
     })
   })
   .then(function(res) {
-    if (!res.ok) {
-      return res.json().then(function(d) { throw new Error(d.error || d.message || 'Ошибка оплаты'); });
-    }
-    return res.json();
+    console.log('[DEBUG FRONTEND] Payment response status:', res.status);
+    
+    return res.text().then(function(text) {
+      console.log('[DEBUG FRONTEND] Payment response body:', text.substring(0, 500));
+      if (!res.ok) {
+        try {
+          var d = JSON.parse(text);
+          throw new Error(d.error || d.message || 'Ошибка оплаты');
+        } catch(e) {
+          if (e.name !== 'SyntaxError') throw e;
+          throw new Error('Server error ' + res.status + ': ' + text.substring(0, 200));
+        }
+      }
+      try {
+        return JSON.parse(text);
+      } catch(e) {
+        throw new Error('Invalid JSON in response: ' + text.substring(0, 100));
+      }
+    });
   })
   .then(function(data) {
+    console.log('[DEBUG FRONTEND] Payment success:', data);
     if (data.payment_url) {
       // Сохраняем order_id для polling после возврата
       state.currentOrderId = data.order_id;
@@ -1926,25 +2013,45 @@ function startAnalysis() {
   payload.mode = 'full';
   payload.tariff = state.tariff;
 
+  // DEBUG: Логируем перед отправкой full-запроса
+  console.log('[DEBUG FRONTEND] === FULL ANALYZE REQUEST ===');
+  console.log('[DEBUG FRONTEND] Final request URL:', API_BASE_URL + '/api/analyze');
+  console.log('[DEBUG FRONTEND] Payload:', JSON.stringify(payload, null, 2));
+
   fetch(API_BASE_URL + '/api/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   })
   .then(function(res) {
-    if (!res.ok) {
-      return res.json().then(function(d) { throw classifyError(d.error || d.message); });
-    }
-    return res.json();
+    console.log('[DEBUG FRONTEND] Full response status:', res.status);
+    
+    return res.text().then(function(text) {
+      console.log('[DEBUG FRONTEND] Full response body:', text.substring(0, 500));
+      if (!res.ok) {
+        try {
+          var d = JSON.parse(text);
+          throw classifyError(d.error || d.message);
+        } catch(e) {
+          if (e.name !== 'SyntaxError') throw e;
+          throw new Error('Server error ' + res.status + ': ' + text.substring(0, 200));
+        }
+      }
+      try {
+        return JSON.parse(text);
+      } catch(e) {
+        throw new Error('Invalid JSON in response: ' + text.substring(0, 100));
+      }
+    });
   })
   .then(function(data) {
+    console.log('[DEBUG FRONTEND] Full response success:', data);
     stopThinkingAnimation();
     renderFullResult(data);
     showScreen('screen-result');
   })
   .catch(function(e) {
-    stopThinkingAnimation();
-    handleError(e);
+    console.log('[DEBUG FRONTEND] Full fetch error:', e.message || e);
   })
   .finally(function() {
     state.requestActive = false;
@@ -1993,17 +2100,30 @@ function pollStatus(orderId) {
   
   state.pollingAttempts++;
   
+  console.log('[DEBUG FRONTEND] Polling status for:', orderId);
+  console.log('[DEBUG FRONTEND] Polling URL:', API_BASE_URL + '/api/payment/status/' + encodeURIComponent(orderId));
+  
   fetch(API_BASE_URL + '/api/payment/status/' + encodeURIComponent(orderId), {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
   })
   .then(function(res) {
-    if (!res.ok) {
-      throw new Error('Status check failed');
-    }
-    return res.json();
+    console.log('[DEBUG FRONTEND] Polling response status:', res.status);
+    
+    return res.text().then(function(text) {
+      console.log('[DEBUG FRONTEND] Polling response body:', text.substring(0, 500));
+      if (!res.ok) {
+        throw new Error('Status check failed: ' + res.status);
+      }
+      try {
+        return JSON.parse(text);
+      } catch(e) {
+        throw new Error('Invalid JSON in polling response: ' + text.substring(0, 100));
+      }
+    });
   })
   .then(function(data) {
+    console.log('[DEBUG FRONTEND] Polling response:', data);
     handlePollResponse(data);
   })
   .catch(function(e) {

@@ -27,13 +27,23 @@ function buildOfferBlock(data) {
     return parts.join('\n') || 'Не указано';
 }
 
+// ===== Knowledge Block =====
+
+function buildKnowledgeBlock(knowledgeContext) {
+    if (!knowledgeContext) return '';
+    console.log('[DEBUG prompts.js] buildKnowledgeBlock received:', knowledgeContext.substring(0, 200) + '...');
+    return 'Контекст из базы знаний:\n' + knowledgeContext + '\n\n';
+}
+
 // ===== Preview =====
 
-function buildPreviewPrompt(data) {
+function buildPreviewPrompt(data, knowledgeContext) {
     var scenarioCtx = getScenarioContext(data.scenario, data.platform);
     var offerBlock = buildOfferBlock(data);
+    var knowledgeBlock = buildKnowledgeBlock(knowledgeContext);
 
     return 'Ты — эксперт по маркетингу и УТП. Проанализируй кратко предложение клиента.\n\n' +
+        knowledgeBlock +
         'Формат: ' + scenarioCtx + '\n' +
         'Что продаёт: ' + (data.product || 'Не указано') + '\n' +
         'Для кого: ' + (data.audience || 'Не указано') + '\n' +
@@ -47,9 +57,10 @@ function buildPreviewPrompt(data) {
 
 // ===== Full =====
 
-function buildFullPrompt(data) {
+function buildFullPrompt(data, knowledgeContext) {
     var scenarioCtx = getScenarioContext(data.scenario, data.platform);
     var offerBlock = buildOfferBlock(data);
+    var knowledgeBlock = buildKnowledgeBlock(knowledgeContext);
 
     var scenarioSpecific = '';
     if (data.scenario === 'marketplace') {
@@ -61,6 +72,7 @@ function buildFullPrompt(data) {
     }
 
     return 'Ты — эксперт по маркетингу, копирайтингу и УТП. Проведи глубокий анализ предложения.\n\n' +
+        knowledgeBlock +
         'Формат: ' + scenarioCtx + '\n' +
         'Что продаёт: ' + (data.product || 'Не указано') + '\n' +
         'Для кого: ' + (data.audience || 'Не указано') + '\n' +
@@ -82,9 +94,10 @@ function buildFullPrompt(data) {
 
 // ===== Full + Competitor (beta) =====
 
-function buildCompetitorPrompt(data) {
+function buildCompetitorPrompt(data, knowledgeContext) {
     var scenarioCtx = getScenarioContext(data.scenario, data.platform);
     var offerBlock = buildOfferBlock(data);
+    var knowledgeBlock = buildKnowledgeBlock(knowledgeContext);
 
     var platformHint = '';
     if (data.scenario === 'marketplace' && data.platform) {
@@ -94,6 +107,7 @@ function buildCompetitorPrompt(data) {
     }
 
     return 'Ты — эксперт по маркетингу и конкурентному анализу. Проведи полный разбор предложения с анализом конкурентов.\n\n' +
+        knowledgeBlock +
         'Формат: ' + scenarioCtx + '\n' +
         'Что продаёт: ' + (data.product || 'Не указано') + '\n' +
         'Для кого: ' + (data.audience || 'Не указано') + '\n' +
@@ -121,5 +135,6 @@ function buildCompetitorPrompt(data) {
 module.exports = {
     buildPreviewPrompt: buildPreviewPrompt,
     buildFullPrompt: buildFullPrompt,
-    buildCompetitorPrompt: buildCompetitorPrompt
+    buildCompetitorPrompt: buildCompetitorPrompt,
+    buildKnowledgeBlock: buildKnowledgeBlock
 };

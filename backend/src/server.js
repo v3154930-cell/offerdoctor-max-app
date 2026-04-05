@@ -2,19 +2,23 @@
  * ОфферДоктор Backend
  * Express-сервер для AI-разбора УТП через GigaChat
  * Поддерживает DEMO_MODE для демонстрации без credentials
+ * Использует модули из api/* (единый источник правды)
  */
 
 require('dotenv').config();
 
 var express = require('express');
 var cors = require('cors');
-var prompts = require('./prompts');
-var gigachat = require('./gigachat');
+var prompts = require('../../api/prompts');
+var gigachat = require('../../api/gigachat');
+var knowledge = require('../../api/knowledge');
 var demoMocks = require('./demoMocks');
 
 var app = express();
 var PORT = process.env.PORT || 3000;
 var DEMO_MODE = process.env.DEMO_MODE === 'true';
+var robokassaConfigured = false;
+var robokassaIsTest = false;
 
 // ===== Middleware =====
 app.use(cors({
@@ -44,6 +48,12 @@ app.get('/health', function (req, res) {
 // ===== POST /api/analyze =====
 app.post('/api/analyze', function (req, res) {
     var data = req.body;
+
+    // ===== DEBUG: Логирование входных данных =====
+    console.log('[DEBUG HTTP] req.body:', JSON.stringify(data, null, 2));
+    console.log('[DEBUG HTTP] product:', data.product);
+    console.log('[DEBUG HTTP] audience:', data.audience);
+    console.log('[DEBUG HTTP] text:', data.text);
 
     // ===== Валидация =====
     var errors = [];
@@ -112,45 +122,126 @@ app.post('/api/analyze', function (req, res) {
         });
     }
 
+    // ===== RAG: получение контекста из knowledge engine =====
+    var knowledgeContext = null;
+    if (knowledge.isEnabled()) {
+        console.log('[DEBUG KNOWLEDGE] normalizedData:', JSON.stringify({
+            product: normalizedData.product,
+            audience: normalizedData.audience,
+            text: normalizedData.text,
+            link: normalizedData.link,
+            pain: normalizedData.pain,
+            scenario: normalizedData.scenario,
+            platform: normalizedData.platform
+        }, null, 2));
+        
+        console.log('[Knowledge] RAG включен, получаем контекст...');
+        knowledge.getKnowledgeContext(normalizedData)
+            .then(function(context) {
+                knowledgeContext = context;
+                console.log('[Knowledge] Контекст получен:', context ? context.substring(0, 100) + '...' : 'null');
+                return buildAndSendPrompt(normalizedData, knowledgeContext, res);
+            })
+            .catch(function(err) {
+                console.error('[Knowledge] Ошибка:', err.message);
+                return buildAndSendPrompt(normalizedData, null, res);
+            });
+    } else {
+        console.log('[Knowledge] RAG выключен');
+        return buildAndSendPrompt(normalizedData, null, res);
+    }
+});
+
+function buildAndSendPrompt(data, knowledgeContext, res) {
+    // ===== DEBUG: Логирование перед сборкой prompt =====
+    console.log('[DEBUG PROMPT] data:', JSON.stringify({
+        format: data.scenario,
+        product: data.product,
+        audience: data.audience,
+        offerText: data.text,
+        pain: data.pain
+    }, null, 2));
+    console.log('[DEBUG PROMPT] knowledgeContext:', knowledgeContext ? knowledgeContext.substring(0, 200) + '...' : 'null');
+    
     // ===== Построение промта =====
     var prompt;
-    if (normalizedData.mode === 'preview') {
-        prompt = prompts.buildPreviewPrompt(normalizedData);
-    } else if (normalizedData.tariff === 'competitor') {
-        prompt = prompts.buildCompetitorPrompt(normalizedData);
+    if (data.mode === 'preview') {
+        prompt = prompts.buildPreviewPrompt(data, knowledgeContext);
+    } else if (data.tariff === 'competitor') {
+        prompt = prompts.buildCompetitorPrompt(data, knowledgeContext);
     } else {
-        prompt = prompts.buildFullPrompt(normalizedData);
+        prompt = prompts.buildFullPrompt(data, knowledgeContext);
     }
+
+    console.log('[DEBUG PROMPT] Built prompt preview (first 200 chars):', prompt.substring(0, 200));
 
     // ===== Запрос к GigaChat =====
     gigachat.requestGigachatWithRetry(prompt)
         .then(function (responseText) {
-            console.log('[' + normalizedData.mode + '] Ответ от GigaChat получен (' + responseText.length + ' символов)');
+            console.log('[' + data.mode + '] RAW RESPONSE:', responseText);
+            console.log('[' + data.mode + '] Response length:', responseText.length);
 
             var parsed = gigachat.safeParseJsonFromModel(responseText);
+            
+            // Only log OK if parsed is actually a valid object with keys
+            var isParsedNonEmpty = parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0;
+            console.log('[' + data.mode + '] Parsed result:', isParsedNonEmpty ? 'OK' : 'FAILED/EMPTY');
+            console.log('[' + data.mode + '] Parsed object:', JSON.stringify(parsed));
+            
+            // If initial parse failed or returned empty object {}, try manual fallback
+            if (!isParsedNonEmpty) {
+                console.log('[' + data.mode + '] PARSE FAILED: Trying manual parse...');
+                try {
+                    var cleaned = responseText.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```\s*$/, '').trim();
+                    console.log('[' + data.mode + '] DEBUG cleaned:', cleaned.substring(0, 200));
+                    var manual = JSON.parse(cleaned);
+                    console.log('[' + data.mode + '] DEBUG manual parse SUCCESS');
+                    parsed = manual;
+                    isParsedNonEmpty = parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0;
+                    console.log('[' + data.mode + '] Parsed after manual:', JSON.stringify(parsed), 'isNonEmpty:', isParsedNonEmpty);
+                } catch(e) {
+                    console.log('[' + data.mode + '] PARSE FAILED:', e.message);
+                }
+            }
 
-            if (!parsed) {
-                console.error('[' + normalizedData.mode + '] Не удалось распарсить JSON. Ответ:', responseText.substring(0, 500));
+            // If still no valid parsed result, return error
+            if (!isParsedNonEmpty) {
+                console.error('[' + data.mode + '] PARSE FAILED: Не удалось распарсить JSON. Ответ:', responseText.substring(0, 500));
                 return res.status(502).json({
                     error: 'invalid_model_response',
                     message: 'AI вернул ответ в невалидном формате. Попробуйте снова.'
                 });
             }
+            
+            // For preview mode, check if parsed object has required fields
+            if (data.mode === 'preview') {
+                var isValid = gigachat.isValidPreviewResponse(parsed);
+                console.log('[' + data.mode + '] Preview validation:', isValid ? 'VALID' : 'INVALID');
+                if (!isValid) {
+                    console.error('[' + data.mode + '] PREVIEW VALIDATION FAILED: missing required fields. Parsed:', JSON.stringify(parsed));
+                    return res.status(502).json({
+                        error: 'invalid_model_response',
+                        message: 'AI вернул ответ с неполными данными. Попробуйте снова.'
+                    });
+                }
+            }
 
             var result;
-            if (normalizedData.mode === 'preview') {
+            if (data.mode === 'preview') {
+                // Only call normalize if we already validated the response
                 result = gigachat.normalizePreviewResponse(parsed);
-            } else if (normalizedData.tariff === 'competitor') {
+                console.log('[' + data.mode + '] Normalized result:', JSON.stringify(result));
+            } else if (data.tariff === 'competitor') {
                 result = gigachat.normalizeFullWithCompetitorResponse(parsed);
             } else {
                 result = gigachat.normalizeFullResponse(parsed);
             }
 
-            console.log('[' + normalizedData.mode + '] Результат отправлен');
+            console.log('[' + data.mode + '] RESULT SENT: SUCCESS');
             res.json(result);
         })
         .catch(function (error) {
-            console.error('[' + normalizedData.mode + '] Ошибка:', error.message);
+            console.error('[' + data.mode + '] Ошибка:', error.message);
 
             if (error.message.indexOf('PROVIDER_NOT_CONFIGURED') !== -1) {
                 return res.status(503).json({
@@ -181,7 +272,7 @@ app.post('/api/analyze', function (req, res) {
                 message: errorMessage
             });
         });
-});
+}
 
 // ===== POST /api/payment/create =====
 app.post('/api/payment/create', function (req, res) {

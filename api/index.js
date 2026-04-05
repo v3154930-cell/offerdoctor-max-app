@@ -91,3 +91,8 @@ app.get('/api/debug/env', function(req, res) {
 });
 
 module.exports = app;
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`[index.js] Server listening on port ${PORT}`);
+});
