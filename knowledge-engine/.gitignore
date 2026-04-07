@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+data/
+uploads/
+imports/inbox/
+imports/processed/
+imports/failed/
+
+# Настройки
+.env
+.env.local
+.env.example
+imports.env
+.config
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log
+logs/
+
+# Streamlit
+.streamlit/
+
+# pytest
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

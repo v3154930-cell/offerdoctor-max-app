@@ -1,0 +1,98 @@
+[
+  {
+    "title": "[scenario=avito] [platform=avito] [topic=title] [type=rule] [level=core] Заголовки объявлений Avito",
+    "source_type": "text",
+    "file_path": "avito_titles_01.txt",
+    "scenario": "avito",
+    "platform": "avito",
+    "topic": "title",
+    "type": "rule",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Базовые правила заголовков"
+  },
+  {
+    "title": "[scenario=landing] [platform=generic] [topic=hero] [type=checklist] [level=core] Первый экран лендинга",
+    "source_type": "text",
+    "file_path": "landing_hero_01.txt",
+    "scenario": "landing",
+    "platform": "generic",
+    "topic": "hero",
+    "type": "checklist",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Ключевые правила hero block"
+  },
+  {
+    "title": "[scenario=generic] [platform=generic] [topic=offer] [type=framework] [level=core] Общая формула сильного оффера",
+    "source_type": "text",
+    "file_path": "offer_formula_01.txt",
+    "scenario": "generic",
+    "platform": "generic",
+    "topic": "offer",
+    "type": "framework",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Базовый каркас сильного оффера для личности ОфферДоктора"
+  },
+  {
+    "title": "[scenario=generic] [platform=generic] [topic=offer] [type=diagnostics] [level=core] Типовые ошибки слабых офферов",
+    "source_type": "text",
+    "file_path": "weak_offer_mistakes_01.txt",
+    "scenario": "generic",
+    "platform": "generic",
+    "topic": "offer",
+    "type": "diagnostics",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Диагностический документ по типовым ошибкам слабых офферов"
+  },
+  {
+    "title": "[scenario=avito] [platform=avito] [topic=title] [type=framework] [level=core] Заголовки и первые строки для Avito",
+    "source_type": "text",
+    "file_path": "avito_titles_opening_01.txt",
+    "scenario": "avito",
+    "platform": "avito",
+    "topic": "title",
+    "type": "framework",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Базовый документ по заголовкам и первым строкам объявлений Avito"
+  },
+  {
+    "title": "[scenario=landing] [platform=generic] [topic=hero] [type=framework] [level=core] Первый экран лендинга / hero block",
+    "source_type": "text",
+    "file_path": "landing_hero_block_01.txt",
+    "scenario": "landing",
+    "platform": "generic",
+    "topic": "hero",
+    "type": "framework",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Базовый документ по анализу первого экрана лендинга"
+  },
+  {
+    "title": "[scenario=marketplace] [platform=generic] [topic=product_card] [type=framework] [level=core] Карточка товара — оффер, выбор и страхи покупателя",
+    "source_type": "text",
+    "file_path": "product_card_offer_choice_fears_01.txt",
+    "scenario": "marketplace",
+    "platform": "generic",
+    "topic": "product_card",
+    "type": "framework",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Базовый документ по логике карточки товара, выбору и страхам покупателя"
+  },
+  {
+    "title": "[scenario=competitor] [platform=generic] [topic=positioning] [type=framework] [level=core] Фреймворк конкурентного разбора",
+    "source_type": "text",
+    "file_path": "competitor_analysis_framework_01.txt",
+    "scenario": "competitor",
+    "platform": "generic",
+    "topic": "positioning",
+    "type": "framework",
+    "level": "core",
+    "priority_level": 1,
+    "notes": "Базовый документ по конкурентному разбору и поиску точки отличия"
+  }
+]

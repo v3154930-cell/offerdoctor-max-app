@@ -1,0 +1,6 @@
+◇ injecting env (9) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+[index.js] Starting. ENV check:
+[index.js] DEMO_MODE: false
+[index.js] SUPABASE_URL: missing
+[index.js] SUPABASE_KEY: missing
+[index.js] Server listening on port 3000

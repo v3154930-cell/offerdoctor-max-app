@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  knowledge-engine:
+    build: .
+    container_name: knowledge-engine
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
